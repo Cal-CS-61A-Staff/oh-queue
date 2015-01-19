@@ -6,22 +6,40 @@ $(document).ready(function(){
         socket.emit('connect');
     });
 
+    function scrollBottom() {
+        $('html, body').animate({
+            scrollTop: $(document).height()
+        }, 600);
+    }
+
+    function toggleHelpForm() {
+        $("#help-form-container").slideToggle('medium');
+        $('#add-entry').slideToggle('medium');
+    }
+
     // Socket handler for adding entries
     socket.on('add_entry_response', function(message) {
         $('#queue').append('\
-            <div class="queue-entry row" id="' + message.id + '"> \
-                <div class="three columns">' + message.login + '</div> \
+            <div style="display: none" class="queue-entry row" id="' + message.id + '"> \
+                <div class="three columns no-hide">' + message.login + '</div> \
                 <div class="three columns">' + message.add_date + '</div> \
                 <div class="three columns">' + message.assignment + '</div> \
                 <div class="three columns">' + message.question + '</div> \
             </div>'
         );
+
+        $('#' + message.id).slideToggle('medium');
     });
 
     // Help form listeners
     $('#add-entry').click(function() {
-        $('#help-form-container').show();
+        toggleHelpForm();
+        scrollBottom();
     });
+
+    $('#cancel-form').click(function() {
+        toggleHelpForm();
+    })
 
     $('#help-form').submit(function(event) {
         NProgress.start();
@@ -35,27 +53,8 @@ $(document).ready(function(){
         });
 
         request.done(function(msg) {
-            $('#queue').animate({
-                scrollTop: $('#queue')[0].scrollHeight
-            }, 600);
-
-            $('#help-form-container').hide();
+            toggleHelpForm();
             NProgress.done();
         });
-    });
-
-    // Close form if focus is lost
-    $(document).mouseup(function(e) {
-        var container = $("#help-form-container");
-
-        if (!container.is(e.target) && container.has(e.target).length === 0) {
-            container.hide();
-        }
-    });
-
-    $(document).on('keydown', function(e) {
-        if ( e.keyCode === 27 ) {
-            $('#help-form-container').hide();
-        }
     });
 });
