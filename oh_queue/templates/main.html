@@ -1,0 +1,48 @@
+{% extends "default.html" %}
+{% block body %}
+<script src="{{ url_for('static', filename='js/client/student.js') }}"></script>
+
+<div class="queue-container container">
+	<section class="header">
+		<div class="row">
+			<div class="seven columns">
+				<h4><b>CS61A</b> Office Hour Queue</h4>
+			</div>
+			<div class="five columns">
+				<div>
+					<h6 class="info"><b>John DeNero</b>, 5-6:30 PM</h6>
+					<h6 class="info">Bechtel Somewhere or Other</h6>
+				</div>
+			</div>
+		</div>
+
+		<div class="heading title row">
+			<div class="three columns">Class Login</div>
+			<div class="three columns">Queue Time</div>
+			<div class="three columns">Assignment</div>
+			<div class="three columns">Question</div>
+		</div>
+	</section>
+	
+	<div class="queue" id="queue">
+		{% for entry in entries %}
+		<div class="queue-entry row" id="queue-entry-{{ entry.id }}">
+			<div class="three columns">{{ entry.login }}</div>
+			<div class="three columns">{{ entry.add_date | datetime }}</div>
+			<div class="three columns">{{ entry.assignment }}</div>
+			<div class="three columns">{{ entry.question }}</div>
+		</div>
+		{% endfor %}
+	</div>
+</div>
+
+<div id="add-entry" class="btn-add-entry title">
+	<p>request help</p>
+</div>
+
+<div id="help-form-container">
+	<div class="container">
+		{% include "form.html" %}
+	</div>
+</div>
+{% endblock %}

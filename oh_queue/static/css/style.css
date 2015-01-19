@@ -1,0 +1,100 @@
+html, body{
+	margin:0;
+	height:100%;
+}
+
+.title {
+	text-transform: uppercase;
+	font-size: 1.4rem;
+	letter-spacing: .2rem;
+	font-weight: 600;
+}
+
+.queue-container {
+	height: 91%;
+	position: relative;
+}
+
+.header {
+	padding-top: 5%;
+	margin-bottom: 1.2rem;
+}
+
+.header .info { 
+	text-align: right;
+	margin-bottom: 0.2rem;
+}
+
+.heading {
+	padding-top: 10px;
+	padding-bottom: 0.8rem;
+}
+
+.queue {
+	overflow-y: scroll;
+	position: absolute;
+	top: 142px;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+}
+
+.queue::-webkit-scrollbar {
+	width: 0 !important
+}
+
+.queue-entry {
+	padding: 1.0rem 0;
+	border-bottom: 1px solid #E1E1E1;
+}
+
+.btn-add-entry {
+	position: fixed;
+	left: 0px;
+	bottom: 0px;
+	height: 50px;
+	width: 100%;
+	background: #222;
+	color: #fff;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 50px;
+	cursor: pointer;
+}
+
+#help-form-container {
+	padding-top: 10px;
+	position: fixed;
+	left: 0px;
+	bottom: 0px;
+	width: 100%;
+	background-color: rgba(255, 255, 255, 0.95);
+	display: none;
+}
+
+.three.columns {
+	width: 22%;
+}
+
+/* Media queries */
+
+/* Larger than mobile */
+@media (min-width: 400px) {
+	.three.columns {
+		width: 22%;
+	}
+}
+
+/* Larger than phablet (also point when grid becomes active) */
+@media (min-width: 550px) {
+
+}
+
+/* Larger than tablet */
+@media (min-width: 750px) {}
+
+/* Larger than desktop */
+@media (min-width: 1000px) {}
+
+/* Larger than Desktop HD */
+@media (min-width: 1200px) {}

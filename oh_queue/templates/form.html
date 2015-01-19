@@ -1,0 +1,34 @@
+<form id="help-form" action="{{ url_for('add_entry') }}" method="post">
+  <div class="row">
+    <div class="four columns">
+      <label for="name">Name</label>
+      <input class="u-full-width" type="text" placeholder="John Doe" id="name" name="name">
+    </div>
+
+    <div class="three columns">
+      <label for="login">Class login</label>
+      <input class="u-full-width" type="text" placeholder="cs61a-xx" id="login" name="login">
+    </div>
+
+    <div class="three columns">
+      <label for="assignment">Assignment</label>
+      <select class="u-full-width" id="assignment" name="assignment">
+        <option value="ants">Ants</option>
+        <option value="hw4">Homework 4</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="two columns">
+      <label for="question">Question</label>
+      <select class="u-full-width" id="question" name="question">
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </div>
+  </div>
+
+  <br/>
+
+  <input class="button-primary" type="submit" value="Submit">
+</form>

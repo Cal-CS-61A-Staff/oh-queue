@@ -1,0 +1,4 @@
+flask
+flask-socketio
+flask-sqlalchemy
+pytz
