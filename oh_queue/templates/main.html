@@ -18,7 +18,7 @@
 	<nav class="column-headings">
 		<div class="container u-full-width">
 			<div class="row">
-				<div class="three columns no-hide">Class Login</div>
+				<div class="three columns no-hide">Name</div>
 				<div class="three columns">Queue Time</div>
 				<div class="three columns">Assignment</div>
 				<div class="three columns">Question</div>
@@ -29,7 +29,7 @@
 	<div id="queue">
 		{% for entry in entries %}
 		<div class="row queue-entry" id="queue-entry-{{ entry.id }}">
-			<div class="three columns no-hide">{{ entry.login }}</div>
+			<div class="three columns no-hide">{{ entry.name }}</div>
 			<div class="three columns">{{ entry.add_date | datetime }}</div>
 			<div class="three columns">{{ entry.assignment }}</div>
 			<div class="three columns">{{ entry.question }}</div>

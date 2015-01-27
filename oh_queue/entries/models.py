@@ -21,6 +21,7 @@ class Entry(db.Model):
 	helper = db.Column(db.String(120), default=None)
 	add_date = db.Column(db.DateTime)
 	resolved_date = db.Column(db.DateTime)
+	resolved_notes = db.Column(db.Text)
 
 	def __init__(self, name='Anonymous', login='cs61a-xx', assignment=None, question=1):
 		self.name = name
@@ -35,11 +36,9 @@ class Entry(db.Model):
 	def get_status(self):
 		return ENTRY.STATUS[self.status]
 
-
-	def resolve(self, helper):
-		self.helper = helper
+	def resolve(self):
+		self.status = ENTRY.RESOLVED
 		self.resolved_date = datetime.utcnow()
-
 
 	def __repr__(self):
 		return '<Entry from {}>'.format(self.login)

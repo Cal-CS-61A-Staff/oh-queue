@@ -20,8 +20,8 @@ $(document).ready(function(){
     // Socket handler for adding entries
     socket.on('add_entry_response', function(message) {
         $('#queue').append('\
-            <div style="display: none" class="queue-entry row" id="' + message.id + '"> \
-                <div class="three columns no-hide">' + message.login + '</div> \
+            <div class="queue-entry row" id="queue-entry-' + message.id + '"> \
+                <div class="three columns no-hide">' + message.name + '</div> \
                 <div class="three columns">' + message.add_date + '</div> \
                 <div class="three columns">' + message.assignment + '</div> \
                 <div class="three columns">' + message.question + '</div> \
@@ -29,6 +29,11 @@ $(document).ready(function(){
         );
 
         $('#' + message.id).slideToggle('medium');
+    });
+
+    socket.on('resolve_entry_response', function (message) {
+        console.log(message.id);
+        $('#queue-entry-' + message.id).remove();
     });
 
     // Help form listeners
@@ -55,6 +60,12 @@ $(document).ready(function(){
         request.done(function(msg) {
             toggleHelpForm();
             NProgress.done();
+        })
+        .fail(function () {
+            toggleHelpForm();
+            NProgress.done();
+            // Currently, the alert doesn't work and no messages are displayed
+            alert("Your help request could not be added. Possible reason: you have a pending request.");
         });
     });
 });

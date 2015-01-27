@@ -1,7 +1,7 @@
 {% extends "default.html" %}
 {% block body %}
-<script src="{{ url_for('static', filename='js/client/assist.js') }}"></script>
 
+<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
 <div class="queue-container container">
 	<section class="header">
 		<div class="row">
@@ -19,8 +19,8 @@
 		<div class="heading title row">
 			<div class="three columns">Name</div>
 			<div class="three columns">Queue Time</div>
-			<div class="three columns">Assignment</div>
-			<div class="three columns">Question</div>
+			<div class="two columns">Assignment</div>
+			<div class="two columns">Question</div>
 		</div>
 	</section>
 	
@@ -29,10 +29,30 @@
 		<div class="queue-entry row" id="queue-entry-{{ entry.id }}">
 			<div class="three columns">{{ entry.name }}</div>
 			<div class="three columns">{{ entry.add_date | datetime }}</div>
-			<div class="three columns">{{ entry.assignment }}</div>
-			<div class="three columns">{{ entry.question }}</div>
+			<div class="two columns">{{ entry.assignment }}</div>
+			<div class="two columns">{{ entry.question }}</div>
+			<div class="two columns"><button data-url="{{ url_for('resolve_entry')}}" data-id='{{ entry.id }}' class="resolve">Resolve</button></div>
 		</div>
 		{% endfor %}
 	</div>
+
+<!-- 	<div id="dialog-form" title="Resolve Notes">
+	  <p class="validateTips">Brief summary of student's issue and solution</p>
+	 
+	  <form>
+	    <fieldset>
+	      <label for="name">Notes</label>
+	      <textarea name="notes" id="notes" class="text ui-widget-content ui-corner-all">
+	 
+	      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+	    </fieldset>
+	  </form>
+	</div> -->
+
+	<h4>Resolved</h4>
+	<div class="queue" id="resolved">
+	</div>
+
 </div>
+<script src="{{ url_for('static', filename='js/client/assist.js') }}"></script>
 {% endblock %}
