@@ -1,6 +1,5 @@
 $(document).ready(function(){
-    $('.resolve').click(function (event) { 
-           console.log("Resolve clicked");
+    var resolveHandler = function (event) { 
            var url = $(this).attr('data-url');
            var postData = {
             id: $(this).attr('data-id')
@@ -9,7 +8,9 @@ $(document).ready(function(){
                 //nothing needs to be done here
             });
 
-         });
+         };
+
+    $('.resolve').click(resolveHandler);
 
 	// Variables
 	var socket = io.connect('http://' + document.domain + ':' + location.port);
@@ -24,12 +25,13 @@ $(document).ready(function(){
             <div class="queue-entry row" id="queue-entry-' + message.id + '"> \
                 <div class="three columns">' + message.name + '</div> \
                 <div class="three columns">' + message.add_date + '</div> \
-                <div class="three columns">' + message.assignment + '</div> \
-                <div class="three columns">' + message.question + '</div> \
-                <div class="three columns"><button data-url="/resolve_entry" \
-                    data-id="' + message.id + '" class="resolve">Resolve</button></div> \
+                <div class="two columns">' + message.assignment + '</div> \
+                <div class="two columns">' + message.question + '</div> \
+                <div class="two columns"><button data-url="/resolve_entry" \
+                    data-id="' + message.id + '" class="resolve" id="resolve-' + message.id + '">Resolve</button></div> \
             </div>'
         );
+        $('#resolve-' + message.id).click(resolveHandler);
     });
 
     socket.on('resolve_entry_response', function (message) {
@@ -38,11 +40,58 @@ $(document).ready(function(){
             <div class="queue-entry row" id="resolved-entry-' + message.id + '"> \
                 <div class="three columns">' + message.name + '</div> \
                 <div class="three columns">' + message.add_date + '</div> \
-                <div class="three columns">' + message.assignment + '</div> \
-                <div class="three columns">' + message.question + '</div> \
+                <div class="two columns">' + message.assignment + '</div> \
+                <div class="one columns">' + message.question + '</div> \
+                <div class="three columns" id="resolved-entry-notes-' + message.id + '"><button data-url="/add_notes" \
+                    data-id="' + message.id + '" class="add-notes">Add notes</button></div> \
             </div>'
         );
+        $('#resolved-entry-notes-' + message.id + '> button').click(function(event) {
+            addNotesId = $(this).attr('data-id');
+          dialog.dialog( "open" );
+        });
     });
 
+    socket.on('notes_added', function (message) {
+        $('#resolved-entry-notes-' + message.id + '> button').remove();
+        $('#resolved-entry-notes-' + message.id).append('<p>' + message.notes + '</p>');
+    });
+
+    // For the adding notes modal
+    var dialog, form, addNotesId,
+      notes = $( "#notes" ),
+      tips = $( ".validateTips" );
+ 
+    function addNotes() {
+        var postData = {
+            id: addNotesId,
+            notes: notes.val()
+        };
+       $.post('/add_notes', postData, function(data) {
+            
+        });        
+       dialog.dialog( "close" );
+    }
+ 
+    dialog = $( "#dialog-form" ).dialog({
+      autoOpen: false,
+      height: 300,
+      width: 350,
+      modal: true,
+      buttons: {
+        "Add note": addNotes,
+        Cancel: function() {
+          dialog.dialog( "close" );
+        }
+      },
+      close: function() {
+        form[ 0 ].reset();
+      }
+    });
+ 
+    form = dialog.find( "form" ).on( "submit", function( event ) {
+      event.preventDefault();
+      addNotes();
+    });
 
 });
