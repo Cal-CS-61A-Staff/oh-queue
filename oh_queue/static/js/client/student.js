@@ -53,8 +53,8 @@ $(document).ready(function(){
         var request = $.post('/add_entry', {
             name: $('#name').val(), 
             sid: $('#sid').val(), 
-            session_password: $('#session_password').val(), 
-            assignment: $('#assignment').val(), 
+            session_password: 'foo', 
+            assignment: $('#assignment').val(),
             question: $('#question').val()
         });
 
