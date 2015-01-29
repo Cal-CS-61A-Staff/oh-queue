@@ -4,7 +4,7 @@ from flask import request, jsonify
 from datetime import datetime
 from pytz import timezone
 
-from oh_queue.entries.models import Entry
+from oh_queue.entries.models import Entry, SessionPassword
 from oh_queue.entries import constants as ENTRY
 
 from oh_queue.auth import requires_admin
@@ -13,7 +13,7 @@ def return_payload(student):
 	return {
 		'id': student.id, 
 		'name': student.name, 
-		'login': student.login, 
+		'sid': student.sid, 
 		'add_date': format_datetime(student.add_date), 
 		'assignment': student.assignment, 
 		'question': student.question	
@@ -26,15 +26,20 @@ def add_entry():
 	"""
 	# Extract attributes from the POST request
 	name = request.form['name']
-	login = request.form['login']
+	sid = request.form['sid']
+	session_password = request.form['session_password']
 	assignment = request.form['assignment']
 	question = request.form['question']
 
-	active_entries = Entry.query.filter_by(status=ENTRY.PENDING).filter_by(login=login)
+	active_entries = Entry.query.filter_by(status=ENTRY.PENDING).filter_by(sid=sid)
 	if active_entries and active_entries.count() > 0:
-		return jsonify(result='failure')
+		return jsonify(result='failure', error='you are already on the queue')
+
+	stored_password = SessionPassword.query.get(1)
+	if not stored_password or stored_password.password != session_password:
+		return jsonify(result='failure', error='bad session password')
 	# Create a new entry and add it to persistent storage
-	new_entry = Entry(name, login, assignment, question)
+	new_entry = Entry(name, sid, assignment, question)
 	db.session.add(new_entry)
 	db.session.commit()
 
@@ -99,6 +104,20 @@ def generate_report():
 		db.session.delete(request)
 		db.session.commit()
 	return jsonify(data_list)
+
+@app.route('/set_session_password', methods=['POST'])
+@requires_admin
+def set_session_password():
+	old_password = SessionPassword.query.get(1)
+	if old_password:
+		db.session.delete(old_password)
+		db.session.commit()
+	password = request.form['password']
+	new_password = SessionPassword(password)
+	db.session.add(new_password)
+	db.session.commit()
+	return jsonify(result="success", password=password)
+
 
 # Filters
 

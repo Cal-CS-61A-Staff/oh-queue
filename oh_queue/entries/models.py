@@ -3,16 +3,26 @@ from oh_queue.entries import constants as ENTRY
 
 from datetime import datetime
 
+class SessionPassword(db.Model):
+	"""
+	A session password so that students must be present to put their names on the queue.
+	"""
+	__tablename__ = 'session_password'
+	id = db.Column(db.Integer, primary_key=True)
+	password = db.Column(db.String(120))
+
+	def __init__(self, password):
+		self.password = password
 
 class Entry(db.Model):
 	"""Represents an entry in the queue. Each entry has a student name, their 
-	class login, the assignment, and the question they have issues with. To 
+	SID, the assignment, and the question they have issues with. To 
 	resolve an issue, a helper must be input (TA, lab assistant, etc.)
 	"""
 	__tablename__ = 'entries_entry'
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(120))
-	login = db.Column(db.String(10))
+	sid = db.Column(db.Integer)
 
 	assignment = db.Column(db.String(120))
 	question = db.Column(db.SmallInteger)
@@ -23,9 +33,9 @@ class Entry(db.Model):
 	resolved_date = db.Column(db.DateTime)
 	resolved_notes = db.Column(db.Text)
 
-	def __init__(self, name='Anonymous', login='cs61a-xx', assignment=None, question=1):
+	def __init__(self, name='Anonymous', sid='24616161', assignment=None, question=1):
 		self.name = name
-		self.login = login
+		self.sid = sid
 
 		self.assignment = assignment
 		self.question = question
@@ -41,5 +51,5 @@ class Entry(db.Model):
 		self.resolved_date = datetime.utcnow()
 
 	def __repr__(self):
-		return '<Entry from {}>'.format(self.login)
+		return '<Entry from {}>'.format(self.name)
 

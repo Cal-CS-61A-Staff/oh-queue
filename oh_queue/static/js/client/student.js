@@ -52,7 +52,8 @@ $(document).ready(function(){
 
         var request = $.post('/add_entry', {
             name: $('#name').val(), 
-            login: $('#login').val(), 
+            sid: $('#sid').val(), 
+            session_password: $('#session_password').val(), 
             assignment: $('#assignment').val(), 
             question: $('#question').val()
         });
@@ -60,12 +61,15 @@ $(document).ready(function(){
         request.done(function(msg) {
             toggleHelpForm();
             NProgress.done();
+            if (msg.result === 'failure') {
+                alert("Your help request could not be added. Possible reason: " + msg.error);
+            }
         })
-        .fail(function () {
+        .fail(function (msg) {
             toggleHelpForm();
             NProgress.done();
             // Currently, the alert doesn't work and no messages are displayed
-            alert("Your help request could not be added. Possible reason: you have a pending request.");
+            alert("Your help request could not be added. Possible reason: Incomplete fields");
         });
     });
 });

@@ -4,18 +4,16 @@ From: http://flask.pocoo.org/snippets/8/
 
 from functools import wraps
 from flask import request, Response
-
-ASSISTANT = 1
-ADMIN = 2
+from oh_queue.users import *
 
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    if username == 'assistant' and password == 'soumya':
-        return ASSISTANT
-    elif username == 'ta' and password == 'scheminganthogger':
-        return ADMIN
+    if username == ASSISTANT['username'] and password == ASSISTANT['password']:
+        return ASSISTANT['level']
+    elif username == ADMIN['username'] and password == ADMIN['password']:
+        return ADMIN['level']
     else:
         return 0
 
@@ -39,7 +37,7 @@ def requires_admin(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
-        if not auth or check_auth(auth.username, auth.password) < ADMIN:
+        if not auth or check_auth(auth.username, auth.password) < ADMIN['level']:
             return authenticate()
         return f(*args, **kwargs)
     return decorated
