@@ -83,9 +83,9 @@ The data (without names) will then be returned.
 @app.route('/generate_report', methods=['GET'])
 @requires_admin
 def generate_report():
-	resolved = Entry.query.filter_by(status=ENTRY.RESOLVED)
+	resolved = Entry.query.filter_by(status=ENTRY.RESOLVED).all()
 	data_list = {}
-	for i in xrange(resolved.count()):
+	for i in range(len(resolved)):
 		request = resolved[i]
 		data_list[i] = {
 			# "name": request.name,
