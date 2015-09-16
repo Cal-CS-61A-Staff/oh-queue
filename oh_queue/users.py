@@ -6,6 +6,6 @@ ADMIN = {
 
 ASSISTANT = {
         "username": "assistant",
-        "password": "soumya",
+        "password": "elephant",
         "level": 1
     }
