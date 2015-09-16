@@ -61,8 +61,8 @@
 
   .one.column,
   .one.columns                    { width: 4.66666666667%; }
-  .two.columns                    { width: 13.3333333333%; }
-  .three.columns                  { width: 22%;            }
+  .two.columns                    { width: 10%; }
+  .three.columns                  { width: 13%;            }
   .four.columns                   { width: 30.6666666667%; }
   .five.columns                   { width: 39.3333333333%; }
   .six.columns                    { width: 48%;            }

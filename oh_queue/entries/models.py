@@ -24,7 +24,9 @@ class Entry(db.Model):
 	name = db.Column(db.String(120))
 	sid = db.Column(db.Integer)
 
-	assignment = db.Column(db.String(120))
+	location = db.Column(db.String(120))
+	assignment_type = db.Column(db.String(120))
+	assignment = db.Column(db.SmallInteger)
 	question = db.Column(db.SmallInteger)
 	status = db.Column(db.SmallInteger, default=ENTRY.PENDING)
 
@@ -33,10 +35,13 @@ class Entry(db.Model):
 	resolved_date = db.Column(db.DateTime)
 	resolved_notes = db.Column(db.Text)
 
-	def __init__(self, name='Anonymous', sid='24616161', assignment=None, question=1):
+	def __init__(self, name='Anonymous', sid='24616161', location=None,
+				 assignment_type=None, assignment=None, question=None):
 		self.name = name
 		self.sid = sid
 
+		self.location = location
+		self.assignment_type = assignment_type
 		self.assignment = assignment
 		self.question = question
 

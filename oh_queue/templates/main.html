@@ -6,11 +6,11 @@
 	<section class="header row">
 		<div class="seven columns">
 			<h4><b>CS61A</b> Office Hour Queue</h4>
-			<h6>Garbarini Lounge</h6>
+			<h6>Evans B4</h6>
 		</div>
 		<div class="five columns ta-info">
 			<h6><b>CS61Awesome Staff</b></h6>
-			<h6>Thursday January 28, 2015</h6>
+			<h6 id="now-date"></h6>
 		</div>
 	</section>
 
@@ -20,8 +20,10 @@
 			<div class="row">
 				<div class="three columns no-hide">Name</div>
 				<div class="three columns">Queue Time</div>
-				<div class="three columns">Assignment</div>
- 				<div class="three columns">Question</div> 
+				<div class="three columns">Location</div>
+ 				<div class="three columns">Type</div>
+ 				<div class="three columns">Assignment</div>
+ 				<div class="three columns">Question</div>
 			</div>
 		</div>
 	</nav>
@@ -31,6 +33,8 @@
 		<div class="row queue-entry" id="queue-entry-{{ entry.id }}">
 			<div class="three columns no-hide">{{ entry.name }}</div>
 			<div class="three columns">{{ entry.add_date | datetime }}</div>
+			<div class="three columns">{{ entry.location }}</div>
+			<div class="three columns">{{ entry.assignment_type }}</div>
 			<div class="three columns">{{ entry.assignment }}</div>
 			<div class="three columns">{{ entry.question }}</div>
 		</div>

@@ -22,14 +22,16 @@ $(document).ready(function(){
     // Socket handler for adding entries
     socket.on('add_entry_response', function(message) {
         $('#queue').append('\
-            <div class="queue-entry row" id="queue-entry-' + message.id + '"> \
-                <div class="three columns">' + message.name + '</div> \
-                <div class="three columns">' + message.add_date + '</div> \
+            <div class="row queue-entry" id="queue-entry-' + message.id + '"> \
+                <div class="three columns no-hide">' + message.name + '</div> \
+                <div class="three columns">' + message.add_date+ '</div> \
+                <div class="two columns">' + message.location+ '</div> \
+                <div class="two columns">' + message.assignment_type + '</div> \
                 <div class="two columns">' + message.assignment + '</div> \
                 <div class="two columns">' + message.question + '</div> \
                 <div class="two columns"><button data-url="/resolve_entry" \
                     data-id="' + message.id + '" class="resolve" id="resolve-' + message.id + '">Resolve</button></div> \
-            </div>'
+            '
         );
         $('#resolve-' + message.id).click(resolveHandler);
     });
@@ -37,13 +39,13 @@ $(document).ready(function(){
     socket.on('resolve_entry_response', function (message) {
         $('#queue-entry-' + message.id).remove();
         $('#resolved').append('\
-            <div class="queue-entry row" id="resolved-entry-' + message.id + '"> \
-                <div class="three columns">' + message.name + '</div> \
-                <div class="three columns">' + message.add_date + '</div> \
+            <div class="row queue-entry" id="queue-entry-' + message.id + '"> \
+                <div class="three columns no-hide">' + message.name + '</div> \
+                <div class="three columns">' + message.add_date+ '</div> \
+                <div class="two columns">' + message.location+ '</div> \
+                <div class="two columns">' + message.assignment_type + '</div> \
                 <div class="two columns">' + message.assignment + '</div> \
-                <div class="one columns">' + message.question + '</div> \
-                <div class="three columns" id="resolved-entry-notes-' + message.id + '"><button data-url="/add_notes" \
-                    data-id="' + message.id + '" class="add-notes">Add notes</button></div> \
+                <div class="two columns">' + message.question + '</div> \
             </div>'
         );
         $('#resolved-entry-notes-' + message.id + '> button').click(function(event) {
