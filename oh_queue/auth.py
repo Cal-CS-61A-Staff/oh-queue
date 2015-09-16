@@ -12,7 +12,7 @@ def check_auth(username, password):
     """
     if username == ASSISTANT['username'] and password == ASSISTANT['password']:
         return ASSISTANT['level']
-    elif username == ADMIN['username'] and password == ADMIN['password']:
+    if username == ADMIN['username'] and password == ADMIN['password']:
         return ADMIN['level']
     else:
         return 0
