@@ -15,11 +15,11 @@ $(document).ready(function(){
   var formatMessage = function(message, resolveButton) {
     rendered =
       '<div class="row queue-entry" id="queue-entry-' + message.id + '"> \
-            <div class="three columns no-hide">' + message.name + '</div> \
+            <div class="two columns no-hide">' + message.name + '</div> \
             <div class="three columns">' + message.add_date+ '</div> \
             <div class="two columns">' + message.location+ '</div> \
             <div class="two columns">' + message.assignment_type + '</div> \
-            <div class="two columns">' + message.assignment + '</div> \
+            <div class="three columns">' + message.assignment + '</div> \
             <div class="two columns">' + message.question + '</div> \
       '
     resolve = 
