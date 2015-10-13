@@ -2,20 +2,21 @@
   <div class="row">
     <div class="three columns no-hide">
       <label for="name">Name</label>
-      <input class="u-full-width" type="text" placeholder="John Doe" id="name" name="name">
+      <input class="u-full-width" type="text" placeholder="John Doe" id="name" name="name" required>
     </div>
 
     <div class="three columns no-hide">
       <label for="sid">SID</label>
-      <input class="u-full-width" type="number" placeholder="24616161" id="sid" name="sid">
+      <input class="u-full-width" type="number" placeholder="24616161" id="sid" name="sid" required>
     </div>
 
     <div class="three columns no-hide">
       <label for="location">Location</label>
       <select class="u-full-width" id="location" name="location">
-        <option value="big-room">Big Room</option>
+        <option value="big-room">Main Room</option>
+        <option value="hallway">HallWay</option>
         <option value="small-room">Small Room</option>
-        <option value="hallway">Hall Way</option>
+        <option value="tiny-room">Tiny Room</option>
       </select>
     </div>
     <div class="three columns no-hide">
@@ -30,13 +31,12 @@
     </div>
     <div class="three columns no-hide">
       <label for="assignment">Assignment</label>
-      <input class="u-full-width" type="number" placeholder="1" id="assignment">
+      <input class="u-full-width" type="number" id="assignment" required>
     </div>
     <div class="three columns no-hide">
       <label for="question">Question</label>
-      <input class="u-full-width" type="number" placeholder="2" id="question">
+      <input class="u-full-width" type="number" id="question" required>
     </div>
-
   </div>
 
   <br/>
