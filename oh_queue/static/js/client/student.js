@@ -77,7 +77,4 @@ $(document).ready(function(){
         console.log(message.id);
         $('#queue-entry-' + message.id).remove();
     });
-
-    // Dynamically rendering web page
-    $('#now-date').text((new Date()).toDateString())
 });

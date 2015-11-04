@@ -100,5 +100,4 @@ $(document).ready(function(){
     event.preventDefault();
     addNotes();
   });
-
 });
