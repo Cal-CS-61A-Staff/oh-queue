@@ -1,5 +1,7 @@
 $(document).ready(function(){
-  
+  var titleToggleTimer = null;
+  var startTitle = document.title;
+
   // helper functions
   var resolveHandler = function (event) { 
      var url = $(this).attr('data-url');
@@ -32,6 +34,22 @@ $(document).ready(function(){
     return rendered + '</div>'
   }
 
+  var toggleTitle = function() {
+      if (document.title == startTitle) {
+          document.title = "NEW STUDENT ON QUEUE";
+      }
+      else {
+          document.title = startTitle;
+      }
+      titleToggleTimer = setTimeout(toggleTitle, 1000);
+  }
+
+  var resetTitle = function() {
+      clearTimeout(titleToggleTimer);
+      titleToggleTimer = null;
+      document.title = startTitle;
+  }
+
   // Bind event listeners
   $('.resolve').click(resolveHandler);
 
@@ -45,11 +63,18 @@ $(document).ready(function(){
   socket.on('add_entry_response', function(message) {
       $('#queue').append(formatMessage(message, true));
       $('#resolve-' + message.id).click(resolveHandler);
+      if (!titleToggleTimer) {
+          toggleTitle();
+      }
   });
 
   socket.on('resolve_entry_response', function (message) {
       $('#queue-entry-' + message.id).remove();
       $('#resolved').append(formatMessage(message, false));
+      
+      if (titleToggleTimer){
+          resetTitle();
+      }
       // $('#resolved-entry-notes-' + message.id + '> button').click(function(event) {
       //     addNotesId = $(this).attr('data-id');
       //   dialog.dialog( "open" );
