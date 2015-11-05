@@ -46,6 +46,7 @@ $(document).ready(function(){
 
   var resetTitle = function() {
       clearTimeout(titleToggleTimer);
+      titleToggleTimer = null;
       document.title = startTitle;
   }
 
