@@ -1,12 +1,35 @@
 $(document).ready(function(){
-	// Variables
-	var socket = io.connect('http://' + document.domain + ':' + location.port);
+    // Variables
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
 
     // Helper Function
     function scrollBottom() {
         $('html, body').animate({
             scrollTop: $(document).height()
         }, 600);
+    }
+
+    function getNotifPermission() {
+      if (("Notification" in window)) {
+        // Request notifictions
+        Notification.requestPermission(function (permission) {
+          // Whatever the user answers, we make sure we store the information
+          if(!('permission' in Notification)) {
+            Notification.permission = permission;
+          }
+        });
+      }
+    }
+
+    function notifyUser(text, options) {
+        // Let's check if the browser supports notifications
+        if (!("Notification" in window)) {
+          return;
+        }
+        // Let's check if the user is okay to get some notification
+        else if (Notification.permission === "granted") {
+          var notif = new Notification(text, options);
+        } 
     }
 
     function toggleHelpForm() {
@@ -24,6 +47,8 @@ $(document).ready(function(){
         toggleHelpForm();
     })
 
+    var student_sid = null;
+
     $('#help-form').submit(function(event) {
         NProgress.start();
         event.preventDefault();
@@ -40,6 +65,9 @@ $(document).ready(function(){
 
         request.done(function(msg) {
             toggleHelpForm();
+            // Get permissions to notify users 
+            getNotifPermission();
+            student_sid = $('#sid').val();
             NProgress.done();
             if (msg.result === 'failure') {
                 alert('Your help request could not be added. Possible reason: ' + msg.error);
@@ -74,7 +102,10 @@ $(document).ready(function(){
     });
 
     socket.on('resolve_entry_response', function (message) {
-        console.log(message.id);
+        if (student_sid != null && message.sid == student_sid) {
+            notifyUser("61A Queue: Your name has been called", {});
+        }
         $('#queue-entry-' + message.id).remove();
     });
 });
+
