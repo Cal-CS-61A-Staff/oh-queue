@@ -1,5 +1,5 @@
 from oh_queue import app, db, socketio
-from flask import request, jsonify
+from flask import render_template_string, request, jsonify
 
 from datetime import datetime
 from pytz import timezone
@@ -7,7 +7,11 @@ from pytz import timezone
 from oh_queue.entries.models import Entry
 from oh_queue.entries import constants as ENTRY
 
-def return_payload(entry):
+def render_entry(entry, assist):
+    template = app.jinja_env.get_template('entry.html')
+    return template.render(entry=entry, assist=assist)
+
+def return_payload(entry, assist=False):
     return {
         'id': entry.id,
         'name': entry.name,
@@ -16,7 +20,8 @@ def return_payload(entry):
         'location': entry.location,
         'assignment_type':entry.assignment_type,
         'assignment':entry.assignment,
-        'question': entry.question
+        'question': entry.question,
+        'html': render_entry(entry, assist),
     }
 
 @app.route('/add_entry', methods=['POST'])
@@ -37,6 +42,7 @@ def add_entry():
     db.session.commit()
 
     # Emit the new entry to all clients
+    socketio.emit('add_entry_response', return_payload(entry, assist=True), namespace='/assist')
     socketio.emit('add_entry_response', return_payload(entry))
     return jsonify(result='success')
 
@@ -56,6 +62,7 @@ def resolve_entry():
     resolved_entry.resolve()
     db.session.commit()
 
+    socketio.emit('resolve_entry_response', return_payload(resolved_entry), namespace='/assist')
     socketio.emit('resolve_entry_response', return_payload(resolved_entry))
     return jsonify(result='success')
 

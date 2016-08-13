@@ -12,36 +12,18 @@ $(document).ready(function(){
 
   };
 
-  var formatMessage = function(message, resolveButton) {
-    rendered =
-      '<div class="row queue-entry" id="queue-entry-' + message.id + '"> \
-            <div class="two columns no-hide">' + message.name + '</div> \
-            <div class="three columns">' + message.add_date+ '</div> \
-            <div class="two columns">' + message.location+ '</div> \
-            <div class="two columns">' + message.assignment_type + '</div> \
-            <div class="three columns">' + message.assignment + '</div> \
-            <div class="two columns">' + message.question + '</div> \
-      '
-    resolve =
-      '<div class="two columns"><button data-url="/resolve_entry" \
-      data-id="' + message.id + '" class="resolve" id="resolve-' + message.id +
-      '">Resolve</button></div>'
-    if (resolveButton == true) {
-      rendered = rendered + resolve
-    }
-    return rendered + '</div>'
-  }
-
   // Bind event listeners
   $('.resolve').click(resolveHandler);
   requestNotificationPermission();
 
   // opening Socket
-    var socket = io.connect('http://' + document.domain + ':' + location.port);
+  var socket = io.connect(
+    'http://' + document.domain + ':' + location.port + '/assist'
+  );
 
   // Socket handler for adding entries
   socket.on('add_entry_response', function(message) {
-      $('#queue').append(formatMessage(message, true));
+      $('#queue').append(message.html);
       $('#resolve-' + message.id).click(resolveHandler);
       var details = {
           body: message.name + " - " + message.assignment + message.question + " in " + message.location
@@ -51,6 +33,6 @@ $(document).ready(function(){
 
   socket.on('resolve_entry_response', function (message) {
       $('#queue-entry-' + message.id).remove();
-      $('#resolved').append(formatMessage(message, false));
+      $('#resolved').append(message.html);
   });
 });

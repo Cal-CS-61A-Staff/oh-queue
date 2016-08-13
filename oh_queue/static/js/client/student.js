@@ -58,17 +58,7 @@ $(document).ready(function(){
     });
 
     socket.on('add_entry_response', function(message) {
-        $('#queue').append('\
-            <div class="row queue-entry" id="queue-entry-' + message.id + '"> \
-                <div class="three columns no-hide">' + message.name + '</div> \
-                <div class="three columns">' + message.add_date+ '</div> \
-                <div class="three columns">' + message.location+ '</div> \
-                <div class="three columns">' + message.assignment_type + '</div> \
-                <div class="three columns">' + message.assignment + '</div> \
-                <div class="three columns">' + message.question + '</div> \
-            </div>'
-        );
-
+        $('#queue').append(message.html);
         $('#' + message.id).slideToggle('medium');
     });
 
