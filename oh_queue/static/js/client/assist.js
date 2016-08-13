@@ -1,7 +1,7 @@
 $(document).ready(function(){
-  
+
   // helper functions
-  var resolveHandler = function (event) { 
+  var resolveHandler = function (event) {
      var url = $(this).attr('data-url');
      var postData = {
       id: $(this).attr('data-id')
@@ -22,9 +22,9 @@ $(document).ready(function(){
             <div class="three columns">' + message.assignment + '</div> \
             <div class="two columns">' + message.question + '</div> \
       '
-    resolve = 
+    resolve =
       '<div class="two columns"><button data-url="/resolve_entry" \
-      data-id="' + message.id + '" class="resolve" id="resolve-' + message.id + 
+      data-id="' + message.id + '" class="resolve" id="resolve-' + message.id +
       '">Resolve</button></div>'
     if (resolveButton == true) {
       rendered = rendered + resolve
@@ -44,7 +44,7 @@ $(document).ready(function(){
     // Let's check if the user is okay to get some notification
     else if (Notification.permission === "granted") {
       var notif = new Notification(text, options);
-    } 
+    }
 
   // At last, if the user already denied any notification, and you
   // want to be respectful there is no need to bother him any more.
@@ -103,8 +103,8 @@ $(document).ready(function(){
           notes: notes.val()
       };
      $.post('/add_notes', postData, function(data) {
-          
-      });        
+
+      });
      dialog.dialog( "close" );
   }
 
@@ -129,4 +129,3 @@ $(document).ready(function(){
     addNotes();
   });
 });
-

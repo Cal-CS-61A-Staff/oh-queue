@@ -11,14 +11,14 @@ from oh_queue.auth import requires_admin
 
 def return_payload(entry):
 	return {
-		'id': entry.id, 
-		'name': entry.name, 
-		'sid': entry.sid, 
-		'add_date': format_datetime(entry.add_date), 
-		'location': entry.location, 
+		'id': entry.id,
+		'name': entry.name,
+		'sid': entry.sid,
+		'add_date': format_datetime(entry.add_date),
+		'location': entry.location,
 		'assignment_type':entry.assignment_type,
 		'assignment':entry.assignment,
-		'question': entry.question	
+		'question': entry.question
 	}
 
 @app.route('/add_entry', methods=['POST'])
@@ -33,7 +33,7 @@ def add_entry():
 	location = request.form['location']
 	assignment_type = request.form['assignment_type']
 	assignment = request.form['assignment']
-	question = request.form['question']	
+	question = request.form['question']
 	# session_password = request.form['session_password']
 	# session_password = stored_password.password
 
@@ -134,5 +134,3 @@ local_timezone = timezone(app.config['LOCAL_TIMEZONE'])
 def format_datetime(timestamp):
 	tz_aware = db_timezone.localize(timestamp)
 	return tz_aware.astimezone(local_timezone).strftime('%I:%M %p')
-
-

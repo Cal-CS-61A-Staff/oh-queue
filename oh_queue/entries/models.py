@@ -15,8 +15,8 @@ class SessionPassword(db.Model):
 		self.password = password
 
 class Entry(db.Model):
-	"""Represents an entry in the queue. Each entry has a student name, their 
-	SID, the assignment, and the question they have issues with. To 
+	"""Represents an entry in the queue. Each entry has a student name, their
+	SID, the assignment, and the question they have issues with. To
 	resolve an issue, a helper must be input (TA, lab assistant, etc.)
 	"""
 	__tablename__ = 'entries_entry'
@@ -57,4 +57,3 @@ class Entry(db.Model):
 
 	def __repr__(self):
 		return '<Entry from {}>'.format(self.name)
-

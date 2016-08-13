@@ -16,7 +16,7 @@ html, body{
 	display: none;
 }
 
-.column-headings, 
+.column-headings,
 .column-headings-spacer {
 	display: block;
 	width: 100%;
@@ -98,5 +98,3 @@ html, body{
 		display: block;
 	}
 }
-
-

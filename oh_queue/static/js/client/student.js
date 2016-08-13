@@ -29,7 +29,7 @@ $(document).ready(function(){
         // Let's check if the user is okay to get some notification
         else if (Notification.permission === "granted") {
           var notif = new Notification(text, options);
-        } 
+        }
     }
 
     function toggleHelpForm() {
@@ -54,9 +54,9 @@ $(document).ready(function(){
         event.preventDefault();
 
         var request = $.post('/add_entry', {
-            name: $('#name').val(), 
-            sid: $('#sid').val(), 
-            session_password: 'foo', 
+            name: $('#name').val(),
+            sid: $('#sid').val(),
+            session_password: 'foo',
             location: $('#location').val(),
             assignment_type: $('#assignment_type').val(),
             assignment: $('#assignment').val(),
@@ -65,7 +65,7 @@ $(document).ready(function(){
 
         request.done(function(msg) {
             toggleHelpForm();
-            // Get permissions to notify users 
+            // Get permissions to notify users
             getNotifPermission();
             student_sid = $('#sid').val();
             NProgress.done();
@@ -103,4 +103,3 @@ $(document).ready(function(){
         $('#queue-entry-' + message.id).remove();
     });
 });
-
