@@ -84,8 +84,13 @@ html, body{
 
 
 /* Media queries */
+.two.columns {
+  width: 10%;
+}
+
 .three.columns {
   display: none;
+  width: 13%;
 }
 
 .three.columns.no-hide {
