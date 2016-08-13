@@ -1,41 +1,41 @@
 html, body{
-	margin:0;
-	height:100%;
+  margin:0;
+  height:100%;
 }
 
 .header {
-	padding-top: 3rem;
+  padding-top: 3rem;
 }
 
 .ta-info {
-	text-align: right;
-	padding-top: 10px;
+  text-align: right;
+  padding-top: 10px;
 }
 
 .navbar {
-	display: none;
+  display: none;
 }
 
 .column-headings,
 .column-headings-spacer {
-	display: block;
-	width: 100%;
-	height: 6.5rem;
-	background: #fff;
-	z-index: 99;
+  display: block;
+  width: 100%;
+  height: 6.5rem;
+  background: #fff;
+  z-index: 99;
 
-	text-transform: uppercase;
-	font-size: 11px;
-	font-weight: 600;
-	letter-spacing: .2rem;
-	margin-right: 35px;
-	text-decoration: none;
-	line-height: 6.5rem;
-	color: #222;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .2rem;
+  margin-right: 35px;
+  text-decoration: none;
+  line-height: 6.5rem;
+  color: #222;
 }
 
 .column-headings-spacer {
-	display: none;
+  display: none;
 }
 
 .docked-headings .column-headings-spacer {
@@ -43,58 +43,58 @@ html, body{
 }
 
 .docked-headings .column-headings {
-	position: fixed;
-	top: 0;
-	left: 0;
-	border-top: 1px solid #eee;
-	border-bottom: 1px solid #eee;
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
 }
 
 #queue {
-	padding-bottom: 60px;
+  padding-bottom: 60px;
 }
 
 .queue-entry {
-	padding: 1rem 0;
-	border-bottom: 1px solid #E1E1E1;
+  padding: 1rem 0;
+  border-bottom: 1px solid #E1E1E1;
 }
 
 .btn-add-entry {
-	position: fixed;
-	left: 0px;
-	bottom: 0px;
-	height: 50px;
-	width: 100%;
-	background: #222;
-	color: #fff;
-	text-align: center;
-	vertical-align: middle;
-	line-height: 50px;
-	cursor: pointer;
+  position: fixed;
+  left: 0px;
+  bottom: 0px;
+  height: 50px;
+  width: 100%;
+  background: #222;
+  color: #fff;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 50px;
+  cursor: pointer;
 }
 
 #help-form-container {
-	padding-top: 40px;
+  padding-top: 40px;
 
-	border-top: 2px solid #eee;
-	background-color: #fff;
-	display: none;
+  border-top: 2px solid #eee;
+  background-color: #fff;
+  display: none;
 }
 
 
 
 /* Media queries */
 .three.columns {
-	display: none;
+  display: none;
 }
 
 .three.columns.no-hide {
-	display: block;
+  display: block;
 }
 
 /* Larger than phablet (also point when grid becomes active) */
 @media (min-width: 550px) {
-	.three.columns {
-		display: block;
-	}
+  .three.columns {
+    display: block;
+  }
 }
