@@ -3,17 +3,6 @@ from oh_queue.entries import constants as ENTRY
 
 from datetime import datetime
 
-class SessionPassword(db.Model):
-    """
-    A session password so that students must be present to put their names on the queue.
-    """
-    __tablename__ = 'session_password'
-    id = db.Column(db.Integer, primary_key=True)
-    password = db.Column(db.String(120))
-
-    def __init__(self, password):
-        self.password = password
-
 class Entry(db.Model):
     """Represents an entry in the queue. Each entry has a student name, their
     SID, the assignment, and the question they have issues with. To

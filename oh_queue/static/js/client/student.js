@@ -56,7 +56,6 @@ $(document).ready(function(){
         var request = $.post('/add_entry', {
             name: $('#name').val(),
             sid: $('#sid').val(),
-            session_password: 'foo',
             location: $('#location').val(),
             assignment_type: $('#assignment_type').val(),
             assignment: $('#assignment').val(),

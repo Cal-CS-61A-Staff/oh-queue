@@ -4,7 +4,7 @@ from flask import request, jsonify
 from datetime import datetime
 from pytz import timezone
 
-from oh_queue.entries.models import Entry, SessionPassword
+from oh_queue.entries.models import Entry
 from oh_queue.entries import constants as ENTRY
 
 from oh_queue.auth import requires_admin
@@ -99,20 +99,6 @@ def generate_report():
         db.session.delete(request)
         db.session.commit()
     return jsonify(data_list)
-
-@app.route('/set_session_password', methods=['POST'])
-@requires_admin
-def set_session_password():
-    old_password = SessionPassword.query.get(1)
-    if old_password:
-        db.session.delete(old_password)
-        db.session.commit()
-    password = request.form['password']
-    new_password = SessionPassword(password)
-    db.session.add(new_password)
-    db.session.commit()
-    return jsonify(result="success", password=password)
-
 
 # Filters
 
