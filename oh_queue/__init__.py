@@ -7,13 +7,14 @@ logging.basicConfig(level=logging.INFO)
 
 # Flask-related stuff
 from flask import Flask
-from flask.ext.socketio import SocketIO
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO
+from flask_sqlalchemy import SQLAlchemy
 
 
 # Initialize the application
 app = Flask(__name__)
 app.config.from_object('config')
+app.config.setdefault('SQLALCHEMY_TRACK_MODIFICATIONS', False)
 
 db = SQLAlchemy(app)
 socketio = SocketIO(app)
@@ -26,5 +27,3 @@ import oh_queue.sockets
 
 # Import routes
 import oh_queue.entries.routes
-
-
