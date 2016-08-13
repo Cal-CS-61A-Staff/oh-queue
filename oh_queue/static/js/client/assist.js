@@ -34,36 +34,10 @@ $(document).ready(function(){
 
   // Bind event listeners
   $('.resolve').click(resolveHandler);
+  requestNotificationPermission();
 
-
-  function notifyUser(text, options) {
-    // Let's check if the browser supports notifications
-    if (!("Notification" in window)) {
-      return;
-    }
-    // Let's check if the user is okay to get some notification
-    else if (Notification.permission === "granted") {
-      var notif = new Notification(text, options);
-    }
-
-  // At last, if the user already denied any notification, and you
-  // want to be respectful there is no need to bother him any more.
-}
   // opening Socket
     var socket = io.connect('http://' + document.domain + ':' + location.port);
-    socket.on('connect', function() {
-
-      if (("Notification" in window)) {
-        // Request notifictions
-        Notification.requestPermission(function (permission) {
-          // Whatever the user answers, we make sure we store the information
-          if(!('permission' in Notification)) {
-            Notification.permission = permission;
-          }
-        });
-      }
-
-    });
 
   // Socket handler for adding entries
   socket.on('add_entry_response', function(message) {

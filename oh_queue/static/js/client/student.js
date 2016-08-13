@@ -9,29 +9,6 @@ $(document).ready(function(){
         }, 600);
     }
 
-    function getNotifPermission() {
-      if (("Notification" in window)) {
-        // Request notifictions
-        Notification.requestPermission(function (permission) {
-          // Whatever the user answers, we make sure we store the information
-          if(!('permission' in Notification)) {
-            Notification.permission = permission;
-          }
-        });
-      }
-    }
-
-    function notifyUser(text, options) {
-        // Let's check if the browser supports notifications
-        if (!("Notification" in window)) {
-          return;
-        }
-        // Let's check if the user is okay to get some notification
-        else if (Notification.permission === "granted") {
-          var notif = new Notification(text, options);
-        }
-    }
-
     function toggleHelpForm() {
         $('#help-form-container').slideToggle('medium');
         $('#add-entry').slideToggle('medium');
@@ -65,7 +42,7 @@ $(document).ready(function(){
         request.done(function(msg) {
             toggleHelpForm();
             // Get permissions to notify users
-            getNotifPermission();
+            requestNotificationPermission();
             student_sid = $('#sid').val();
             NProgress.done();
             if (msg.result === 'failure') {
