@@ -7,8 +7,6 @@ from pytz import timezone
 from oh_queue.entries.models import Entry
 from oh_queue.entries import constants as ENTRY
 
-from oh_queue.auth import requires_admin
-
 def return_payload(entry):
     return {
         'id': entry.id,
@@ -81,7 +79,6 @@ All resolved entries currently in the database will be cleared out.
 The data (without names) will then be returned.
 """
 @app.route('/generate_report', methods=['GET'])
-@requires_admin
 def generate_report():
     resolved = Entry.query.filter_by(status=ENTRY.RESOLVED).all()
     data_list = {}

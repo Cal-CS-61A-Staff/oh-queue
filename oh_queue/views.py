@@ -5,7 +5,6 @@ from flask import render_template
 from oh_queue import app
 from oh_queue.entries.models import Entry
 from oh_queue.entries import constants as ENTRY
-from oh_queue.auth import requires_auth, requires_admin
 
 @app.route("/")
 def index():
