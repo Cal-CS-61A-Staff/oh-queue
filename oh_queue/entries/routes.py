@@ -26,26 +26,15 @@ def add_entry():
     """Stores a new entry to the persistent database, and emits it to all
     connected clients.
     """
-    # stored_password = SessionPassword.query.get(1)
-    # Extract attributes from the POST request
-    name = request.form['name']
-    sid = request.form['sid']
-    location = request.form['location']
-    assignment_type = request.form['assignment_type']
-    assignment = request.form['assignment']
-    question = request.form['question']
-    # session_password = request.form['session_password']
-    # session_password = stored_password.password
-
-
-    # active_entries = Entry.query.filter_by(status=ENTRY.PENDING).filter_by(sid=sid)
-    # if active_entries and active_entries.count() > 0:
-    #     return jsonify(result='failure', error='you are already on the queue')
-
-    # if not stored_password or stored_password.password != session_password:
-    #     return jsonify(result='failure', error='bad session password')
     # Create a new entry and add it to persistent storage
-    entry = Entry(name, sid, location, assignment_type, assignment, question)
+    entry = Entry(
+        name=request.form['name'],
+        sid=request.form['sid'],
+        location=request.form['location'],
+        assignment_type=request.form['assignment_type'],
+        assignment=request.form['assignment'],
+        question=request.form['question'],
+    )
     db.session.add(entry)
     db.session.commit()
 

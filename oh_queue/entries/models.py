@@ -31,22 +31,9 @@ class Entry(db.Model):
     status = db.Column(db.SmallInteger, default=ENTRY.PENDING)
 
     helper = db.Column(db.String(120), default=None)
-    add_date = db.Column(db.DateTime)
+    add_date = db.Column(db.DateTime, default=db.func.now())
     resolved_date = db.Column(db.DateTime)
     resolved_notes = db.Column(db.Text)
-
-    def __init__(self, name='Anonymous', sid='24616161', location=None,
-                 assignment_type=None, assignment=None, question=None):
-        self.name = name
-        self.sid = sid
-
-        self.location = location
-        self.assignment_type = assignment_type
-        self.assignment = assignment
-        self.question = question
-
-        self.add_date = datetime.utcnow()
-
 
     def get_status(self):
         return ENTRY.STATUS[self.status]
