@@ -1,4 +1,5 @@
 {% extends "default.html" %}
+{% from "macros.html" import render_entry %}
 {% block body %}
 <script src="{{ url_for('static', filename='js/client/student.js') }}"></script>
 
@@ -30,14 +31,7 @@
 
   <div id="queue">
     {% for entry in entries %}
-    <div class="row queue-entry" id="queue-entry-{{ entry.id }}">
-      <div class="three columns no-hide">{{ entry.name }}</div>
-      <div class="three columns">{{ entry.add_date | datetime }}</div>
-      <div class="three columns">{{ entry.location }}</div>
-      <div class="three columns">{{ entry.assignment_type }}</div>
-      <div class="three columns">{{ entry.assignment }}</div>
-      <div class="three columns">{{ entry.question }}</div>
-    </div>
+      {{ render_entry(entry) }}
     {% endfor %}
   </div>
 </div>
