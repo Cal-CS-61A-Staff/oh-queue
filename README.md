@@ -20,13 +20,13 @@ Provides a web-based interface for requesting help during office hours. Allows s
 3. Execute the following command from `shell.py`: `db.create_all()`. This should
 create a database called `app.db` in the repository directory.
 
-    $ python3 shell.py
+    $ ./shell.py
     >>> db.create_all()
     >>>
 
 4. Run the server:
 
-    $ python3 run.py
+    $ ./run.py
 
 5. Point your browser to http://localhost:5000.
 
