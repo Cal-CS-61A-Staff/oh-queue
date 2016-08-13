@@ -81,11 +81,6 @@ $(document).ready(function(){
         });
     });
 
-    // Opening Sockets
-    socket.on('connect', function() {
-        socket.emit('connect');
-    });
-
     socket.on('add_entry_response', function(message) {
         $('#queue').append('\
             <div class="row queue-entry" id="queue-entry-' + message.id + '"> \
