@@ -78,54 +78,5 @@ $(document).ready(function(){
   socket.on('resolve_entry_response', function (message) {
       $('#queue-entry-' + message.id).remove();
       $('#resolved').append(formatMessage(message, false));
-      // $('#resolved-entry-notes-' + message.id + '> button').click(function(event) {
-      //     addNotesId = $(this).attr('data-id');
-      //   dialog.dialog( "open" );
-      // });
-  });
-
-  // removed notes ability temporarily, kept the other functions un
-  // touched so it could be added again.
-
-  socket.on('notes_added', function (message) {
-      $('#resolved-entry-notes-' + message.id + '> button').remove();
-      $('#resolved-entry-notes-' + message.id).append('<p>' + message.notes + '</p>');
-  });
-
-  // For the adding notes modal
-  var dialog, form, addNotesId,
-    notes = $( "#notes" ),
-    tips = $( ".validateTips" );
-
-  function addNotes() {
-      var postData = {
-          id: addNotesId,
-          notes: notes.val()
-      };
-     $.post('/add_notes', postData, function(data) {
-
-      });
-     dialog.dialog( "close" );
-  }
-
-  dialog = $( "#dialog-form" ).dialog({
-    autoOpen: false,
-    height: 300,
-    width: 350,
-    modal: true,
-    buttons: {
-      "Add note": addNotes,
-      Cancel: function() {
-        dialog.dialog( "close" );
-      }
-    },
-    close: function() {
-      form[ 0 ].reset();
-    }
-  });
-
-  form = dialog.find( "form" ).on( "submit", function( event ) {
-    event.preventDefault();
-    addNotes();
   });
 });

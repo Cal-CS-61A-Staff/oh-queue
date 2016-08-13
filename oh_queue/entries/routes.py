@@ -59,20 +59,6 @@ def resolve_entry():
     socketio.emit('resolve_entry_response', return_payload(resolved_entry))
     return jsonify(result='success')
 
-@app.route('/add_notes', methods=['POST'])
-def add_notes():
-    entry_id = request.form['id']
-    notes = request.form['notes']
-
-    entry = Entry.query.get(entry_id)
-    entry.resolved_notes = notes
-    db.session.commit()
-    socketio.emit('notes_added', {
-        "id": entry_id,
-        "notes": notes
-        })
-    return jsonify(result='success')
-
 """
 This route should be accessed at the end of office hours.
 All resolved entries currently in the database will be cleared out.
