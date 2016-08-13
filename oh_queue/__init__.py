@@ -22,8 +22,6 @@ socketio = SocketIO(app)
 
 # Import views
 import oh_queue.views
-import oh_queue.sockets
-
 
 # Import routes
 import oh_queue.entries.routes
