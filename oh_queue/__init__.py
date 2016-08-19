@@ -14,7 +14,10 @@ from flask_sqlalchemy import SQLAlchemy
 # Initialize the application
 app = Flask(__name__)
 app.config.from_object('config')
-app.config.setdefault('SQLALCHEMY_TRACK_MODIFICATIONS', False)
+app.config.update({
+    'DEBUG': True,
+    'SQLALCHEMY_TRACK_MODIFICATIONS': False,
+})
 
 db = SQLAlchemy(app)
 socketio = SocketIO(app)
