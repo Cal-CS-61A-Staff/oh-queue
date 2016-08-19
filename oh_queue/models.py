@@ -1,9 +1,8 @@
 import datetime
+import enum
 
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
-
-from oh_queue.constants import TicketStatus, TicketEventType
 
 db = SQLAlchemy()
 
@@ -12,6 +11,12 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, default=db.func.now())
     email = db.Column(db.String(255), nullable=False, index=True)
+
+class TicketStatus(enum.IntEnum):
+    pending = 0
+    assigned = 1
+    resolved = 2
+    canceled = 3
 
 class Ticket(db.Model):
     """Represents an entry in the queue. A student submits a ticket and receives
@@ -27,6 +32,13 @@ class Ticket(db.Model):
     body = db.Column(db.Text, nullable=False)
 
     helper_id = db.Column(db.ForeignKey('User.id'))
+
+class TicketEventType(enum.IntEnum):
+    create = 0
+    assign = 1
+    unassign = 2
+    resolve = 3
+    cancel = 4
 
 class TicketEvent(db.Model):
     """Represents an event that changes a ticket during its lifecycle."""

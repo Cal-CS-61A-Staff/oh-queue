@@ -34,7 +34,7 @@ def unauthorized():
 
 def authorize_user(user):
     login_user(user)
-    after_login = session.pop('after_login', None) or url_for('student.index')
+    after_login = session.pop('after_login', None) or url_for('index')
     return redirect(after_login)
 
 def user_from_email(email):

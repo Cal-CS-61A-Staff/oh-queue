@@ -4,17 +4,22 @@ from flask import render_template
 from flask_login import login_required
 
 from oh_queue import app
-from oh_queue.models import Ticket
-from oh_queue import constants as ENTRY
+from oh_queue.models import Ticket, TicketStatus
+
+def pending_tickets():
+     return Ticket.query.filter_by(
+        status=TicketStatus.pending,
+    ).order_by(Ticket.created).all()
 
 @app.route("/")
+@login_required
 def index():
-    entries = Entry.query.filter_by(status=ENTRY.PENDING).order_by(Entry.add_date).all()
+    entries = pending_tickets()
     return render_template('main.html', entries=entries, date=datetime.datetime.now())
 
 
 @app.route("/assist")
 @login_required
 def assist():
-    entries = Entry.query.filter_by(status=ENTRY.PENDING).order_by(Entry.add_date).all()
+    entries = pending_tickets()
     return render_template('assist.html', entries=entries, date=datetime.datetime.now())
