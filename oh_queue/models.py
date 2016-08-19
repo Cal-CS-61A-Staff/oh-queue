@@ -1,5 +1,5 @@
 from oh_queue import db
-from oh_queue.entries import constants as ENTRY
+from oh_queue import constants as ENTRY
 
 from datetime import datetime
 

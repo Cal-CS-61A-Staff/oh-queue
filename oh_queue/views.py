@@ -3,8 +3,8 @@ import datetime
 from flask import render_template
 
 from oh_queue import app
-from oh_queue.entries.models import Entry
-from oh_queue.entries import constants as ENTRY
+from oh_queue.models import Entry
+from oh_queue import constants as ENTRY
 
 @app.route("/")
 def index():

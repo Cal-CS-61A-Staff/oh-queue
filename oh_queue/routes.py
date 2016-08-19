@@ -4,8 +4,8 @@ from flask import render_template_string, request, jsonify
 from datetime import datetime
 from pytz import timezone
 
-from oh_queue.entries.models import Entry
-from oh_queue.entries import constants as ENTRY
+from oh_queue.models import Entry
+from oh_queue import constants as ENTRY
 
 def render_entry(entry, assist):
     template = app.jinja_env.get_template('entry.html')
