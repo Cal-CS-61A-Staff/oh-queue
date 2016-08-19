@@ -1,7 +1,14 @@
-PENDING = 0
-RESOLVED = 1
+import enum
 
-STATUS = {
-    PENDING: 'pending',
-    RESOLVED: 'resolved',
-}
+class TicketStatus(enum.IntEnum):
+    pending = 0
+    assigned = 1
+    resolved = 2
+    canceled = 3
+
+class TicketEventType(enum.IntEnum):
+    create = 0
+    assign = 1
+    unassign = 2
+    resolve = 3
+    cancel = 4

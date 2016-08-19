@@ -1,46 +1,38 @@
-from datetime import datetime
+import datetime
 
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 
-from oh_queue import constants as ENTRY
+from oh_queue.constants import TicketStatus, TicketEventType
 
 db = SQLAlchemy()
 
 class User(db.Model, UserMixin):
-    __tablename__ = 'users'
-
+    __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), nullable=False, index=True)
     created = db.Column(db.DateTime, default=db.func.now())
+    email = db.Column(db.String(255), nullable=False, index=True)
 
-class Entry(db.Model):
-    """Represents an entry in the queue. Each entry has a student name, their
-    SID, the assignment, and the question they have issues with. To
-    resolve an issue, a helper must be input (TA, lab assistant, etc.)
+class Ticket(db.Model):
+    """Represents an entry in the queue. A student submits a ticket and receives
+    help from a staff member.
     """
-    __tablename__ = 'entries_entry'
+    __tablename__ = 'Ticket'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120))
-    sid = db.Column(db.Integer)
+    created = db.Column(db.DateTime, default=db.func.now())
+    updated = db.Column(db.DateTime, onupdate=db.func.now())
+    status = db.Column(db.SmallInteger, nullable=False, index=True)
 
-    location = db.Column(db.String(120))
-    assignment_type = db.Column(db.String(120))
-    assignment = db.Column(db.SmallInteger)
-    question = db.Column(db.SmallInteger)
-    status = db.Column(db.SmallInteger, default=ENTRY.PENDING)
+    user_id = db.Column(db.ForeignKey('User.id'), nullable=False)
+    body = db.Column(db.Text, nullable=False)
 
-    helper = db.Column(db.String(120), default=None)
-    add_date = db.Column(db.DateTime, default=db.func.now())
-    resolved_date = db.Column(db.DateTime)
-    resolved_notes = db.Column(db.Text)
+    helper_id = db.Column(db.ForeignKey('User.id'))
 
-    def get_status(self):
-        return ENTRY.STATUS[self.status]
-
-    def resolve(self):
-        self.status = ENTRY.RESOLVED
-        self.resolved_date = datetime.utcnow()
-
-    def __repr__(self):
-        return '<Entry from {}>'.format(self.name)
+class TicketEvent(db.Model):
+    """Represents an event that changes a ticket during its lifecycle."""
+    __tablename__ = 'TicketEvent'
+    id = db.Column(db.Integer, primary_key=True)
+    time = db.Column(db.DateTime, default=db.func.now())
+    event_type = db.Column(db.SmallInteger, nullable=False)
+    ticket_id = db.Column(db.ForeignKey('Ticket.id'), nullable=False)
+    user_id = db.Column(db.ForeignKey('User.id'), nullable=False)

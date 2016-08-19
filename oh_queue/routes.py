@@ -4,7 +4,7 @@ from flask import render_template_string, request, jsonify
 from datetime import datetime
 from pytz import timezone
 
-from oh_queue.models import Entry
+from oh_queue.models import Ticket
 from oh_queue import constants as ENTRY
 
 def render_entry(entry, assist):
