@@ -8,9 +8,9 @@ logging.basicConfig(level=logging.INFO)
 # Flask-related stuff
 from flask import Flask
 from flask_socketio import SocketIO
-from flask_sqlalchemy import SQLAlchemy
 
-from oh_queue.auth import auth
+from oh_queue import auth
+from oh_queue.models import db
 
 # Initialize the application
 app = Flask(__name__)
@@ -20,9 +20,8 @@ app.config.update({
     'SQLALCHEMY_TRACK_MODIFICATIONS': False,
 })
 
-app.register_blueprint(auth)
-
-db = SQLAlchemy(app)
+db.init_app(app)
+auth.init_app(app)
 socketio = SocketIO(app)
 
 

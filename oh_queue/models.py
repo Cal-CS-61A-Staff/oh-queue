@@ -1,7 +1,18 @@
-from oh_queue import db
+from datetime import datetime
+
+from flask_login import UserMixin
+from flask_sqlalchemy import SQLAlchemy
+
 from oh_queue import constants as ENTRY
 
-from datetime import datetime
+db = SQLAlchemy()
+
+class User(db.Model, UserMixin):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), nullable=False, index=True)
+    created = db.Column(db.DateTime, default=db.func.now())
 
 class Entry(db.Model):
     """Represents an entry in the queue. Each entry has a student name, their
