@@ -54,12 +54,12 @@ html, body{
   padding-bottom: 60px;
 }
 
-.queue-entry {
+.queue-ticket {
   padding: 1rem 0;
   border-bottom: 1px solid #E1E1E1;
 }
 
-.btn-add-entry {
+.btn-add-ticket {
   position: fixed;
   left: 0px;
   bottom: 0px;

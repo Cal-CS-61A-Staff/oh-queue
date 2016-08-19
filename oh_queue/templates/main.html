@@ -1,5 +1,5 @@
 {% extends "default.html" %}
-{% from "macros.html" import render_entry %}
+{% from "macros.html" import render_ticket %}
 {% block body %}
 <script src="{{ url_for('static', filename='js/client/student.js') }}"></script>
 
@@ -30,8 +30,8 @@
   </nav>
 
   <div id="queue">
-    {% for entry in entries %}
-      {{ render_entry(entry) }}
+    {% for ticket in tickets %}
+      {{ render_ticket(ticket) }}
     {% endfor %}
   </div>
 </div>
@@ -42,7 +42,7 @@
   </div>
 </div>
 
-<div id="add-entry" class="btn-add-entry title">
+<div id="add-ticket" class="btn-add-ticket title">
   <p>request help</p>
 </div>
 {% endblock %}

@@ -7,9 +7,9 @@ from pytz import timezone
 
 from oh_queue.models import Ticket, TicketStatus
 
-def render_entry(ticket, assist):
-    template = app.jinja_env.get_template('entry.html')
-    return template.render(entry=ticket, assist=assist)
+def render_ticket(ticket, assist):
+    template = app.jinja_env.get_template('ticket.html')
+    return template.render(ticket=ticket, assist=assist)
 
 def return_payload(ticket, assist=False):
     return {
@@ -21,12 +21,12 @@ def return_payload(ticket, assist=False):
         'assignment_type': 'Essay',
         'assignment': 'Essay 1',
         'question': ticket.body,
-        'html': render_entry(ticket, assist),
+        'html': render_ticket(ticket, assist),
     }
 
-@app.route('/add_entry', methods=['POST'])
-def add_entry():
-    """Stores a new entry to the persistent database, and emits it to all
+@app.route('/add_ticket', methods=['POST'])
+def add_ticket():
+    """Stores a new ticket to the persistent database, and emits it to all
     connected clients.
     """
     if not current_user.is_authenticated:
@@ -41,28 +41,28 @@ def add_entry():
     db.session.commit()
 
     # Emit the new ticket to all clients
-    socketio.emit('add_entry_response', return_payload(ticket, assist=True), namespace='/assist')
-    socketio.emit('add_entry_response', return_payload(ticket))
+    socketio.emit('add_ticket_response', return_payload(ticket, assist=True), namespace='/assist')
+    socketio.emit('add_ticket_response', return_payload(ticket))
     return jsonify(result='success')
 
-@app.route('/resolve_entry', methods=['POST'])
-def resolve_entry():
+@app.route('/resolve_ticket', methods=['POST'])
+def resolve_ticket():
     if not current_user.is_authenticated:
         abort(403)
-    entry_id = request.form['id']
+    ticket_id = request.form['id']
 
-    ticket = Ticket.query.get(entry_id)
+    ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.resolved
     ticket.helper_id = current_user.id
     db.session.commit()
 
-    socketio.emit('resolve_entry_response', return_payload(ticket), namespace='/assist')
-    socketio.emit('resolve_entry_response', return_payload(ticket))
+    socketio.emit('resolve_ticket_response', return_payload(ticket), namespace='/assist')
+    socketio.emit('resolve_ticket_response', return_payload(ticket))
     return jsonify(result='success')
 
 """
 This route should be accessed at the end of office hours.
-All resolved entries currently in the database will be cleared out.
+All resolved tickets currently in the database will be cleared out.
 The data (without names) will then be returned.
 """
 @app.route('/generate_report', methods=['GET'])

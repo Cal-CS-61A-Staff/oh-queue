@@ -19,7 +19,7 @@ class TicketStatus(enum.IntEnum):
     canceled = 3
 
 class Ticket(db.Model):
-    """Represents an entry in the queue. A student submits a ticket and receives
+    """Represents an ticket in the queue. A student submits a ticket and receives
     help from a staff member.
     """
     __tablename__ = 'Ticket'

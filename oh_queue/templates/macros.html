@@ -1,5 +1,5 @@
-{% macro render_entry(ticket, assist=false) -%}
-  <div class="queue-entry row" id="queue-entry-{{ ticket.id }}">
+{% macro render_ticket(ticket, assist=false) -%}
+  <div class="queue-ticket row" id="queue-ticket-{{ ticket.id }}">
     {% if assist -%}
       <div class="two columns">Unknown</div>
       <div class="three columns">{{ ticket.created | datetime }}</div>
@@ -7,7 +7,7 @@
       <div class="two columns">Essay</div>
       <div class="three columns">Essay 1</div>
       <div class="two columns">{{ ticket.body }}</div>
-      <div class="two columns"><button data-url="{{ url_for('resolve_entry') }}" data-id='{{ ticket.id }}' class="resolve">Resolve</button></div>
+      <div class="two columns"><button data-url="{{ url_for('resolve_ticket') }}" data-id='{{ ticket.id }}' class="resolve">Resolve</button></div>
     {%- else -%}
       <div class="three columns no-hide">Unknown</div>
       <div class="three columns">{{ ticket.created | datetime }}</div>

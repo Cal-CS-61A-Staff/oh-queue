@@ -11,11 +11,11 @@ $(document).ready(function(){
 
   function toggleHelpForm() {
     $('#help-form-container').slideToggle('medium');
-    $('#add-entry').slideToggle('medium');
+    $('#add-ticket').slideToggle('medium');
   }
 
   // Add event listeners
-  $('#add-entry').click(function() {
+  $('#add-ticket').click(function() {
     toggleHelpForm();
     scrollBottom();
   });
@@ -30,7 +30,7 @@ $(document).ready(function(){
     NProgress.start();
     event.preventDefault();
 
-    var request = $.post('/add_entry', {
+    var request = $.post('/add_ticket', {
       name: $('#name').val(),
       sid: $('#sid').val(),
       location: $('#location').val(),
@@ -57,15 +57,15 @@ $(document).ready(function(){
     });
   });
 
-  socket.on('add_entry_response', function(message) {
+  socket.on('add_ticket_response', function(message) {
     $('#queue').append(message.html);
     $('#' + message.id).slideToggle('medium');
   });
 
-  socket.on('resolve_entry_response', function (message) {
+  socket.on('resolve_ticket_response', function (message) {
     if (student_sid != null && message.sid == student_sid) {
       notifyUser("61A Queue: Your name has been called", {});
     }
-    $('#queue-entry-' + message.id).remove();
+    $('#queue-ticket-' + message.id).remove();
   });
 });

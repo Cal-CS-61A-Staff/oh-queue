@@ -14,8 +14,8 @@ $(document).ready(function(){
     'http://' + document.domain + ':' + location.port + '/assist'
   );
 
-  // Socket handler for adding entries
-  socket.on('add_entry_response', function(message) {
+  // Socket handler for adding tickets
+  socket.on('add_ticket_response', function(message) {
     $('#queue').append(message.html);
     var details = {
       body: message.name + " - " + message.assignment + message.question + " in " + message.location
@@ -23,8 +23,8 @@ $(document).ready(function(){
     notifyUser("OH Queue: " + message.name + " in " + message.location, details);
   });
 
-  socket.on('resolve_entry_response', function(message) {
-    $('#queue-entry-' + message.id).remove();
+  socket.on('resolve_ticket_response', function(message) {
+    $('#queue-ticket-' + message.id).remove();
     $('#resolved').append(message.html);
   });
 });
