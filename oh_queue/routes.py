@@ -15,7 +15,7 @@ def render_ticket(ticket, assist):
         assist=assist,
     )
 
-def return_payload(ticket, assist=False):
+def return_payload(ticket):
     return {
         'id': ticket.id,
         'name': current_user.name,
@@ -23,7 +23,8 @@ def return_payload(ticket, assist=False):
         'location': ticket.location,
         'assignment': ticket.assignment,
         'question': ticket.question,
-        'html': render_ticket(ticket, assist),
+        'html': render_ticket(ticket, assist=False),
+        'assist_html': render_ticket(ticket, assist=True),
     }
 
 @app.route('/add_ticket', methods=['POST'])
@@ -45,7 +46,6 @@ def add_ticket():
     db.session.commit()
 
     # Emit the new ticket to all clients
-    socketio.emit('add_ticket_response', return_payload(ticket, assist=True), namespace='/assist')
     socketio.emit('add_ticket_response', return_payload(ticket))
     return jsonify(result='success')
 
@@ -60,7 +60,6 @@ def resolve_ticket():
     ticket.helper_id = current_user.id
     db.session.commit()
 
-    socketio.emit('resolve_ticket_response', return_payload(ticket), namespace='/assist')
     socketio.emit('resolve_ticket_response', return_payload(ticket))
     return jsonify(result='success')
 
