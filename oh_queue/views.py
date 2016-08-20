@@ -32,12 +32,10 @@ def pending_tickets():
         status=TicketStatus.pending,
     ).order_by(Ticket.created).all()
 
-@app.route("/")
-@login_required
+@app.route('/')
 def index():
-    tickets = pending_tickets()
-    return render_template('main.html', tickets=tickets, date=datetime.datetime.now())
-
+    # TODO
+    return redirect(url_for('queue.index'))
 
 @app.route("/assist")
 @login_required
