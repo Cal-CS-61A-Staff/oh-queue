@@ -9,12 +9,16 @@ from oh_queue.models import Ticket, TicketStatus
 
 def render_ticket(ticket, assist):
     template = app.jinja_env.get_template('ticket.html')
-    return template.render(ticket=ticket, assist=assist)
+    return template.render(
+        current_user=current_user,
+        ticket=ticket,
+        assist=assist,
+    )
 
 def return_payload(ticket, assist=False):
     return {
         'id': ticket.id,
-        'name': 'Unknown',
+        'name': current_user.name,
         'add_date': format_datetime(ticket.created),
         'location': ticket.location,
         'assignment': ticket.assignment,

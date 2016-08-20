@@ -37,11 +37,11 @@ def authorize_user(user):
     after_login = session.pop('after_login', None) or url_for('index')
     return redirect(after_login)
 
-def user_from_email(email):
+def user_from_email(name, email):
     """Get a User with the given email, or create one."""
     user = User.query.filter_by(email=email).one_or_none()
     if not user:
-        user = User(email=email)
+        user = User(name=name, email=email)
         db.session.add(user)
         db.session.commit()
     return user
@@ -53,7 +53,7 @@ def login():
 
 @auth.route('/login/authorized/', methods=['POST'])
 def authorized():
-    user = user_from_email(request.form['email'])
+    user = user_from_email(request.form['name'], request.form['email'])
     return authorize_user(user)
 
 @auth.route('/logout/')

@@ -11,6 +11,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, default=db.func.now())
     email = db.Column(db.String(255), nullable=False, index=True)
+    name = db.Column(db.String(255), nullable=False)
 
 class TicketStatus(enum.IntEnum):
     pending = 0

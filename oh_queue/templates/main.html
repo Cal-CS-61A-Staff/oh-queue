@@ -1,5 +1,5 @@
 {% extends "default.html" %}
-{% from "macros.html" import render_ticket %}
+{% from "macros.html" import render_ticket with context %}
 {% block body %}
 <script src="{{ url_for('static', filename='js/client/student.js') }}"></script>
 
