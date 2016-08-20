@@ -64,30 +64,6 @@ def resolve_ticket():
     socketio.emit('resolve_ticket_response', return_payload(ticket))
     return jsonify(result='success')
 
-"""
-This route should be accessed at the end of office hours.
-All resolved tickets currently in the database will be cleared out.
-The data (without names) will then be returned.
-"""
-@app.route('/generate_report', methods=['GET'])
-def generate_report():
-    resolved = Entry.query.filter_by(status=ENTRY.RESOLVED).all()
-    data_list = {}
-    for i in range(len(resolved)):
-        request = resolved[i]
-        data_list[i] = {
-            # "name": request.name,
-            # The data we get should be anonymized
-            "assignment": request.assignment,
-            "question": request.question,
-            "add_date": request.add_date,
-            "resolved_date": request.resolved_date,
-            "resolved_notes": request.resolved_notes,
-            }
-        db.session.delete(request)
-        db.session.commit()
-    return jsonify(data_list)
-
 # Filters
 
 db_timezone = timezone(app.config['DB_TIMEZONE'])
