@@ -17,10 +17,10 @@ def return_payload(ticket, assist=False):
         'name': 'Unknown',
         'sid': '8675309',
         'add_date': format_datetime(ticket.created),
-        'location': 'Nowhere',
+        'location': ticket.location,
         'assignment_type': 'Essay',
-        'assignment': 'Essay 1',
-        'question': ticket.body,
+        'assignment': ticket.assignment,
+        'question': ticket.question,
         'html': render_ticket(ticket, assist),
     }
 
@@ -35,7 +35,9 @@ def add_ticket():
     ticket = Ticket(
         status=TicketStatus.pending,
         user_id=current_user.id,
-        body=request.form['question'],
+        assignment=request.form['assignment'],
+        question=request.form['question'],
+        location=request.form['location'],
     )
     db.session.add(ticket)
     db.session.commit()

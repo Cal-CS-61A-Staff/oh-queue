@@ -29,7 +29,9 @@ class Ticket(db.Model):
     status = db.Column(db.SmallInteger, nullable=False, index=True)
 
     user_id = db.Column(db.ForeignKey('User.id'), nullable=False)
-    body = db.Column(db.Text, nullable=False)
+    assignment = db.Column(db.Text, nullable=False)
+    question = db.Column(db.Text, nullable=False)
+    location = db.Column(db.Text, nullable=False)
 
     helper_id = db.Column(db.ForeignKey('User.id'))
 
