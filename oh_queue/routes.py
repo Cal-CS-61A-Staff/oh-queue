@@ -15,10 +15,8 @@ def return_payload(ticket, assist=False):
     return {
         'id': ticket.id,
         'name': 'Unknown',
-        'sid': '8675309',
         'add_date': format_datetime(ticket.created),
         'location': ticket.location,
-        'assignment_type': 'Essay',
         'assignment': ticket.assignment,
         'question': ticket.question,
         'html': render_ticket(ticket, assist),
