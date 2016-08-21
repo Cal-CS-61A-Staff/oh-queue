@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.INFO)
 from flask import Flask
 from flask_socketio import SocketIO
 
-from oh_queue import auth, queue
+from oh_queue import auth
 from oh_queue.models import db
 
 # Initialize the application
@@ -22,8 +22,6 @@ app.config.update({
 
 db.init_app(app)
 auth.init_app(app)
-queue.init_app(app)
-assist.init_app(app)
 socketio = SocketIO(app)
 
 

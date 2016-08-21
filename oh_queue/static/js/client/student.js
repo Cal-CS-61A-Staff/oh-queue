@@ -62,7 +62,7 @@ $(document).ready(function(){
     $('#' + message.id).slideToggle('medium');
   });
 
-  socket.on('resolve_ticket_response', function (message) {
+  socket.on('resolve_response', function (message) {
     if (student_sid != null && message.sid == student_sid) {
       notifyUser("61A Queue: Your name has been called", {});
     }

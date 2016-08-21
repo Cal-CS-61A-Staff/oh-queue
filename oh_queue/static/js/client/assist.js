@@ -3,10 +3,7 @@ $(document).ready(function(){
 
   // Bind event listeners
   $('body').on('click', '.resolve', function(event) {
-    var url = $(this).attr('data-url');
-    $.post(url, {
-      id: $(this).attr('data-id')
-    });
+    $.post($(this).attr('data-url'));
   });
 
   // opening Socket
@@ -21,7 +18,7 @@ $(document).ready(function(){
     notifyUser("OH Queue: " + message.name + " in " + message.location, details);
   });
 
-  socket.on('resolve_ticket_response', function(message) {
+  socket.on('resolve_response', function(message) {
     $('#queue-ticket-' + message.id).remove();
     $('#resolved').append(message.html);
   });

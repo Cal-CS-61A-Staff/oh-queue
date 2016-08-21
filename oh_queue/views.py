@@ -34,50 +34,64 @@ def pending_tickets():
 
 @app.route('/')
 def index():
-    # TODO
-    return redirect(url_for('queue.index'))
-
-@app.route("/assist")
-@login_required
-def assist():
     tickets = pending_tickets()
     return render_template('assist.html', tickets=tickets, date=datetime.datetime.now())
 
-@app.route('/add_ticket', methods=['POST'])
-def add_ticket():
+@app.route('/create/', methods=['GET', 'POST'])
+@login_required
+def create():
     """Stores a new ticket to the persistent database, and emits it to all
     connected clients.
     """
-    if not current_user.is_authenticated:
-        abort(403)
-    # Create a new ticket and add it to persistent storage
-    ticket = Ticket(
-        status=TicketStatus.pending,
-        user_id=current_user.id,
-        assignment=request.form['assignment'],
-        question=request.form['question'],
-        location=request.form['location'],
-    )
-    db.session.add(ticket)
+    # TODO use WTForms
+    if request.method == 'POST':
+        # Create a new ticket and add it to persistent storage
+        ticket = Ticket(
+            status=TicketStatus.pending,
+            user_id=current_user.id,
+            assignment=request.form['assignment'],
+            question=request.form['question'],
+            location=request.form['location'],
+        )
+        db.session.add(ticket)
+        db.session.commit()
+
+        # TODO
+        # Emit the new ticket to all clients
+        socketio.emit('add_ticket_response', return_payload(ticket))
+        return jsonify(result='success')
+    else:
+        return render_template('create.html')
+
+@app.route('/<int:ticket_id>/')
+def ticket(ticket_id):
+    pass
+
+@app.route('/<int:ticket_id>/cancel/', methods=['POST'])
+def cancel(ticket_id):
+    ticket = Ticket.query.get_or_404(ticket_id)
+    ticket.status = TicketStatus.canceled
     db.session.commit()
 
-    # Emit the new ticket to all clients
-    socketio.emit('add_ticket_response', return_payload(ticket))
+    # TODO
+    socketio.emit('resolve_response', return_payload(ticket))
     return jsonify(result='success')
 
-@app.route('/resolve_ticket', methods=['POST'])
-def resolve_ticket():
-    if not current_user.is_authenticated:
-        abort(403)
-    ticket_id = request.form['id']
-
-    ticket = Ticket.query.get(ticket_id)
+@app.route('/<int:ticket_id>/resolve/', methods=['POST'])
+@login_required
+def resolve(ticket_id):
+    ticket = Ticket.query.get_or_404(ticket_id)
     ticket.status = TicketStatus.resolved
     ticket.helper_id = current_user.id
     db.session.commit()
 
-    socketio.emit('resolve_ticket_response', return_payload(ticket))
+    # TODO
+    socketio.emit('resolve_response', return_payload(ticket))
     return jsonify(result='success')
+
+@app.route('/<int:ticket_id>/rate/', methods=['GET', 'POST'])
+def rate(ticket_id):
+    abort(404)  # TODO
 
 # Filters
 
