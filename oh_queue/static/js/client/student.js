@@ -30,7 +30,7 @@ $(document).ready(function(){
     NProgress.start();
     event.preventDefault();
 
-    var request = $.post('/add_ticket', {
+    var request = $.post('/create', {
       name: $('#name').val(),
       sid: $('#sid').val(),
       location: $('#location').val(),
@@ -57,7 +57,7 @@ $(document).ready(function(){
     });
   });
 
-  socket.on('add_ticket_response', function(message) {
+  socket.on('create_response', function(message) {
     $('#queue').append(message.html);
     $('#' + message.id).slideToggle('medium');
   });

@@ -58,7 +58,7 @@ def create():
 
         # TODO
         # Emit the new ticket to all clients
-        socketio.emit('add_ticket_response', return_payload(ticket))
+        socketio.emit('create_response', return_payload(ticket))
         return jsonify(result='success')
     else:
         return render_template('create.html')

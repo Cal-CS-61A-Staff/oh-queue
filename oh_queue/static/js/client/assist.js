@@ -10,7 +10,7 @@ $(document).ready(function(){
   var socket = io.connect('http://' + document.domain + ':' + location.port);
 
   // Socket handler for adding tickets
-  socket.on('add_ticket_response', function(message) {
+  socket.on('create_response', function(message) {
     $('#queue').append(message.assist_html);
     var details = {
       body: message.name + " - " + message.assignment + message.question + " in " + message.location
