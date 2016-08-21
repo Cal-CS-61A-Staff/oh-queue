@@ -1,4 +1,17 @@
 $(document).ready(function(){
+  function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission !== 'denied') {
+      Notification.requestPermission();
+    }
+  }
+
+  function notifyUser(text, options) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(text, options);
+    }
+  }
+
+  requestNotificationPermission();
   // Variables
   var socket = io.connect('http://' + document.domain + ':' + location.port);
 
@@ -24,13 +37,18 @@ $(document).ready(function(){
     toggleHelpForm();
   })
 
+  // Bind event listeners
+  $('body').on('click', '.resolve', function(event) {
+    $.post($(this).attr('data-url'));
+  });
+
   var student_sid = null;
 
   $('#help-form').submit(function(event) {
     NProgress.start();
     event.preventDefault();
 
-    var request = $.post('/create', {
+    var request = $.post('/create/', {
       name: $('#name').val(),
       sid: $('#sid').val(),
       location: $('#location').val(),
@@ -41,8 +59,6 @@ $(document).ready(function(){
 
     request.done(function(msg) {
       toggleHelpForm();
-      // Get permissions to notify users
-      requestNotificationPermission();
       student_sid = $('#sid').val();
       NProgress.done();
       if (msg.result === 'failure') {
@@ -58,8 +74,11 @@ $(document).ready(function(){
   });
 
   socket.on('create_response', function(message) {
-    $('#queue').append(message.html);
-    $('#' + message.id).slideToggle('medium');
+    $('#queue').append(message.assist_html);
+    var details = {
+      body: message.name + " - " + message.assignment + message.question + " in " + message.location
+    }
+    notifyUser("OH Queue: " + message.name + " in " + message.location, details);
   });
 
   socket.on('resolve_response', function (message) {
@@ -67,5 +86,6 @@ $(document).ready(function(){
       notifyUser("61A Queue: Your name has been called", {});
     }
     $('#queue-ticket-' + message.id).remove();
+    $('#resolved').append(message.html);
   });
 });

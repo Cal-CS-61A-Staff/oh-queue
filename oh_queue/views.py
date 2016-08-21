@@ -35,7 +35,7 @@ def pending_tickets():
 @app.route('/')
 def index():
     tickets = pending_tickets()
-    return render_template('assist.html', tickets=tickets, date=datetime.datetime.now())
+    return render_template('index.html', tickets=tickets, date=datetime.datetime.now())
 
 @app.route('/create/', methods=['GET', 'POST'])
 @login_required

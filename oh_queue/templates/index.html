@@ -1,9 +1,8 @@
 {% extends "default.html" %}
 {% from "macros.html" import render_ticket with context %}
 {% block body %}
-<script src="{{ url_for('static', filename='js/client/student.js') }}"></script>
 
-<div class="container ">
+<div class="queue-container container">
   <section class="header row">
     <div class="seven columns">
       <h4><b>CS61A</b> Office Hour Queue</h4>
@@ -15,8 +14,7 @@
     </div>
   </section>
 
-  <div class="column-headings-spacer"></div>
-  <nav class="column-headings">
+  <div class="column-headings">
     <div class="container u-full-width">
       <div class="row">
         <div class="three columns no-hide">Name</div>
@@ -26,22 +24,27 @@
         <div class="two columns">Question</div>
       </div>
     </div>
-  </nav>
+  </div>
 
-  <div id="queue">
+  <div class="queue" id="queue">
     {% for ticket in tickets %}
-      {{ render_ticket(ticket) }}
+      {{ render_ticket(ticket, assist=true) }}
     {% endfor %}
   </div>
-</div>
 
-<div id="help-form-container">
-  <div class="container">
-    {% include "form.html" %}
+  <h4>Resolved</h4>
+  <div class="queue" id="resolved"></div>
+
+  <div id="help-form-container">
+    <div class="container">
+      {% include "form.html" %}
+    </div>
   </div>
-</div>
 
-<div id="add-ticket" class="btn-add-ticket title">
-  <p>request help</p>
+  <div id="add-ticket" class="btn-add-ticket title">
+    <p>request help</p>
+  </div>
+
 </div>
+<script src="{{ url_for('static', filename='js/client.js') }}"></script>
 {% endblock %}
