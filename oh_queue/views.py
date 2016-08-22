@@ -60,7 +60,7 @@ def create():
 
         # TODO
         # Emit the new ticket to all clients
-        socketio.emit('create_response', return_payload(ticket))
+        socketio.emit('create', return_payload(ticket))
         return jsonify(result='success')
     else:
         return render_template('create.html')
@@ -68,7 +68,8 @@ def create():
 @app.route('/<int:ticket_id>/')
 @login_required
 def ticket(ticket_id):
-    pass
+    ticket = Ticket.query.get_or_404(ticket_id)
+    pass  # TODO
 
 @app.route('/<int:ticket_id>/cancel/', methods=['POST'])
 @login_required
@@ -78,7 +79,7 @@ def cancel(ticket_id):
     db.session.commit()
 
     # TODO
-    socketio.emit('resolve_response', return_payload(ticket))
+    socketio.emit('cancel', return_payload(ticket))
     return jsonify(result='success')
 
 @app.route('/<int:ticket_id>/resolve/', methods=['POST'])
@@ -90,7 +91,7 @@ def resolve(ticket_id):
     db.session.commit()
 
     # TODO
-    socketio.emit('resolve_response', return_payload(ticket))
+    socketio.emit('resolve', return_payload(ticket))
     return jsonify(result='success')
 
 @app.route('/<int:ticket_id>/rate/', methods=['GET', 'POST'])

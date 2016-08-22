@@ -69,7 +69,7 @@ $(document).ready(function(){
     });
   });
 
-  socket.on('create_response', function(message) {
+  socket.on('create', function(message) {
     console.log('create', message);
     $('#queue').append(message.assist_html);
     var details = {
@@ -78,7 +78,7 @@ $(document).ready(function(){
     notifyUser("OH Queue: " + message.user_name + " in " + message.location, details);
   });
 
-  socket.on('resolve_response', function (message) {
+  socket.on('resolve', function (message) {
     console.log('resolve', message);
     if (message.user_id == current_user_id) {
       notifyUser("61A Queue: Your name has been called", {});
