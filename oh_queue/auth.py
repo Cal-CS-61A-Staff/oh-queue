@@ -35,6 +35,7 @@ def unauthorized():
 def authorize_user(user):
     login_user(user)
     after_login = session.pop('after_login', None) or url_for('index')
+    # TODO validate after_login URL
     return redirect(after_login)
 
 def user_from_email(name, email):
