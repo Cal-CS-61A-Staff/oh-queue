@@ -18,7 +18,8 @@ def render_ticket(ticket, assist):
 def return_payload(ticket):
     return {
         'id': ticket.id,
-        'name': current_user.name,
+        'user_id': ticket.user.id,
+        'user_name': ticket.user.name,
         'add_date': format_datetime(ticket.created),
         'location': ticket.location,
         'assignment': ticket.assignment,
@@ -33,6 +34,7 @@ def pending_tickets():
     ).order_by(Ticket.created).all()
 
 @app.route('/')
+@login_required
 def index():
     tickets = pending_tickets()
     return render_template('index.html', tickets=tickets, date=datetime.datetime.now())
@@ -64,10 +66,12 @@ def create():
         return render_template('create.html')
 
 @app.route('/<int:ticket_id>/')
+@login_required
 def ticket(ticket_id):
     pass
 
 @app.route('/<int:ticket_id>/cancel/', methods=['POST'])
+@login_required
 def cancel(ticket_id):
     ticket = Ticket.query.get_or_404(ticket_id)
     ticket.status = TicketStatus.canceled
@@ -90,6 +94,7 @@ def resolve(ticket_id):
     return jsonify(result='success')
 
 @app.route('/<int:ticket_id>/rate/', methods=['GET', 'POST'])
+@login_required
 def rate(ticket_id):
     abort(404)  # TODO
 

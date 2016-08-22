@@ -42,15 +42,12 @@ $(document).ready(function(){
     $.post($(this).attr('data-url'));
   });
 
-  var student_sid = null;
-
   $('#help-form').submit(function(event) {
     NProgress.start();
     event.preventDefault();
 
     var request = $.post('/create/', {
       name: $('#name').val(),
-      sid: $('#sid').val(),
       location: $('#location').val(),
       assignment_type: $('#assignment_type').val(),
       assignment: $('#assignment').val(),
@@ -59,7 +56,6 @@ $(document).ready(function(){
 
     request.done(function(msg) {
       toggleHelpForm();
-      student_sid = $('#sid').val();
       NProgress.done();
       if (msg.result === 'failure') {
         alert('Your help request could not be added. Possible reason: ' + msg.error);
@@ -74,15 +70,17 @@ $(document).ready(function(){
   });
 
   socket.on('create_response', function(message) {
+    console.log('create', message);
     $('#queue').append(message.assist_html);
     var details = {
-      body: message.name + " - " + message.assignment + message.question + " in " + message.location
+      body: message.user_name + " - " + message.assignment + message.question + " in " + message.location
     }
-    notifyUser("OH Queue: " + message.name + " in " + message.location, details);
+    notifyUser("OH Queue: " + message.user_name + " in " + message.location, details);
   });
 
   socket.on('resolve_response', function (message) {
-    if (student_sid != null && message.sid == student_sid) {
+    console.log('resolve', message);
+    if (message.user_id == current_user_id) {
       notifyUser("61A Queue: Your name has been called", {});
     }
     $('#queue-ticket-' + message.id).remove();

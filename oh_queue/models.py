@@ -36,6 +36,9 @@ class Ticket(db.Model):
 
     helper_id = db.Column(db.ForeignKey('User.id'))
 
+    user = db.relationship('User', foreign_keys=[user_id])
+    helper = db.relationship('User', foreign_keys=[helper_id])
+
 class TicketEventType(enum.IntEnum):
     create = 0
     assign = 1
