@@ -10,3 +10,4 @@ $ ./shell.py
 >>> db.drop_all(app=app)
 >>> db.create_all(app=app)
 ```
+* Add resolved_time to Ticket (for analytics)

@@ -30,15 +30,12 @@ def return_payload(ticket):
         'assist_html': render_ticket(ticket, assist=True),
     }
 
-def pending_tickets():
-     return Ticket.query.filter_by(
-        status=TicketStatus.pending,
-    ).order_by(Ticket.created).all()
-
 @app.route('/')
 @login_required
 def index():
-    tickets = pending_tickets()
+    tickets = Ticket.query.filter_by(
+       status=TicketStatus.pending,
+    ).order_by(Ticket.created).all()
     return render_template('index.html', tickets=tickets, date=datetime.datetime.now())
 
 @app.route('/create/', methods=['GET', 'POST'])
