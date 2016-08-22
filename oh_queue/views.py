@@ -98,14 +98,14 @@ def resolve(ticket_id):
 @app.route('/<int:ticket_id>/rate/', methods=['GET', 'POST'])
 @login_required
 def rate(ticket_id):
+    ticket = Ticket.query.get_or_404(ticket_id)
     abort(404)  # TODO
 
 # Filters
 
-db_timezone = pytz.timezone(app.config['DB_TIMEZONE'])
 local_timezone = pytz.timezone(app.config['LOCAL_TIMEZONE'])
 
 @app.template_filter('datetime')
 def format_datetime(timestamp):
-    tz_aware = db_timezone.localize(timestamp)
-    return tz_aware.astimezone(local_timezone).strftime('%I:%M %p')
+    time = pytz.utc.localize(timestamp).astimezone(local_timezone)
+    return time.strftime('%I:%M %p')

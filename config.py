@@ -1,14 +1,12 @@
 import os
-_basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = os.path.abspath(os.path.dirname(__file__))
 
-DEBUG = False
+DEBUG = True
 
-DB_TIMEZONE = 'UTC'
-LOCAL_TIMEZONE = 'America/Los_Angeles'
+LOCAL_TIMEZONE = 'US/Pacific'
 
-
-#SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'app.db')
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 DATABASE_CONNECT_OPTIONS = {}
 
-SECRET_KEY = 'oE3<EX.-x(k/9Y9GS=B{tNW~`EY<Yj[xO<h]1k68Ro}???U]|8P+7+#.?OSiUF$*'
+SECRET_KEY = 'dev'

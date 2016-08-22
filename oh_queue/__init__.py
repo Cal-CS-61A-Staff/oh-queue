@@ -15,10 +15,6 @@ from oh_queue.models import db
 # Initialize the application
 app = Flask(__name__)
 app.config.from_object('config')
-app.config.update({
-    'DEBUG': True,
-    'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-})
 
 db.init_app(app)
 auth.init_app(app)
