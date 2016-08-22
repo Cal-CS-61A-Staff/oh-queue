@@ -1,6 +1,5 @@
 * OK authentication
 * Check for staff members using OK API (and render different page)
-* Create form on separate page
 * Use WTForms
 * Rating
 * Assign, don't resolve
@@ -11,3 +10,4 @@ $ ./shell.py
 >>> db.create_all(app=app)
 ```
 * Add resolved_time to Ticket (for analytics)
+* Write tests
