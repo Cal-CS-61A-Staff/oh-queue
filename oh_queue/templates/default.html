@@ -30,7 +30,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
 
   <!-- App-specific JS -->
-  <script src="{{ url_for('static', filename='js/common.js') }}"></script>
   {% if current_user.is_authenticated %}
   <script>
     var current_user_id = {{ current_user.id }};
