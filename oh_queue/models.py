@@ -6,51 +6,62 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+class EnumType(db.TypeDecorator):
+    impl = db.String(255)
+
+    def __init__(self, enum_class):
+        super(EnumType, self).__init__(self)
+        self.enum_class = enum_class
+
+    def process_bind_param(self, enum_value, dialect):
+        return enum_value.value if enum_value else None
+
+    def process_result_value(self, value, dialect):
+        return self.enum_class(value) if value else None
+
+    @property
+    def python_type(self):
+        return self.enum_class
+
 class User(db.Model, UserMixin):
-    __tablename__ = 'User'
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, default=db.func.now())
     email = db.Column(db.String(255), nullable=False, index=True)
     name = db.Column(db.String(255), nullable=False)
 
-class TicketStatus(enum.IntEnum):
-    pending = 0
-    assigned = 1
-    resolved = 2
-    canceled = 3
+TicketStatus = enum.Enum('TicketStatus', 'pending assigned resolved canceled')
 
 class Ticket(db.Model):
     """Represents an ticket in the queue. A student submits a ticket and receives
     help from a staff member.
     """
-    __tablename__ = 'Ticket'
+    __tablename__ = 'ticket'
     id = db.Column(db.Integer, primary_key=True)
-    created = db.Column(db.DateTime, default=db.func.now())
+    created = db.Column(db.DateTime, default=db.func.now(), index=True)
     updated = db.Column(db.DateTime, onupdate=db.func.now())
-    status = db.Column(db.SmallInteger, nullable=False, index=True)
+    status = db.Column(EnumType(TicketStatus), nullable=False, index=True)
 
-    user_id = db.Column(db.ForeignKey('User.id'), nullable=False)
-    assignment = db.Column(db.Text, nullable=False)
-    question = db.Column(db.Text, nullable=False)
-    location = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.ForeignKey('user.id'), nullable=False, index=True)
+    assignment = db.Column(db.String(255), nullable=False)
+    question = db.Column(db.String(255), nullable=False)
+    location = db.Column(db.String(255), nullable=False)
 
-    helper_id = db.Column(db.ForeignKey('User.id'))
+    helper_id = db.Column(db.ForeignKey('user.id'), index=True)
 
-    user = db.relationship('User', foreign_keys=[user_id])
-    helper = db.relationship('User', foreign_keys=[helper_id])
+    user = db.relationship(User, foreign_keys=[user_id])
+    helper = db.relationship(User, foreign_keys=[helper_id])
 
-class TicketEventType(enum.IntEnum):
-    create = 0
-    assign = 1
-    unassign = 2
-    resolve = 3
-    cancel = 4
+TicketEventType = enum.Enum(
+    'TicketEventType',
+    'create assign unassign resolve cancel',
+)
 
 class TicketEvent(db.Model):
     """Represents an event that changes a ticket during its lifecycle."""
-    __tablename__ = 'TicketEvent'
+    __tablename__ = 'ticket_event'
     id = db.Column(db.Integer, primary_key=True)
     time = db.Column(db.DateTime, default=db.func.now())
-    event_type = db.Column(db.SmallInteger, nullable=False)
-    ticket_id = db.Column(db.ForeignKey('Ticket.id'), nullable=False)
-    user_id = db.Column(db.ForeignKey('User.id'), nullable=False)
+    event_type = db.Column(EnumType(TicketEventType), nullable=False)
+    ticket_id = db.Column(db.ForeignKey('ticket.id'), nullable=False)
+    user_id = db.Column(db.ForeignKey('user.id'), nullable=False)
