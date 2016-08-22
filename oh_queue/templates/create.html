@@ -1,0 +1,34 @@
+{% extends "default.html" %}
+
+{% block body %}
+<div class="container">
+  <h1>Request Help</h1>
+  <form method="POST">
+    <div class="row">
+      <div class="four columns">
+        <label for="location">Location</label>
+        <select class="u-full-width" name="location" id="location">
+          <!-- TODO should these be hardcoded? -->
+          <option value="big-room">Main Room</option>
+          <option value="b3a-evans">B3A Evans Lab</option>
+          <option value="b3-aisles">B3 Evans Aisles</option>
+          <option value="small-room">Small Room</option>
+          <option value="tiny-room">Tiny Room</option>
+        </select>
+      </div>
+      <div class="four columns">
+        <label for="assignment">Assignment</label>
+        <input class="u-full-width" type="text" name="assignment" id="assignment" required>
+      </div>
+      <div class="four columns">
+        <label for="question">Question</label>
+        <input class="u-full-width" type="text" name="question" id="question" required>
+      </div>
+    </div>
+    <div class="row">
+      <input class="button-primary" type="submit" value="Submit">
+      <a class="button" href="{{ url_for('index') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

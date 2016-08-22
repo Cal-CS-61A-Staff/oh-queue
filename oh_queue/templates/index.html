@@ -35,15 +35,9 @@
   <h4>Resolved</h4>
   <div class="queue" id="resolved"></div>
 
-  <div id="help-form-container">
-    <div class="container">
-      {% include "form.html" %}
-    </div>
-  </div>
-
-  <div id="add-ticket" class="btn-add-ticket title">
-    <p>request help</p>
-  </div>
+  <a class="button btn-add-ticket title" href="{{ url_for('create') }}">
+    request help
+  </a>
 
 </div>
 <script src="{{ url_for('static', filename='js/client.js') }}"></script>

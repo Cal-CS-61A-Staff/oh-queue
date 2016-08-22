@@ -42,33 +42,6 @@ $(document).ready(function(){
     $.post($(this).attr('data-url'));
   });
 
-  $('#help-form').submit(function(event) {
-    NProgress.start();
-    event.preventDefault();
-
-    var request = $.post('/create/', {
-      name: $('#name').val(),
-      location: $('#location').val(),
-      assignment_type: $('#assignment_type').val(),
-      assignment: $('#assignment').val(),
-      question: $('#question').val()
-    });
-
-    request.done(function(msg) {
-      toggleHelpForm();
-      NProgress.done();
-      if (msg.result === 'failure') {
-        alert('Your help request could not be added. Possible reason: ' + msg.error);
-      }
-    })
-    .fail(function (msg) {
-      toggleHelpForm();
-      NProgress.done();
-      // Currently, the alert doesn't work and no messages are displayed
-      alert('Your help request could not be added.');
-    });
-  });
-
   socket.on('create', function(message) {
     console.log('create', message);
     $('#queue').append(message.assist_html);

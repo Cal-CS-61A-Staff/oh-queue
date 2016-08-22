@@ -1,7 +1,9 @@
 import datetime
 import pytz
 
-from flask import jsonify, render_template, render_template_string, request
+from flask import (
+    jsonify, redirect, render_template, render_template_string, request, url_for
+)
 from flask_login import current_user, login_required
 
 from oh_queue import app, db, socketio
@@ -58,10 +60,9 @@ def create():
         db.session.add(ticket)
         db.session.commit()
 
-        # TODO
         # Emit the new ticket to all clients
         socketio.emit('create', return_payload(ticket))
-        return jsonify(result='success')
+        return redirect(url_for('index'))
     else:
         return render_template('create.html')
 
