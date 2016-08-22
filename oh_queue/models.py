@@ -14,10 +14,10 @@ class EnumType(db.TypeDecorator):
         self.enum_class = enum_class
 
     def process_bind_param(self, enum_value, dialect):
-        return enum_value.value if enum_value else None
+        return enum_value.name
 
-    def process_result_value(self, value, dialect):
-        return self.enum_class(value) if value else None
+    def process_result_value(self, name, dialect):
+        return self.enum_class[name]
 
     @property
     def python_type(self):
