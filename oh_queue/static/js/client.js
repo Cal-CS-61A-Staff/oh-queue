@@ -44,7 +44,7 @@ $(document).ready(function(){
 
   socket.on('create', function(message) {
     console.log('create', message);
-    $('#queue').append(message.assist_html);
+    $('#queue').append(message.html);
     var details = {
       body: message.user_name + " - " + message.assignment + message.question + " in " + message.location
     }
@@ -57,6 +57,5 @@ $(document).ready(function(){
       notifyUser("61A Queue: Your name has been called", {});
     }
     $('#queue-ticket-' + message.id).remove();
-    $('#resolved').append(message.html);
   });
 });

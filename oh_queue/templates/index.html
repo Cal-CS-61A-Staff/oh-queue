@@ -17,8 +17,8 @@
   <div class="column-headings">
     <div class="container u-full-width">
       <div class="row">
-        <div class="three columns no-hide">Name</div>
-        <div class="three columns">Queue Time</div>
+        <div class="two columns no-hide">Name</div>
+        <div class="two columns">Queue Time</div>
         <div class="two columns">Location</div>
         <div class="two columns">Assignment</div>
         <div class="two columns">Question</div>
@@ -28,12 +28,9 @@
 
   <div class="queue" id="queue">
     {% for ticket in tickets %}
-      {{ render_ticket(ticket, assist=true) }}
+      {{ render_ticket(ticket) }}
     {% endfor %}
   </div>
-
-  <h4>Resolved</h4>
-  <div class="queue" id="resolved"></div>
 
   <a class="button btn-add-ticket title" href="{{ url_for('create') }}">
     request help

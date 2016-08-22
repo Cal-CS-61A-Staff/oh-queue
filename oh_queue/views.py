@@ -9,12 +9,11 @@ from flask_login import current_user, login_required
 from oh_queue import app, db, socketio
 from oh_queue.models import Ticket, TicketStatus
 
-def render_ticket(ticket, assist):
+def render_ticket(ticket):
     template = app.jinja_env.get_template('ticket.html')
     return template.render(
         current_user=current_user,
         ticket=ticket,
-        assist=assist,
     )
 
 def return_payload(ticket):
@@ -26,8 +25,7 @@ def return_payload(ticket):
         'location': ticket.location,
         'assignment': ticket.assignment,
         'question': ticket.question,
-        'html': render_ticket(ticket, assist=False),
-        'assist_html': render_ticket(ticket, assist=True),
+        'html': render_ticket(ticket),
     }
 
 @app.route('/')
