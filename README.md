@@ -10,26 +10,23 @@ Provides a web-based interface for requesting help during office hours. Allows s
 
 1. Create an activate a virtualenv:
 
-    $ virtualenv -p python3 env
-    $ source env/bin/activate
+    virtualenv -p python3 env
+    source env/bin/activate
 
 2. Use pip to install all the dependencies from `requirements.txt`:
 
-    $ pip install -r requirements.txt
+    pip install -r requirements.txt
 
-3. Execute the following command from `shell.py`: `db.create_all()`. This should
-create a database called `app.db` in the repository directory.
+3. Reset the database to create tables.
 
-    $ ./shell.py
-    >>> db.create_all()
-    >>>
+    ./manage.py resetdb
 
 4. Run the server:
 
-    $ ./run.py
+    ./manage.py server
 
 5. Point your browser to http://localhost:5000.
 
 ## Workflow
 
-There is more documentation within `oh_queue/README.md`.
+There is some out-of-date documentation within `oh_queue/README.md`.
