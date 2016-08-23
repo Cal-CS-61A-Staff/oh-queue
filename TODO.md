@@ -6,7 +6,6 @@
 * Number of people on queue and average wait time (refresh for updates)
 * OH locations for dropdown (from config) and separate description field
 * Filtering by location
-* Logging events to DB
 * Deployment to Dokku
 
 Future:

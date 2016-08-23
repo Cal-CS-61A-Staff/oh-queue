@@ -7,26 +7,32 @@ from flask import (
 from flask_login import current_user, login_required
 
 from oh_queue import app, db, socketio
-from oh_queue.models import Ticket, TicketStatus
+from oh_queue.models import Ticket, TicketStatus, TicketEvent, TicketEventType
 
-def render_ticket(ticket):
-    template = app.jinja_env.get_template('ticket.html')
-    return template.render(
-        current_user=current_user,
+def emit_event(ticket, event_type):
+    # TODO log
+
+    ticket_event = TicketEvent(
+        event_type=event_type,
         ticket=ticket,
+        user=current_user,
     )
+    db.session.add(ticket_event)
+    db.session.commit()
 
-def return_payload(ticket):
-    return {
+    socketio.emit(event_type.name, {
         'id': ticket.id,
-        'user_id': ticket.user.id,
+        'user_id': ticket.user_id,
         'user_name': ticket.user.name,
         'add_date': format_datetime(ticket.created),
         'location': ticket.location,
         'assignment': ticket.assignment,
         'question': ticket.question,
-        'html': render_ticket(ticket),
-    }
+        'html': app.jinja_env.get_template('ticket.html').render(
+            current_user=current_user,
+            ticket=ticket,
+        )
+    })
 
 @app.route('/')
 @login_required
@@ -47,7 +53,7 @@ def create():
         # Create a new ticket and add it to persistent storage
         ticket = Ticket(
             status=TicketStatus.pending,
-            user_id=current_user.id,
+            user=current_user,
             assignment=request.form['assignment'],
             question=request.form['question'],
             location=request.form['location'],
@@ -55,8 +61,7 @@ def create():
         db.session.add(ticket)
         db.session.commit()
 
-        # Emit the new ticket to all clients
-        socketio.emit('create', return_payload(ticket))
+        emit_event(ticket, TicketEventType.create)
         return redirect(url_for('index'))
     else:
         return render_template('create.html')
@@ -74,8 +79,7 @@ def cancel(ticket_id):
     ticket.status = TicketStatus.canceled
     db.session.commit()
 
-    # TODO
-    socketio.emit('cancel', return_payload(ticket))
+    emit_event(ticket, TicketEventType.cancel)
     return jsonify(result='success')
 
 @app.route('/<int:ticket_id>/resolve/', methods=['POST'])
@@ -86,8 +90,7 @@ def resolve(ticket_id):
     ticket.helper_id = current_user.id
     db.session.commit()
 
-    # TODO
-    socketio.emit('resolve', return_payload(ticket))
+    emit_event(ticket, TicketEventType.resolve)
     return jsonify(result='success')
 
 @app.route('/<int:ticket_id>/rate/', methods=['GET', 'POST'])

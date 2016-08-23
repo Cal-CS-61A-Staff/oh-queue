@@ -65,3 +65,6 @@ class TicketEvent(db.Model):
     event_type = db.Column(EnumType(TicketEventType), nullable=False)
     ticket_id = db.Column(db.ForeignKey('ticket.id'), nullable=False)
     user_id = db.Column(db.ForeignKey('user.id'), nullable=False)
+
+    ticket = db.relationship(Ticket)
+    user = db.relationship(User)
