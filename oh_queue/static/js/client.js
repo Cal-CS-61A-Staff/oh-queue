@@ -38,7 +38,7 @@ $(document).ready(function(){
   })
 
   // Bind event listeners
-  $('body').on('click', '.resolve', function(event) {
+  $('body').on('click', '.event-btn', function(event) {
     $.post($(this).attr('data-url'));
   });
 
@@ -53,9 +53,19 @@ $(document).ready(function(){
 
   socket.on('resolve', function (message) {
     console.log('resolve', message);
+    $('#queue-ticket-' + message.id).remove();
+  });
+
+  socket.on('assign', function (message) {
+    console.log('assign', message);
     if (message.user_id == current_user_id) {
       notifyUser("61A Queue: Your name has been called", {});
     }
-    $('#queue-ticket-' + message.id).remove();
+    $('#queue-ticket-' + message.id).replaceWith(message.html);
+  });
+
+  socket.on('unassign', function (message) {
+    console.log('unassign', message);
+    $('#queue-ticket-' + message.id).replaceWith(message.html);
   });
 });

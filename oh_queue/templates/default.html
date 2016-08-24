@@ -35,6 +35,17 @@
     var current_user_id = {{ current_user.id }};
   </script>
   {% endif %}
+  <style>
+      {% if current_user_is_staff %}
+      .staff-only {display: block !important}
+      .student-only {display: none !important}
+      {% else %}
+      .staff-only {display: none !important}
+      .student-only {display: block !important}
+      {% endif %}
+      .hidden, .user-{{ current_user.id }}-hidden {display: none !important}
+      .user-{{ current_user.id }}-visible {display: block !important}
+  </style>
 </head>
 <body>
   {% block body %}{% endblock %}
