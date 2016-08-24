@@ -11,7 +11,10 @@
     {% elif ticket.status == TicketStatus.assigned %}
         <div class="two columns hidden user-{{ ticket.helper_id }}-visible"><button data-url="{{ url_for('unassign', ticket_id=ticket.id) }}" class="event-btn">Put Back</button></div>
         <div class="one columns hidden user-{{ ticket.helper_id }}-visible"><button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}" class="event-btn">Resolve</button></div>
-        <div class="three columns user-{{ ticket.helper_id }}-hidden">Being helped by<br>{{ ticket.helper.name }}</div>
+        <div class="two columns user-{{ ticket.helper_id }}-hidden">Being helped by<br>{{ ticket.helper.name }}</div>
+        <div class="one columns user-{{ ticket.helper_id }}-hidden staff-only">
+            <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}" class="reassign-btn">Reassign</button>
+        </div>
     {% endif %}
   </div>
 {%- endmacro %}

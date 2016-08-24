@@ -42,6 +42,12 @@ $(document).ready(function(){
     $.post($(this).attr('data-url'));
   });
 
+  $('body').on('click', '.reassign-btn', function(event) {
+    if (confirm("Reassign this student to yourself?")) {
+      $.post($(this).attr('data-url'))
+    }
+  });
+
   socket.on('create', function(message) {
     console.log('create', message);
     $('#queue').append(message.html);
@@ -59,7 +65,7 @@ $(document).ready(function(){
   socket.on('assign', function (message) {
     console.log('assign', message);
     if (message.user_id == current_user_id) {
-      notifyUser("61A Queue: Your name has been called", {});
+      notifyUser("61A Queue: Your name has been called by " + message.helper_name, {});
     }
     $('#queue-ticket-' + message.id).replaceWith(message.html);
   });

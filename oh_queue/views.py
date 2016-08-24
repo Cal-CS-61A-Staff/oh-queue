@@ -27,6 +27,7 @@ def emit_event(ticket, event_type):
         'location': ticket.location,
         'assignment': ticket.assignment,
         'question': ticket.question,
+        'helper_name': ticket.helper and ticket.helper.name,
         'html': app.jinja_env.get_template('ticket.html').render(
             current_user=current_user,
             ticket=ticket,
