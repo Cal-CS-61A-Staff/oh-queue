@@ -66,9 +66,6 @@ $(document).ready(function(){
 
   socket.on('unassign', function (message) {
     console.log('unassign', message);
-    if (message.user_id == current_user_id) {
-      notifyUser("61A Queue: You've been added back to the queue", {});
-    }
     $('#queue-ticket-' + message.id).replaceWith(message.html);
   });
 });
