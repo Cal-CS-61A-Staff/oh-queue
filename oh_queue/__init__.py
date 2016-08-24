@@ -10,11 +10,15 @@ from flask import Flask
 from flask_socketio import SocketIO
 
 from oh_queue import auth
-from oh_queue.models import db
+from oh_queue.models import db, TicketStatus
 
 # Initialize the application
 app = Flask(__name__)
 app.config.from_object('config')
+
+app.jinja_env.globals.update({
+  'TicketStatus': TicketStatus
+})
 
 db.init_app(app)
 auth.init_app(app)

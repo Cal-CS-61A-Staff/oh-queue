@@ -19,7 +19,6 @@ def emit_event(ticket, event_type):
     )
     db.session.add(ticket_event)
     db.session.commit()
-
     socketio.emit(event_type.name, {
         'id': ticket.id,
         'user_id': ticket.user_id,
@@ -31,16 +30,24 @@ def emit_event(ticket, event_type):
         'html': app.jinja_env.get_template('ticket.html').render(
             current_user=current_user,
             ticket=ticket,
+            current_user_is_staff=is_staff()
         )
     })
+
+def is_staff():
+    # TODO Actually add this logic
+    if current_user.email.startswith("student"):
+        return False
+    return True
 
 @app.route('/')
 @login_required
 def index():
-    tickets = Ticket.query.filter_by(
-       status=TicketStatus.pending,
+    tickets = Ticket.query.filter(
+       Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
     ).order_by(Ticket.created).all()
-    return render_template('index.html', tickets=tickets, date=datetime.datetime.now())
+    return render_template('index.html', tickets=tickets,
+                current_user_is_staff = is_staff(), date=datetime.datetime.now())
 
 @app.route('/create/', methods=['GET', 'POST'])
 @login_required
@@ -91,6 +98,28 @@ def resolve(ticket_id):
     db.session.commit()
 
     emit_event(ticket, TicketEventType.resolve)
+    return jsonify(result='success')
+
+@app.route('/<int:ticket_id>/assign/', methods=['POST'])
+@login_required
+def assign(ticket_id):
+    ticket = Ticket.query.get_or_404(ticket_id)
+    ticket.status = TicketStatus.assigned
+    ticket.helper_id = current_user.id
+    db.session.commit()
+
+    emit_event(ticket, TicketEventType.assign)
+    return jsonify(result='success')
+
+@app.route('/<int:ticket_id>/unassign/', methods=['POST'])
+@login_required
+def unassign(ticket_id):
+    ticket = Ticket.query.get_or_404(ticket_id)
+    ticket.status = TicketStatus.pending
+    ticket.helper_id = None
+    db.session.commit()
+
+    emit_event(ticket, TicketEventType.unassign)
     return jsonify(result='success')
 
 @app.route('/<int:ticket_id>/rate/', methods=['GET', 'POST'])
