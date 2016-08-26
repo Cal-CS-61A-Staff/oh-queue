@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, redirect, render_template, request, session, url_for
+from flask import Blueprint, abort, current_app, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, login_user
 from flask_oauthlib.client import OAuth, OAuthException
 
@@ -8,26 +8,27 @@ import requests
 from oh_queue.models import db, User
 
 auth = Blueprint('auth', __name__)
-
-OK_KEY = 'oh-queue'
-OK_SECRET = 'M05dGkt1xe1a1OJvG06YRITzAqQQvEa'
-
-COURSE_OFFERING = 'cal/cs61a/fa16'
+auth.config = {}
 
 oauth = OAuth()
-ok_auth = oauth.remote_app(
-    'ok-server',
-    consumer_key=OK_KEY,
-    consumer_secret=OK_SECRET,
-    request_token_params={
-        'scope': 'all',
-        'state': lambda: security.gen_salt(10)
-    },
-    base_url='https://ok.cs61a.org/api/v3/',
-    request_token_url=None,
-    access_token_method='POST',
-    access_token_url='https://ok.cs61a.org/oauth/token',
-    authorize_url='https://ok.cs61a.org/oauth/authorize',)
+
+@auth.record
+def record_params(setup_state):
+    app = setup_state.app
+    auth.ok_auth = oauth.remote_app(
+        'ok-server',
+        consumer_key=app.config.get('OK_KEY'),
+        consumer_secret=app.config.get('OK_SECRET'),
+        request_token_params={
+            'scope': 'all',
+            'state': lambda: security.gen_salt(10)
+        },
+        base_url='https://ok.cs61a.org/api/v3/',
+        request_token_url=None,
+        access_token_method='POST',
+        access_token_url='https://ok.cs61a.org/oauth/token',
+        authorize_url='https://ok.cs61a.org/oauth/authorize',)
+    auth.course_offering = app.config.get('COURSE_OFFERING')
 
 login_manager = LoginManager()
 
@@ -61,24 +62,26 @@ def user_from_email(name, email, is_staff):
 def login():
     callback = url_for(".authorized", _external=True)
     print("callback", callback)
-    return ok_auth.authorize(callback=callback)
+    return auth.ok_auth.authorize(callback=callback)
 
 @auth.route('/login/authorized')
 def authorized():
-    auth_resp = ok_auth.authorized_response()
+    auth_resp = auth.ok_auth.authorized_response()
     if auth_resp is None:
         return 'Access denied: error=%s' % (request.args['error'])
     token = auth_resp['access_token']
     resp = requests.get('https://ok.cs61a.org/api/v3/user/?access_token={}'.format(token))
     resp.raise_for_status()
-    user_info = resp.json()['data']
-    name = user_info['name']
-    email = user_info['email']
+    info = resp.json()['data']
+    name = info['name']
+    email = info['email']
     if not name:
         name = email
     is_staff = False
-    particips = [p for p in user_info['participations'] if p['course']['offering'] == COURSE_OFFERING]
-    if particips and particips[0]['role'] != 'student':
+    parts = info['participations']
+    offering = auth.course_offering
+    valid_parts = [p for p in parts if p['course']['offering'] == offering]
+    if parts and parts[0]['role'] != 'student':
         is_staff = True
     user = user_from_email(name, email, is_staff)
     return authorize_user(user)
