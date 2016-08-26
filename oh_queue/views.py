@@ -30,16 +30,9 @@ def emit_event(ticket, event_type):
         'helper_name': ticket.helper and ticket.helper.name,
         'html': app.jinja_env.get_template('ticket.html').render(
             current_user=current_user,
-            ticket=ticket,
-            current_user_is_staff=is_staff()
+            ticket=ticket
         )
     })
-
-def is_staff():
-    # TODO Actually add this logic
-    if current_user.email.startswith("student"):
-        return False
-    return True
 
 @app.route('/')
 @login_required
@@ -48,7 +41,7 @@ def index():
        Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
     ).order_by(Ticket.created).all()
     return render_template('index.html', tickets=tickets,
-                current_user_is_staff = is_staff(), date=datetime.datetime.now())
+                current_user=current_user, date=datetime.datetime.now())
 
 @app.route('/create/', methods=['GET', 'POST'])
 @login_required

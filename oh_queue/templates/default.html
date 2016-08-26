@@ -36,7 +36,7 @@
   </script>
   {% endif %}
   <style>
-      {% if current_user_is_staff %}
+      {% if current_user.is_staff %}
       .staff-only {display: block !important}
       .student-only {display: none !important}
       {% else %}

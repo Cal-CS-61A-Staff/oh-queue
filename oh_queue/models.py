@@ -29,6 +29,7 @@ class User(db.Model, UserMixin):
     created = db.Column(db.DateTime, default=db.func.now())
     email = db.Column(db.String(255), nullable=False, index=True)
     name = db.Column(db.String(255), nullable=False)
+    is_staff = db.Column(db.Boolean, default=False)
 
 TicketStatus = enum.Enum('TicketStatus', 'pending assigned resolved canceled')
 
