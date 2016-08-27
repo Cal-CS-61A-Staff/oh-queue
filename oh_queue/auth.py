@@ -29,6 +29,7 @@ def record_params(setup_state):
         access_token_url='https://ok.cs61a.org/oauth/token',
         authorize_url='https://ok.cs61a.org/oauth/authorize',)
     auth.course_offering = app.config.get('COURSE_OFFERING')
+    auth.debug = app.config.get('DEBUG')
 
 login_manager = LoginManager()
 
@@ -90,6 +91,22 @@ def authorized():
 def logout():
     session.clear()
     return "Logged out."
+
+@auth.route('/testing-login/')
+def testing_login():
+    if not auth.debug:
+        abort(404)
+    callback = url_for(".testing_authorized")
+    return render_template('login.html', callback=callback)
+
+@auth.route('/testing-login/authorized', methods=['POST'])
+def testing_authorized():
+    if not auth.debug:
+        abort(404)
+    form = request.form
+    is_staff = form['is_staff'] == 'on'
+    user = user_from_email(form['name'], form['email'], is_staff)
+    return authorize_user(user)
 
 def init_app(app):
     app.register_blueprint(auth)
