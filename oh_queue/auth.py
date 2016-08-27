@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, current_app, redirect, render_template, request, session, url_for
+from flask import Blueprint, abort, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, login_user
 from flask_oauthlib.client import OAuth, OAuthException
 
