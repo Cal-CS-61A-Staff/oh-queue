@@ -6,7 +6,7 @@
 	<section class="header row">
 		<div class="seven columns">
 			<h4><b>CS61A</b> Office Hour Queue</h4>
-			<h6>Evans B4</h6>
+			<h6>109 Morgan Hall or Cory Hall</h6>
 		</div>
 		<div class="five columns ta-info">
 			<h6><b>CS61Awesome Staff</b></h6>
@@ -23,7 +23,7 @@
 			<div class="two columns">Question</div>
 		</div>
 	</section>
-	
+
 	<div class="queue" id="queue">
 		{% for entry in entries %}
 		<div class="queue-entry row" id="queue-entry-{{ entry.id }}">
@@ -40,12 +40,12 @@
 
 	<div id="dialog-form" title="Resolve Notes">
 	  <p class="validateTips">Brief summary of student's issue and solution</p>
-	 
+
 	  <form>
 	    <fieldset>
 	      <label for="name">Notes</label>
 	      <textarea name="notes" id="notes" class="text ui-widget-content ui-corner-all"></textarea>
-	 
+
 	      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
 	    </fieldset>
 	  </form>
