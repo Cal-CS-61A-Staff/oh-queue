@@ -1,4 +1,6 @@
 flask
 flask-socketio
 flask-sqlalchemy
+gevent
+python-engineio<1.0.0
 pytz
