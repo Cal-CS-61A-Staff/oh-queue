@@ -1,25 +1,38 @@
 from flask import Blueprint, abort, redirect, render_template, request, session, url_for
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager, login_user, logout_user
 from flask_oauthlib.client import OAuth, OAuthException
+
+from werkzeug import security
 
 from oh_queue.models import db, User
 
 auth = Blueprint('auth', __name__)
+auth.config = {}
 
 oauth = OAuth()
-google_auth = oauth.remote_app(
-    'google',
-    app_key='GOOGLE',
-    request_token_params={
-        'scope': 'email',
-        'prompt': 'select_account'
-    },
-    base_url='https://www.googleapis.com/oauth2/v1/',
-    request_token_url=None,
-    access_token_method='POST',
-    access_token_url='https://accounts.google.com/o/oauth2/token',
-    authorize_url='https://accounts.google.com/o/oauth2/auth',
-)
+
+@auth.record
+def record_params(setup_state):
+    app = setup_state.app
+    auth.ok_auth = oauth.remote_app(
+        'ok-server',
+        consumer_key=app.config.get('OK_KEY'),
+        consumer_secret=app.config.get('OK_SECRET'),
+        request_token_params={
+            'scope': 'all',
+            'state': lambda: security.gen_salt(10)
+        },
+        base_url='https://ok.cs61a.org/api/v3/',
+        request_token_url=None,
+        access_token_method='POST',
+        access_token_url='https://ok.cs61a.org/oauth/token',
+        authorize_url='https://ok.cs61a.org/oauth/authorize',)
+    auth.course_offering = app.config.get('COURSE_OFFERING')
+    auth.debug = app.config.get('DEBUG')
+
+    @auth.ok_auth.tokengetter
+    def get_access_token(token=None):
+        return session.get('access_token')
 
 login_manager = LoginManager()
 
@@ -38,28 +51,64 @@ def authorize_user(user):
     # TODO validate after_login URL
     return redirect(after_login)
 
-def user_from_email(name, email):
+def user_from_email(name, email, is_staff):
     """Get a User with the given email, or create one."""
     user = User.query.filter_by(email=email).one_or_none()
     if not user:
-        user = User(name=name, email=email)
-        db.session.add(user)
-        db.session.commit()
+        user = User(name=name, email=email, is_staff=is_staff)
+    else:
+        user.is_staff = is_staff
+    db.session.add(user)
+    db.session.commit()
     return user
 
 @auth.route('/login/')
 def login():
-    callback = url_for(".authorized")
-    return render_template('login.html', callback=callback)
+    callback = url_for(".authorized", _external=True)
+    return auth.ok_auth.authorize(callback=callback)
 
-@auth.route('/login/authorized/', methods=['POST'])
+@auth.route('/login/authorized')
 def authorized():
-    user = user_from_email(request.form['name'], request.form['email'])
+    auth_resp = auth.ok_auth.authorized_response()
+    if auth_resp is None:
+        return 'Access denied: error=%s' % (request.args['error'])
+    token = auth_resp['access_token']
+    session['access_token'] = (token, '')  # (access_token, secret)
+    info = auth.ok_auth.get('user').data['data']
+    email = info['email']
+    name = info['name']
+    if not name:
+        name = email
+    is_staff = False
+    parts = info['participations']
+    offering = auth.course_offering
+    valid_parts = [p for p in parts if p['course']['offering'] == offering]
+    if parts and parts[0]['role'] != 'student':
+        is_staff = True
+    user = user_from_email(name, email, is_staff)
     return authorize_user(user)
 
 @auth.route('/logout/')
 def logout():
-    abort(403)
+    logout_user()
+    session.clear()
+    return redirect(url_for('index'))
+
+@auth.route('/testing-login/')
+def testing_login():
+    if not auth.debug:
+        abort(404)
+    callback = url_for(".testing_authorized")
+    return render_template('login.html', callback=callback)
+
+@auth.route('/testing-login/authorized', methods=['POST'])
+def testing_authorized():
+    if not auth.debug:
+        abort(404)
+    form = request.form
+    is_staff = form.get('is_staff') == 'on'
+    user = user_from_email(form['name'], form['email'], is_staff)
+    return authorize_user(user)
 
 def init_app(app):
     app.register_blueprint(auth)

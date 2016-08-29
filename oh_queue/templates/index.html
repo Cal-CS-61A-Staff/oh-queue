@@ -4,13 +4,15 @@
 
 <div class="queue-container container">
   <section class="header row">
-    <div class="seven columns">
-      <h4><b>CS61A</b> Office Hour Queue</h4>
-      <h6>Evans B4</h6>
+    <div class="six columns">
+      <h4><b>CS 61A</b> Office Hour Queue</h4>
     </div>
-    <div class="five columns ta-info">
-      <h6><b>CS61Awesome Staff</b></h6>
-                        <h6>{{ date.strftime("%A, %B %d %Y") }}</h6>
+    <div class="five columns">
+      {{ current_user.name }} ({{ current_user.email }})
+    </div>
+    <div>
+    <div class="one columns">
+      <a class="button" href="{{ url_for('auth.logout') }}">Log Out</a>
     </div>
   </section>
 
