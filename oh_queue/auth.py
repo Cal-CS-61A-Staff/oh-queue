@@ -1,5 +1,5 @@
 from flask import Blueprint, abort, redirect, render_template, request, session, url_for
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager, login_user, logout_user
 from flask_oauthlib.client import OAuth, OAuthException
 
 from werkzeug import security
@@ -89,8 +89,9 @@ def authorized():
 
 @auth.route('/logout/')
 def logout():
+    logout_user()
     session.clear()
-    return "Logged out."
+    return redirect(url_for('index'))
 
 @auth.route('/testing-login/')
 def testing_login():
