@@ -27,6 +27,16 @@ Provides a web-based interface for requesting help during office hours. Allows s
 
 5. Point your browser to http://localhost:5000.
 
+## Deployment
+
+First point a git remote to the Dokku server:
+
+    git remote add dokku dokku@app.cs61a.org:officehours-web
+
+To deploy:
+
+    git push dokku master
+
 ## Workflow
 
 There is some out-of-date documentation within `oh_queue/README.md`.
