@@ -5,7 +5,6 @@ from flask_oauthlib.client import OAuth, OAuthException
 from werkzeug import security
 
 from oh_queue.models import db, User
-from oh_queue import utils
 
 auth = Blueprint('auth', __name__)
 auth.config = {}
@@ -30,6 +29,10 @@ def record_params(setup_state):
         authorize_url='https://ok.cs61a.org/oauth/authorize',)
     auth.course_offering = app.config.get('COURSE_OFFERING')
     auth.debug = app.config.get('DEBUG')
+
+    @auth.ok_auth.tokengetter
+    def get_access_token(token=None):
+        return session.get('access_token')
 
 login_manager = LoginManager()
 
@@ -69,8 +72,9 @@ def authorized():
     auth_resp = auth.ok_auth.authorized_response()
     if auth_resp is None:
         return 'Access denied: error=%s' % (request.args['error'])
-    session['access_token'] = auth_resp['access_token']
-    info = utils.ok_api('user')
+    token = auth_resp['access_token']
+    session['access_token'] = (token, '')  # (access_token, secret)
+    info = auth.ok_auth.get('user').data['data']
     email = info['email']
     name = info['name']
     if not name:
