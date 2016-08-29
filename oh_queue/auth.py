@@ -3,9 +3,9 @@ from flask_login import LoginManager, login_user, logout_user
 from flask_oauthlib.client import OAuth, OAuthException
 
 from werkzeug import security
-import requests
 
 from oh_queue.models import db, User
+from oh_queue import utils
 
 auth = Blueprint('auth', __name__)
 auth.config = {}
@@ -69,12 +69,10 @@ def authorized():
     auth_resp = auth.ok_auth.authorized_response()
     if auth_resp is None:
         return 'Access denied: error=%s' % (request.args['error'])
-    token = auth_resp['access_token']
-    resp = requests.get('https://ok.cs61a.org/api/v3/user/?access_token={}'.format(token))
-    resp.raise_for_status()
-    info = resp.json()['data']
-    name = info['name']
+    session['access_token'] = auth_resp['access_token']
+    info = utils.ok_api('user')
     email = info['email']
+    name = info['name']
     if not name:
         name = email
     is_staff = False

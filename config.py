@@ -14,4 +14,5 @@ SECRET_KEY = 'dev'
 OK_KEY = 'oh-queue'
 OK_SECRET = 'M05dGkt1xe1a1OJvG06YRITzAqQQvEa'
 
+OK_SERVER_URL = 'https://ok.cs61a.org'
 COURSE_OFFERING = 'cal/cs61a/fa16'
