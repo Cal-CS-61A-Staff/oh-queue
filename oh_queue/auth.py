@@ -62,7 +62,6 @@ def user_from_email(name, email, is_staff):
 @auth.route('/login/')
 def login():
     callback = url_for(".authorized", _external=True)
-    print("callback", callback)
     return auth.ok_auth.authorize(callback=callback)
 
 @auth.route('/login/authorized')
