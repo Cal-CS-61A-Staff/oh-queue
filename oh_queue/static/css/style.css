@@ -71,6 +71,7 @@ html, body{
   vertical-align: middle;
   line-height: 50px;
   cursor: pointer;
+  margin: 0;
 }
 
 #help-form-container {
