@@ -97,3 +97,9 @@ html, body{
     display: block;
   }
 }
+
+@media only screen and (max-width: 1200px) {
+  .column-headings {
+    display: none;
+  }
+}
