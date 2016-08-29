@@ -104,7 +104,7 @@ def testing_authorized():
     if not auth.debug:
         abort(404)
     form = request.form
-    is_staff = form['is_staff'] == 'on'
+    is_staff = form.get('is_staff') == 'on'
     user = user_from_email(form['name'], form['email'], is_staff)
     return authorize_user(user)
 
