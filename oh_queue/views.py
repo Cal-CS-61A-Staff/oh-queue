@@ -2,7 +2,7 @@ import datetime
 import pytz
 
 from flask import (
-    jsonify, redirect, render_template, render_template_string, request, url_for
+    jsonify, redirect, flash, render_template, render_template_string, request, url_for
 )
 from flask_login import current_user, login_required
 
@@ -34,17 +34,19 @@ def emit_event(ticket, event_type):
         'html': module.render_ticket(ticket=ticket)
     })
 
+def get_my_ticket():
+  return Ticket.query.filter(
+      Ticket.user_id == current_user.id,
+      Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned]),
+  ).one_or_none()
+
 @app.route('/')
 @login_required
 def index():
     tickets = Ticket.query.filter(
        Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
     ).order_by(Ticket.created).all()
-    my_ticket = None
-    for ticket in tickets:
-        if ticket.user_id == current_user.id:
-            my_ticket = ticket
-            break
+    my_ticket = get_my_ticket()
     return render_template('index.html', tickets=tickets, my_ticket=my_ticket,
                 current_user=current_user, date=datetime.datetime.now())
 
@@ -55,7 +57,11 @@ def create():
     connected clients.
     """
     # TODO use WTForms
-    if request.method == 'POST':
+    my_ticket = get_my_ticket()
+    if my_ticket:
+      flash("You're already on the queue!", 'warning')
+      return redirect(url_for('ticket', ticket_id=my_ticket.id))
+    elif request.method == 'POST':
         # Create a new ticket and add it to persistent storage
         ticket = Ticket(
             status=TicketStatus.pending,
