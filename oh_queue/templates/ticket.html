@@ -1,2 +1,8 @@
+{% extends "default.html" %}
 {% from "macros.html" import render_ticket with context %}
+{% block body %}
+
 {{ render_ticket(ticket) }}
+
+<script src="{{ url_for('static', filename='js/ticket.js') }}"></script>
+{% endblock %}

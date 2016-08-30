@@ -30,15 +30,25 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
 
   <!-- App-specific JS -->
+  <script src="{{ url_for('static', filename='js/common.js') }}"></script>
   {% if current_user.is_authenticated %}
   <script>
     var current_user_id = {{ current_user.id }};
+    {% if current_user.is_staff %}
+      var is_staff = true;
+    {% else %}
+      var is_staff = false;
+    {% endif %}
   </script>
-  {% endif %}
   <style>
       {% if current_user.is_staff %}
       .staff-only {display: block !important}
       .student-only {display: none !important}
+      .staff-link:hover {
+        background: #eee;
+        transition: background 0.2s;
+        cursor: pointer;
+      }
       {% else %}
       .staff-only {display: none !important}
       .student-only {display: block !important}
@@ -46,8 +56,33 @@
       .hidden, .user-{{ current_user.id }}-hidden {display: none !important}
       .user-{{ current_user.id }}-visible {display: block !important}
   </style>
+  {% endif %}
 </head>
 <body>
+  <div class="container">
+    <section class="header row">
+      <a href="/" class="six columns">
+        <h4><b>CS 61A</b> Office Hour Queue</h4>
+      </a>
+      <div class="five columns">
+        {{ current_user.name }} ({{ current_user.email }})
+      </div>
+      <div>
+      <div class="one columns">
+        <a class="button" href="{{ url_for('auth.logout') }}">Log Out</a>
+      </div>
+    </section>
+  </div>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+  {% endwith %}
   {% block body %}{% endblock %}
 </body>
 </html>

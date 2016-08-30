@@ -1,20 +1,56 @@
+{% macro render_ticket_row(ticket) -%}
+<div class="queue-ticket row staff-link"
+     id="queue-ticket-{{ ticket.id }}"
+     data-link="{{ url_for('ticket', ticket_id=ticket.id) }}">
+  <div class="two columns">{{ ticket.user.name }}</div>
+  <div class="two columns">{{ ticket.created | datetime }}</div>
+  <div class="two columns">{{ ticket.location }}</div>
+  <div class="two columns">{{ ticket.assignment }}</div>
+  <div class="two columns">{{ ticket.question }}</div>
+  {% if ticket.status == TicketStatus.pending %}
+    <div class="two columns">Queued</div>
+  {% elif ticket.status == TicketStatus.assigned %}
+    <div class="two columns user-{{ ticket.helper_id }}-hidden">Being helped by {{ ticket.helper.name }}</div>
+    <div class="two columns hidden user-{{ ticket.helper_id }}-visible">Assigned to you</div>
+  {% endif %}
+</div>
+{%- endmacro %}
+
 {% macro render_ticket(ticket) -%}
-  <div class="queue-ticket row" id="queue-ticket-{{ ticket.id }}">
-    <div class="two columns">{{ ticket.user.name }}</div>
-    <div class="two columns">{{ ticket.created | datetime }}</div>
-    <div class="two columns">{{ ticket.location }}</div>
-    <div class="two columns">{{ ticket.assignment }}</div>
-    <div class="one columns">{{ ticket.question }}</div>
-    {% if ticket.status == TicketStatus.pending %}
-        <div class="three columns staff-only"><button data-url="{{ url_for('assign', ticket_id=ticket.id) }}" class="event-btn">Help</button></div>
-        <div class="three columns student-only">Queued</div>
-    {% elif ticket.status == TicketStatus.assigned %}
-        <div class="two columns hidden user-{{ ticket.helper_id }}-visible"><button data-url="{{ url_for('unassign', ticket_id=ticket.id) }}" class="event-btn">Put Back</button></div>
-        <div class="one columns hidden user-{{ ticket.helper_id }}-visible"><button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}" class="event-btn">Resolve</button></div>
-        <div class="two columns user-{{ ticket.helper_id }}-hidden">Being helped by<br>{{ ticket.helper.name }}</div>
-        <div class="one columns user-{{ ticket.helper_id }}-hidden staff-only">
-            <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}" class="reassign-btn">Reassign</button>
-        </div>
-    {% endif %}
+<div id="ticket" class="container">
+  <div class="row">Name: <span class="name">{{ ticket.user.name }}</span></div>
+  <div class="row">Queue Time: <span class="created">{{ ticket.created | datetime }}</span></div>
+  <div class="row">Location: <span class="location">{{ ticket.location }}</span></div>
+  <div class="row">Assignment: <span class="assignment">{{ ticket.assignment }}</span></div>
+  <div class="row">Question: <span class="question">{{ ticket.question }}</span></div>
+  <div class="row">
+  {% if ticket.status == TicketStatus.pending %}
+    <div class="twelve columns">
+      <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}"
+              class="btn staff-only">Help</button>
+    </div>
+    <div class="twelve columns">
+      <button data-url="{{ url_for('cancel', ticket_id=ticket.id) }}"
+              data-confirm="Cancel this ticket?"
+              class="btn cancel">Cancel</button>
+    </div>
+  {% elif ticket.status == TicketStatus.assigned %}
+    <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
+      <button data-url="{{ url_for('unassign', ticket_id=ticket.id) }}">Put Back</button>
+    </div>
+    <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
+      <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}">Resolve</button>
+    </div>
+    <div class="twelve columns user-{{ ticket.helper_id }}-hidden">Being helped by {{ ticket.helper.name }}</div>
+    <div class="twelve columns user-{{ ticket.helper_id }}-hidden staff-only">
+        <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}"
+                data-confirm="Reassign this ticket?">Reassign</button>
+    </div>
+  {% elif ticket.status == TicketStatus.resolved %}
+    <div class="twelve columns">Resolved</div>
+  {% elif ticket.status == TicketStatus.canceled %}
+    <div class="twelve columns">Canceled</div>
+  {% endif %}
   </div>
+</div>
 {%- endmacro %}
