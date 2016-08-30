@@ -29,7 +29,7 @@ $(document).ready(function(){
   });
   
   socket.on('cancel', function (message) {
-    console.log('unassign', message);
+    console.log('cancel', message);
     $('#queue-ticket-' + message.id).remove();
   });
 });
