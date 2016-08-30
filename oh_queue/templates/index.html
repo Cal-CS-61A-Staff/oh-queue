@@ -1,21 +1,8 @@
 {% extends "default.html" %}
-{% from "macros.html" import render_ticket with context %}
+{% from "macros.html" import render_ticket_row with context %}
 {% block body %}
 
 <div class="queue-container container">
-  <section class="header row">
-    <div class="six columns">
-      <h4><b>CS 61A</b> Office Hour Queue</h4>
-    </div>
-    <div class="five columns">
-      {{ current_user.name }} ({{ current_user.email }})
-    </div>
-    <div>
-    <div class="one columns">
-      <a class="button" href="{{ url_for('auth.logout') }}">Log Out</a>
-    </div>
-  </section>
-
   <div class="column-headings">
     <div class="container u-full-width">
       <div class="row">
@@ -23,22 +10,29 @@
         <div class="two columns">Queue Time</div>
         <div class="two columns">Location</div>
         <div class="two columns">Assignment</div>
-        <div class="one columns">Question</div>
-        <div class="three columns">Status</div>
+        <div class="two columns">Question</div>
+        <div class="two columns">Status</div>
       </div>
     </div>
   </div>
 
   <div class="queue" id="queue">
     {% for ticket in tickets %}
-      {{ render_ticket(ticket) }}
+      {{ render_ticket_row(ticket) }}
     {% endfor %}
   </div>
-
-  <a class="button btn-add-ticket title" href="{{ url_for('create') }}">
-    request help
-  </a>
+  {% if my_ticket %}
+    <a class="button btn-bottom title" href="{{ url_for('ticket', ticket_id=my_ticket.id) }}">
+      View My Request
+    </a>
+  {% elif current_user.is_staff %}
+    <!-- nothing for staff here yet -->
+  {% else %}
+    <a class="button btn-bottom title" href="{{ url_for('create') }}">
+      Request Help
+    </a>
+  {% endif %}
 
 </div>
-<script src="{{ url_for('static', filename='js/client.js') }}"></script>
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
 {% endblock %}

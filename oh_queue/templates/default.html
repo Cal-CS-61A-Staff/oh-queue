@@ -33,12 +33,20 @@
   {% if current_user.is_authenticated %}
   <script>
     var current_user_id = {{ current_user.id }};
+    {% if current_user.is_staff %}
+      var is_staff = true;
+    {% else %}
+      var is_staff = false;
+    {% endif %}
   </script>
-  {% endif %}
   <style>
       {% if current_user.is_staff %}
       .staff-only {display: block !important}
       .student-only {display: none !important}
+      .staff-link:hover {
+        opacity: 0.8;
+        cursor: pointer;
+      }
       {% else %}
       .staff-only {display: none !important}
       .student-only {display: block !important}
@@ -46,8 +54,23 @@
       .hidden, .user-{{ current_user.id }}-hidden {display: none !important}
       .user-{{ current_user.id }}-visible {display: block !important}
   </style>
+  {% endif %}
 </head>
 <body>
+  <div class="container">
+    <section class="header row">
+      <div class="six columns link" data-url="/">
+        <h4><b>CS 61A</b> Office Hour Queue</h4>
+      </div>
+      <div class="five columns">
+        {{ current_user.name }} ({{ current_user.email }})
+      </div>
+      <div>
+      <div class="one columns">
+        <a class="button" href="{{ url_for('auth.logout') }}">Log Out</a>
+      </div>
+    </section>
+  </div>
   {% block body %}{% endblock %}
 </body>
 </html>

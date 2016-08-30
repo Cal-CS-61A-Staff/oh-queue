@@ -57,6 +57,7 @@ def user_from_email(name, email, is_staff):
     if not user:
         user = User(name=name, email=email, is_staff=is_staff)
     else:
+        user.name = name
         user.is_staff = is_staff
     db.session.add(user)
     db.session.commit()
@@ -77,6 +78,9 @@ def authorized():
     info = auth.ok_auth.get('user').data['data']
     email = info['email']
     name = info['name']
+    if ', ' in name:
+        last, first = name.split(', ')
+        name = first + ' ' + last
     if not name:
         name = email
     is_staff = False

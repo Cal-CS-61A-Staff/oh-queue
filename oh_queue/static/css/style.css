@@ -59,7 +59,7 @@ html, body{
   border-bottom: 1px solid #E1E1E1;
 }
 
-.btn-add-ticket {
+.btn-bottom {
   position: fixed;
   left: 0px;
   bottom: 0px;
@@ -82,6 +82,16 @@ html, body{
   display: none;
 }
 
+.cancel {
+  background: rgba(255, 0, 0, 0.2);
+}
+
+
+.link:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
 /* Media queries */
 .three.columns {
   display: none;
@@ -98,8 +108,8 @@ html, body{
   }
 }
 
-@media only screen and (max-width: 1200px) {
+/*@media only screen and (max-width: 1200px) {
   .column-headings {
     display: none;
   }
-}
+}*/
