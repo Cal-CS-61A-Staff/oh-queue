@@ -83,7 +83,7 @@ def create():
 def ticket(ticket_id):
     ticket = Ticket.query.get_or_404(ticket_id)
     if not current_user.is_staff and current_user.id != ticket.user_id:
-        abort(403)
+        abort(404)
     return render_template('ticket.html', ticket=ticket,
                 current_user=current_user, date=datetime.datetime.now())
 
