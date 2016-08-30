@@ -30,6 +30,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
 
   <!-- App-specific JS -->
+  <script src="{{ url_for('static', filename='js/common.js') }}"></script>
   {% if current_user.is_authenticated %}
   <script>
     var current_user_id = {{ current_user.id }};
@@ -44,7 +45,8 @@
       .staff-only {display: block !important}
       .student-only {display: none !important}
       .staff-link:hover {
-        opacity: 0.8;
+        background: #eee;
+        transition: background 0.2s;
         cursor: pointer;
       }
       {% else %}
@@ -59,9 +61,9 @@
 <body>
   <div class="container">
     <section class="header row">
-      <div class="six columns link" data-url="/">
+      <a href="/" class="six columns">
         <h4><b>CS 61A</b> Office Hour Queue</h4>
-      </div>
+      </a>
       <div class="five columns">
         {{ current_user.name }} ({{ current_user.email }})
       </div>

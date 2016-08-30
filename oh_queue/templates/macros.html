@@ -1,7 +1,7 @@
 {% macro render_ticket_row(ticket) -%}
 <div class="queue-ticket row staff-link"
      id="queue-ticket-{{ ticket.id }}"
-     data-url="{{ url_for('ticket', ticket_id=ticket.id) }}">
+     data-link="{{ url_for('ticket', ticket_id=ticket.id) }}">
   <div class="two columns">{{ ticket.user.name }}</div>
   <div class="two columns">{{ ticket.created | datetime }}</div>
   <div class="two columns">{{ ticket.location }}</div>
@@ -36,15 +36,15 @@
     </div>
   {% elif ticket.status == TicketStatus.assigned %}
     <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
-      <button data-url="{{ url_for('unassign', ticket_id=ticket.id) }}" class="btn">Put Back</button>
+      <button data-url="{{ url_for('unassign', ticket_id=ticket.id) }}">Put Back</button>
     </div>
     <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
-      <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}" class="btn">Resolve</button>
+      <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}">Resolve</button>
     </div>
     <div class="twelve columns user-{{ ticket.helper_id }}-hidden">Being helped by {{ ticket.helper.name }}</div>
     <div class="twelve columns user-{{ ticket.helper_id }}-hidden staff-only">
         <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}"
-                data-confirm="Reassign this ticket?" class="btn">Reassign</button>
+                data-confirm="Reassign this ticket?">Reassign</button>
     </div>
   {% elif ticket.status == TicketStatus.resolved %}
     <div class="twelve columns">Resolved</div>
