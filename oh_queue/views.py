@@ -59,8 +59,8 @@ def create():
     # TODO use WTForms
     my_ticket = get_my_ticket()
     if my_ticket:
-      flash("You're already on the queue!", 'warning')
-      return redirect(url_for('ticket', ticket_id=my_ticket.id))
+        flash("You're already on the queue!", 'warning')
+        return redirect(url_for('ticket', ticket_id=my_ticket.id))
     elif request.method == 'POST':
         # Create a new ticket and add it to persistent storage
         ticket = Ticket(
