@@ -1,29 +1,30 @@
-$(document).ready(function(){
-  function requestNotificationPermission() {
-    if ('Notification' in window && Notification.permission !== 'denied') {
-      Notification.requestPermission();
-    }
+function requestNotificationPermission() {
+  if ('Notification' in window && Notification.permission !== 'denied') {
+    Notification.requestPermission();
   }
+}
 
-  function notifyUser(text, options) {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(text, options);
-    }
+function notifyUser(text, options) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification(text, options);
   }
+}
+
+// Helper Function
+function scrollBottom() {
+  $('html, body').animate({
+    scrollTop: $(document).height()
+  }, 600);
+}
+
+function toggleHelpForm() {
+  $('#help-form-container').slideToggle('medium');
+  $('#add-ticket').slideToggle('medium');
+}
+
+$(document).ready(function(){
 
   requestNotificationPermission();
-
-  // Helper Function
-  function scrollBottom() {
-    $('html, body').animate({
-      scrollTop: $(document).height()
-    }, 600);
-  }
-
-  function toggleHelpForm() {
-    $('#help-form-container').slideToggle('medium');
-    $('#add-ticket').slideToggle('medium');
-  }
 
   // Add event listeners
   $('#add-ticket').click(function() {
