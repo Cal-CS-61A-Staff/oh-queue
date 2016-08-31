@@ -84,11 +84,10 @@ def authorized():
     if not name:
         name = email
     is_staff = False
-    parts = info['participations']
     offering = auth.course_offering
-    valid_parts = [p for p in parts if p['course']['offering'] == offering]
-    if parts and parts[0]['role'] != 'student':
-        is_staff = True
+    for p in info['participations']:
+        if p['course']['offering'] == offering and p['role'] != 'student':
+            is_staff = True
     user = user_from_email(name, email, is_staff)
     return authorize_user(user)
 
