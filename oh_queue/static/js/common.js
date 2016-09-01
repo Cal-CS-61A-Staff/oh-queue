@@ -43,6 +43,10 @@ $(document).ready(function(){
       if (!confirm(confirmQ)) return;
     }
     $.post($(this).attr('data-url'));
+    var redirectUrl = $(this).attr('data-redirect');
+    if (typeof redirectUrl === 'string') {
+      window.location.href = redirectUrl;
+    }
   });
   
   $('body').on('click', '.staff-link', function(event) {
