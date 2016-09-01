@@ -31,8 +31,8 @@
     </div>
     <div class="twelve columns">
       <button data-url="{{ url_for('cancel', ticket_id=ticket.id) }}"
-              data-confirm="Cancel this ticket?"
-              class="btn cancel">Cancel</button>
+              data-confirm="Delete this ticket?"
+              class="btn cancel">Delete</button>
     </div>
   {% elif ticket.status == TicketStatus.assigned %}
     <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
