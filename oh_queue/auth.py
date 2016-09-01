@@ -19,7 +19,7 @@ def record_params(setup_state):
         consumer_key=app.config.get('OK_KEY'),
         consumer_secret=app.config.get('OK_SECRET'),
         request_token_params={
-            'scope': 'all',
+            'scope': 'email',
             'state': lambda: security.gen_salt(10)
         },
         base_url='https://ok.cs61a.org/api/v3/',
