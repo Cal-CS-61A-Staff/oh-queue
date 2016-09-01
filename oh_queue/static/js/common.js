@@ -42,11 +42,12 @@ $(document).ready(function(){
     if (typeof confirmQ === 'string') {
       if (!confirm(confirmQ)) return;
     }
-    $.post($(this).attr('data-url'));
     var redirectUrl = $(this).attr('data-redirect');
-    if (typeof redirectUrl === 'string') {
-      window.location.href = redirectUrl;
-    }
+    $.post($(this).attr('data-url')).then(function (event) {
+      if (typeof redirectUrl === 'string') {
+        window.location.href = redirectUrl;
+      }
+    });
   });
   
   $('body').on('click', '.staff-link', function(event) {
