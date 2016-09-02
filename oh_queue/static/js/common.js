@@ -11,9 +11,6 @@ function notifyUser(text, options) {
 }
 
 $(document).ready(function(){
-
-  requestNotificationPermission();
-
   // Bind event listeners
   $('body').on('click', '[data-url]', function(event) {
     var confirmQ = $(this).attr('data-confirm');

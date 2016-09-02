@@ -1,6 +1,8 @@
 $(document).ready(function(){
   var socket = io.connect('http://' + document.domain + ':' + location.port);
-  
+
+  requestNotificationPermission();
+
   socket.on('resolve', function (message) {
     $('#ticket').replaceWith(message.html);
   });
