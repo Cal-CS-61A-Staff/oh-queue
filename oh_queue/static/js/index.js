@@ -1,5 +1,5 @@
 $(document).ready(function(){
-  var socket = io.connect('http://' + document.domain + ':' + location.port);
+  var socket = connectSocket();
 
   if (is_staff || has_open_ticket) {
     requestNotificationPermission();
