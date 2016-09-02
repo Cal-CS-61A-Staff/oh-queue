@@ -44,11 +44,4 @@ $(document).ready(function(){
     }
     $.post($(this).attr('data-url'));
   });
-  
-  $('body').on('click', '.staff-link', function(event) {
-    if(!is_staff) return;
-    window.location.href = $(this).attr('data-link');
-  });
-  
-  
 });
