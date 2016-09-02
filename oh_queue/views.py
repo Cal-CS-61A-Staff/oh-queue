@@ -78,6 +78,23 @@ def create():
     else:
         return render_template('create.html')
 
+@app.route('/next/')
+@login_required
+def next_ticket():
+    """Redirects to the user's first assigned but unresolved ticket.
+    If none exist, redirects to the first unassigned ticket.
+    """
+    ticket = Ticket.query.filter(
+        Ticket.helper_id == current_user.id,
+        Ticket.status == TicketStatus.assigned).first()
+    if ticket:
+        return redirect(url_for('ticket', ticket_id=ticket.id))
+    ticket = Ticket.query.filter(
+        Ticket.status == TicketStatus.pending).first()
+    if ticket:
+        return redirect(url_for('ticket', ticket_id=ticket.id))
+    return redirect(url_for('index'))
+
 @app.route('/<int:ticket_id>/')
 @login_required
 def ticket(ticket_id):
@@ -144,3 +161,11 @@ local_timezone = pytz.timezone(app.config['LOCAL_TIMEZONE'])
 def format_datetime(timestamp):
     time = pytz.utc.localize(timestamp).astimezone(local_timezone)
     return time.strftime('%I:%M %p')
+
+# Caching
+
+@app.after_request
+def disable_caching(response):
+    response.headers.add('Cache-Control',
+        'no-cache, max-age=0, must-revalidate, no-store')
+    return response

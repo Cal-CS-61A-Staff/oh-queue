@@ -40,17 +40,32 @@
       <button data-url="{{ url_for('unassign', ticket_id=ticket.id) }}">Put Back</button>
     </div>
     <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
-      <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}">Resolve</button>
+      <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}">
+        Resolve
+      </button>
+    </div>
+    <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
+      <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}"
+              data-redirect="{{ url_for('next_ticket') }}">Resolve and Next</button>
     </div>
     <div class="twelve columns user-{{ ticket.helper_id }}-hidden">Being helped by {{ ticket.helper.name }}</div>
     <div class="twelve columns user-{{ ticket.helper_id }}-hidden staff-only">
         <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}"
                 data-confirm="Reassign this ticket?">Reassign</button>
     </div>
+    <div class="twelve columns user-{{ ticket.helper_id }}-hidden staff-only">
+      <a href="{{ url_for('next_ticket') }}" class="button">Next Ticket</a>
+    </div>
   {% elif ticket.status == TicketStatus.resolved %}
     <div class="twelve columns">Resolved</div>
+    <div class="twelve columns staff-only">
+      <a href="{{ url_for('next_ticket') }}" class="button">Next Ticket</a>
+    </div>
   {% elif ticket.status == TicketStatus.deleted %}
     <div class="twelve columns">Deleted</div>
+    <div class="twelve columns staff-only">
+      <a href="{{ url_for('next_ticket') }}" class="button">Next Ticket</a>
+    </div>
   {% endif %}
   </div>
 </div>
