@@ -16,7 +16,7 @@ $(document).ready(function(){
     $('#ticket').replaceWith(message.html);
   });
 
-  socket.on('cancel', function (message) {
+  socket.on('delete', function (message) {
     $('#ticket').replaceWith(message.html);
   });
 });

@@ -30,9 +30,9 @@
               class="btn staff-only">Help</button>
     </div>
     <div class="twelve columns">
-      <button data-url="{{ url_for('cancel', ticket_id=ticket.id) }}"
+      <button data-url="{{ url_for('delete', ticket_id=ticket.id) }}"
               data-confirm="Delete this ticket?"
-              class="btn cancel">Delete</button>
+              class="btn delete">Delete</button>
     </div>
   {% elif ticket.status == TicketStatus.assigned %}
     <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
@@ -48,8 +48,8 @@
     </div>
   {% elif ticket.status == TicketStatus.resolved %}
     <div class="twelve columns">Resolved</div>
-  {% elif ticket.status == TicketStatus.canceled %}
-    <div class="twelve columns">Canceled</div>
+  {% elif ticket.status == TicketStatus.deleted %}
+    <div class="twelve columns">Deleted</div>
   {% endif %}
   </div>
 </div>

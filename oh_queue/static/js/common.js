@@ -32,7 +32,7 @@ $(document).ready(function(){
     scrollBottom();
   });
 
-  $('#cancel-form').click(function() {
+  $('#delete-form').click(function() {
     toggleHelpForm();
   })
 

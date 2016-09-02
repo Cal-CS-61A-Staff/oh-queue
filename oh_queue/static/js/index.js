@@ -24,7 +24,7 @@ $(document).ready(function(){
     $('#queue-ticket-' + message.id).replaceWith(message.row_html);
   });
   
-  socket.on('cancel', function (message) {
+  socket.on('delete', function (message) {
     $('#queue-ticket-' + message.id).remove();
   });
 });
