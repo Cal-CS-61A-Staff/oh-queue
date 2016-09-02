@@ -40,8 +40,9 @@
       <button data-url="{{ url_for('unassign', ticket_id=ticket.id) }}">Put Back</button>
     </div>
     <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
-      <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}"
-              data-redirect="{{ url_for('index') }}">Resolve</button>
+      <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}">
+        Resolve
+      </button>
     </div>
     <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
       <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}"
