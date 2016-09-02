@@ -104,14 +104,14 @@ def ticket(ticket_id):
     return render_template('ticket.html', ticket=ticket,
                 current_user=current_user, date=datetime.datetime.now())
 
-@app.route('/<int:ticket_id>/cancel/', methods=['POST'])
+@app.route('/<int:ticket_id>/delete/', methods=['POST'])
 @login_required
-def cancel(ticket_id):
+def delete(ticket_id):
     ticket = Ticket.query.get_or_404(ticket_id)
-    ticket.status = TicketStatus.canceled
+    ticket.status = TicketStatus.deleted
     db.session.commit()
 
-    emit_event(ticket, TicketEventType.cancel)
+    emit_event(ticket, TicketEventType.delete)
     return jsonify(result='success')
 
 @app.route('/<int:ticket_id>/resolve/', methods=['POST'])
