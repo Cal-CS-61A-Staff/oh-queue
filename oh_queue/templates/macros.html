@@ -18,6 +18,7 @@
 
 {% macro render_ticket(ticket) -%}
 <div id="ticket" class="container">
+  <a href="{{ url_for('index') }}">View Queue</a>
   <div class="row">Name: <span class="name">{{ ticket.user.name }}</span></div>
   <div class="row">Queue Time: <span class="created">{{ ticket.created | datetime }}</span></div>
   <div class="row">Location: <span class="location">{{ ticket.location }}</span></div>
