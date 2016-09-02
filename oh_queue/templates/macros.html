@@ -1,7 +1,7 @@
 {% macro render_ticket_row(ticket) -%}
-<div class="queue-ticket row staff-link"
+<a class="queue-ticket row staff-link"
      id="queue-ticket-{{ ticket.id }}"
-     data-link="{{ url_for('ticket', ticket_id=ticket.id) }}">
+     href="{{ url_for('ticket', ticket_id=ticket.id) }}">
   <div class="two columns">{{ ticket.user.name }}</div>
   <div class="two columns">{{ ticket.created | datetime }}</div>
   <div class="two columns">{{ ticket.location }}</div>
@@ -13,7 +13,7 @@
     <div class="two columns user-{{ ticket.helper_id }}-hidden">Being helped by {{ ticket.helper.name }}</div>
     <div class="two columns hidden user-{{ ticket.helper_id }}-visible">Assigned to you</div>
   {% endif %}
-</div>
+</a>
 {%- endmacro %}
 
 {% macro render_ticket(ticket) -%}

@@ -52,6 +52,9 @@
       {% else %}
       .staff-only {display: none !important}
       .student-only {display: block !important}
+      .staff-link {
+        pointer-events: none;
+      }
       {% endif %}
       .hidden, .user-{{ current_user.id }}-hidden {display: none !important}
       .user-{{ current_user.id }}-visible {display: block !important}

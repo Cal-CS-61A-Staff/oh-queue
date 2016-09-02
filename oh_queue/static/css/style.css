@@ -95,6 +95,11 @@ html, body{
   background: rgba(255, 0, 0, 0.2);
 }
 
+a.staff-link {
+  display: block;
+  color: inherit;
+}
+
 /* Media queries */
 .three.columns {
   display: none;
