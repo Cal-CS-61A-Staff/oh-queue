@@ -35,4 +35,7 @@
 
 </div>
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+<script>
+  var has_open_ticket = {{ 'true' if my_ticket else 'false' }};
+</script>
 {% endblock %}

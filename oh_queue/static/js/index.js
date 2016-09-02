@@ -1,6 +1,10 @@
 $(document).ready(function(){
   var socket = io.connect('http://' + document.domain + ':' + location.port);
-  
+
+  if (is_staff || has_open_ticket) {
+    requestNotificationPermission();
+  }
+
   socket.on('create', function(message) {
     $('#queue').append(message.row_html);
     var details = {
@@ -23,7 +27,7 @@ $(document).ready(function(){
   socket.on('unassign', function (message) {
     $('#queue-ticket-' + message.id).replaceWith(message.row_html);
   });
-  
+
   socket.on('delete', function (message) {
     $('#queue-ticket-' + message.id).remove();
   });
