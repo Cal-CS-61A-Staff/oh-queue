@@ -1,3 +1,4 @@
+# TODO clean these up
 click==6.6
 Flask==0.11.1
 Flask-Login==0.3.2
@@ -20,5 +21,12 @@ six==1.10.0
 SQLAlchemy==1.0.14
 Werkzeug==0.11.10
 
+# Server
 gunicorn==19.6.0
 pymysql==0.7.6
+
+# Testing
+flask-testing
+pytest
+selenium
+blinker
