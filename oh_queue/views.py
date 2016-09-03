@@ -161,11 +161,3 @@ local_timezone = pytz.timezone(app.config['LOCAL_TIMEZONE'])
 def format_datetime(timestamp):
     time = pytz.utc.localize(timestamp).astimezone(local_timezone)
     return time.strftime('%I:%M %p')
-
-# Caching
-
-@app.after_request
-def disable_caching(response):
-    response.headers.add('Cache-Control',
-        'no-cache, max-age=0, must-revalidate, no-store')
-    return response
