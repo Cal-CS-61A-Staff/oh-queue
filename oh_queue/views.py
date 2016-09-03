@@ -2,7 +2,8 @@ import datetime
 import pytz
 
 from flask import (
-    jsonify, redirect, flash, render_template, render_template_string, request, url_for
+    abort, jsonify, redirect, flash, render_template, render_template_string,
+    request, url_for
 )
 from flask_login import current_user, login_required
 from flask_socketio import emit
@@ -11,8 +12,6 @@ from oh_queue import app, db, socketio
 from oh_queue.models import Ticket, TicketStatus, TicketEvent, TicketEventType
 
 def emit_event(ticket, event_type):
-    # TODO log
-
     ticket_event = TicketEvent(
         event_type=event_type,
         ticket=ticket,
