@@ -32,7 +32,7 @@ $(document).ready(function(){
   });
 });
 
-class Client extends React.Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -60,10 +60,19 @@ class Client extends React.Component {
   }
 
   render() {
-    const items = this.state.activeTickets.sortBy(
+    // Pass state to children in props
+    return (
+      <div>{ React.cloneElement(this.props.children, this.state) }</div>
+    );
+  }
+}
+
+class Queue extends React.Component {
+  render() {
+    const items = this.props.activeTickets.sortBy(
       ticket => -ticket.created
     ).map(
-      ticket => <Ticket key={ticket.id} ticket={ticket}/>
+      ticket => <TicketRow key={ticket.id} ticket={ticket}/>
     ).toArray()
     return (
       <div className="queue" >{items}</div>
@@ -71,7 +80,7 @@ class Client extends React.Component {
   }
 }
 
-class Ticket extends React.Component {
+class TicketRow extends React.Component {
   render() {
     const ticket = this.props.ticket;
     const href = '/' + ticket.id + '/';
@@ -97,6 +106,11 @@ class Ticket extends React.Component {
 }
 
 ReactDOM.render(
-  <Client/>,
+  <ReactRouter.Router history={ReactRouter.browserHistory}>
+    <ReactRouter.Route path="/" component={App}>
+      <ReactRouter.IndexRoute component={Queue} />
+      {/* <ReactRouter.Route path=":ticket_id" component={Ticket} /> */}
+    </ReactRouter.Route>
+  </ReactRouter.Router>,
   document.getElementById('react-content')
 );
