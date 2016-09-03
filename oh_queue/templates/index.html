@@ -1,5 +1,6 @@
 {% extends "default.html" %}
-{% from "macros.html" import render_ticket_row with context %}
+
+{% import "macros.html" as macros with context %}
 {% block header %}
 {% if not current_user.is_staff %}
 <div class="jumbotron blue">
@@ -105,10 +106,10 @@
     <div class="col-xs-3 col-sm-2">Status</div>
   </div>
   {% for ticket in tickets %}
-  {{ render_ticket_row(ticket) }}
+  {{ macros.render_ticket_row(ticket) }}
   {% endfor %}
 </div>
-<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+{{ macros.js_asset('index.js') }}
 <script>
 var has_open_ticket = {{ 'true' if my_ticket else 'false' }};
 </script>

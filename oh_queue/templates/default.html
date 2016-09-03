@@ -1,3 +1,4 @@
+{% import "macros.html" as macros with context %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -11,7 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/css/bootstrap-select.min.css">
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mono-blue.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- App-specific CSS -->
+    {{ macros.css_asset('style.css') }}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/queue.css') }}">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/offline-js/0.7.17/themes/offline-theme-default.css">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/offline-js/0.7.17/themes/offline-language-english.css">
@@ -45,7 +47,8 @@
     <!-- Should be loaded before common.js -->
     <script src="https://cdn.ravenjs.com/3.3.0/raven.min.js"></script>
     <script>Raven.config('https://b295358cb42a4151bb615c6731e92ca6@sentry.cs61a.org/15').install() </script>
-    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+    <!-- App-specific JS -->
+    {{  macros.js_asset('common.js') }}
 
     <title>CS 61A Queue</title>
     {% if current_user.is_authenticated %}

@@ -6,7 +6,7 @@ logging.basicConfig(level=logging.INFO)
 from flask import Flask
 from flask_socketio import SocketIO
 
-from oh_queue import auth
+from oh_queue import assets, auth
 from oh_queue.models import db, TicketStatus
 from raven.contrib.flask import Sentry
 
@@ -19,7 +19,8 @@ if not app.debug:
                     dsn='https://d5dd390197e84e3ebb4779ab381610a0:ccac76da30704fa7a352a9ec3bd1708f@sentry.cs61a.org/14')
 
 app.jinja_env.globals.update({
-  'TicketStatus': TicketStatus
+  'TicketStatus': TicketStatus,
+  'assets_env': assets.assets_env,
 })
 
 db.init_app(app)
