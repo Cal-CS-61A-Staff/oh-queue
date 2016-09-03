@@ -7,7 +7,7 @@ assets_env = webassets.Environment(
 )
 assets_env.config['BABEL_BIN'] = 'node_modules/babel-cli/bin/babel.js'
 
-babel = webassets.filter.get_filter('babel', presets='es2015')
+babel = webassets.filter.get_filter('babel', presets='es2015,react')
 
 assets_env.register('style.css',
     'css/style.css',
