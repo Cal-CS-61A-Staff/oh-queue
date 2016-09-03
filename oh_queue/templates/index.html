@@ -2,6 +2,7 @@
 
 {% import "macros.html" as macros with context %}
 {% block header %}
+<div id="content"></div>
 {% if not current_user.is_staff %}
 <div class="jumbotron blue">
   <div class="container">
