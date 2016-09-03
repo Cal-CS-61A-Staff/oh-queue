@@ -140,6 +140,7 @@
           </div>
         </div>
         {% endfor %}
+<<<<<<< 70ea0c01fd8796fb255e0b282c63a5e2c532f8c5
       </div>
       {% endif %}
       {% endwith %}
@@ -152,4 +153,16 @@
   </body>
 
 
+=======
+    {% endif %}
+  {% endwith %}
+  {% block body %}{% endblock %}
+  <!-- Javascript frameworks -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+
+  <!-- App-specific JS -->
+  {{  macros.js_asset('common.js') }}
+</body>
+>>>>>>> Move scripts to body for faster page load
 </html>
