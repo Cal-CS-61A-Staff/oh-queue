@@ -1,0 +1,26 @@
+{
+  "name": "officehours-web",
+  "version": "1.0.0",
+  "description": "Office Hours ============",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cal-CS-61A-Staff/officehours-web.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Cal-CS-61A-Staff/officehours-web/issues"
+  },
+  "homepage": "https://github.com/Cal-CS-61A-Staff/officehours-web#readme",
+  "devDependencies": {
+    "babel-cli": "^6.14.0",
+    "babel-preset-es2015": "^6.14.0"
+  }
+}
