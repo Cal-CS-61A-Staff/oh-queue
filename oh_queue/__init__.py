@@ -6,7 +6,7 @@ logging.basicConfig(level=logging.INFO)
 from flask import Flask
 from flask_socketio import SocketIO
 
-from oh_queue import auth
+from oh_queue import assets, auth
 from oh_queue.models import db, TicketStatus
 
 # Initialize the application
@@ -14,7 +14,8 @@ app = Flask(__name__)
 app.config.from_object('config')
 
 app.jinja_env.globals.update({
-  'TicketStatus': TicketStatus
+  'TicketStatus': TicketStatus,
+  'assets_env': assets.assets_env,
 })
 
 db.init_app(app)

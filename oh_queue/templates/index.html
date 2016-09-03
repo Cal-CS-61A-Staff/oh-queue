@@ -1,5 +1,5 @@
 {% extends "default.html" %}
-{% from "macros.html" import render_ticket_row with context %}
+{% import "macros.html" as macros with context %}
 {% block body %}
 
 <div class="queue-container container">
@@ -18,7 +18,7 @@
 
   <div class="queue" id="queue">
     {% for ticket in tickets %}
-      {{ render_ticket_row(ticket) }}
+      {{ macros.render_ticket_row(ticket) }}
     {% endfor %}
   </div>
   {% if my_ticket %}
@@ -34,7 +34,7 @@
   {% endif %}
 
 </div>
-<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+{{ macros.js_asset('index.js') }}
 <script>
   var has_open_ticket = {{ 'true' if my_ticket else 'false' }};
 </script>

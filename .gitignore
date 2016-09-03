@@ -1,5 +1,4 @@
-# Flask configuration file
-app.db
+*.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

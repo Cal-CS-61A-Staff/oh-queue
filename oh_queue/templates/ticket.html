@@ -1,8 +1,8 @@
 {% extends "default.html" %}
-{% from "macros.html" import render_ticket with context %}
+{% import "macros.html" as macros with context %}
 {% block body %}
 
-{{ render_ticket(ticket) }}
+{{ macros.render_ticket(ticket) }}
+{{ macros.js_asset('ticket.js') }}
 
-<script src="{{ url_for('static', filename='js/ticket.js') }}"></script>
 {% endblock %}
