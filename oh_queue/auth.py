@@ -78,11 +78,11 @@ def authorized():
     info = auth.ok_auth.get('user').data['data']
     email = info['email']
     name = info['name']
+    if not name:
+        name = email
     if ', ' in name:
         last, first = name.split(', ')
         name = first + ' ' + last
-    if not name:
-        name = email
     is_staff = False
     offering = auth.course_offering
     for p in info['participations']:
