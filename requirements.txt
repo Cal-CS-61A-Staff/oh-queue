@@ -5,8 +5,6 @@ Flask-OAuthlib==0.9.3
 Flask-Script==2.0.5
 Flask-SocketIO==2.6.2
 Flask-SQLAlchemy==2.1
-gevent==1.1.2
-greenlet==0.4.10
 itsdangerous==0.24
 Jinja2==2.8
 MarkupSafe==0.23
@@ -22,3 +20,4 @@ Werkzeug==0.11.10
 
 gunicorn==19.6.0
 pymysql==0.7.6
+eventlet==0.19.0

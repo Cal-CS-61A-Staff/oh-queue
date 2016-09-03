@@ -10,6 +10,12 @@ function notifyUser(text, options) {
   }
 }
 
+function connectSocket() {
+  return io.connect('http://' + document.domain + ':' + location.port, {
+    transports: ['websocket', 'polling'],
+  });
+}
+
 $(document).ready(function(){
   // Bind event listeners
   $('body').on('click', '[data-url]', function(event) {
