@@ -1,8 +1,10 @@
 {% extends "default.html" %}
 {% import "macros.html" as macros with context %}
+
 {% block body %}
-
 {{ macros.render_ticket(ticket) }}
-{{ macros.js_asset('ticket.js') }}
+{% endblock %}
 
+{% block js %}
+{{ macros.js_asset('ticket.js') }}
 {% endblock %}

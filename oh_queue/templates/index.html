@@ -2,7 +2,7 @@
 {% import "macros.html" as macros with context %}
 {% block body %}
 
-<div id="content"></div>
+<div id="content" class="container"></div>
 
 <div class="queue-container container">
   <div class="column-headings">
@@ -18,11 +18,7 @@
     </div>
   </div>
 
-  <div class="queue" id="queue">
-    {% for ticket in tickets %}
-      {{ macros.render_ticket_row(ticket) }}
-    {% endfor %}
-  </div>
+  <div id="react-content"></div>
   {% if my_ticket %}
     <a class="button btn-bottom title" href="{{ url_for('ticket', ticket_id=my_ticket.id) }}">
       View My Request
@@ -34,8 +30,10 @@
       Request Help
     </a>
   {% endif %}
-
 </div>
+{% endblock %}
+
+{% block js %}
 {{ macros.js_asset('index.js') }}
 <script>
   var has_open_ticket = {{ 'true' if my_ticket else 'false' }};
