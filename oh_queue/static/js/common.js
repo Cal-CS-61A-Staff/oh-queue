@@ -83,8 +83,6 @@ class Queue extends React.Component {
 class TicketRow extends React.Component {
   render() {
     const ticket = this.props.ticket;
-    const href = '/' + ticket.id + '/';
-    const htmlID = 'queue-ticket-' + ticket.id;
     if (ticket.status === 'pending') {
       var status = 'Queued';
     } else if (ticket.helper_id === current_user_id) {
@@ -93,15 +91,76 @@ class TicketRow extends React.Component {
       var status = 'Being helped by ' + ticket.helper_name;
     }
     return (
-      <a className="queue-ticket row staff-link" id={ htmlID } href={ href }>
+      <ReactRouter.Link className="queue-ticket row staff-link"
+          to={ '/' + ticket.id }>
         <div className="two columns">{ ticket.user_name }</div>
         <div className="two columns">{ ticket.created }</div>
         <div className="two columns">{ ticket.location }</div>
         <div className="two columns">{ ticket.assignment }</div>
         <div className="two columns">{ ticket.question }</div>
         <div className="two columns">{ status }</div>
-      </a>
+      </ReactRouter.Link>
     )
+  }
+}
+
+class Ticket extends React.Component {
+  render() {
+    const ticket = this.props.activeTickets.get(this.props.params.ticket_id);
+    return (
+      <div id="ticket" class="container">
+        <a href="{{ url_for('index') }}">View Queue</a>
+        <div class="row">Name: <span class="name">{ ticket.user_name }</span></div>
+        <div class="row">Queue Time: <span class="created">{ ticket.created }</span></div>
+        <div class="row">Location: <span class="location">{ ticket.location }</span></div>
+        <div class="row">Assignment: <span class="assignment">{ ticket.assignment }</span></div>
+        <div class="row">Question: <span class="question">{ ticket.question }</span></div>
+        <div class="row">
+        {/* {% if ticket.status == TicketStatus.pending %}
+          <div class="twelve columns">
+            <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}"
+                    class="btn staff-only">Help</button>
+          </div>
+          <div class="twelve columns">
+            <button data-url="{{ url_for('delete', ticket_id=ticket.id) }}"
+                    data-confirm="Delete this ticket?"
+                    class="btn delete">Delete</button>
+          </div>
+        {% elif ticket.status == TicketStatus.assigned %}
+          <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
+            <button data-url="{{ url_for('unassign', ticket_id=ticket.id) }}">Put Back</button>
+          </div>
+          <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
+            <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}">
+              Resolve
+            </button>
+          </div>
+          <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
+            <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}"
+                    data-redirect="{{ url_for('next_ticket') }}">Resolve and Next</button>
+          </div>
+          <div class="twelve columns user-{{ ticket.helper_id }}-hidden">Being helped by {{ ticket.helper.name }}</div>
+          <div class="twelve columns user-{{ ticket.helper_id }}-hidden staff-only">
+              <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}"
+                      data-confirm="Reassign this ticket?">Reassign</button>
+          </div>
+          <div class="twelve columns user-{{ ticket.helper_id }}-hidden staff-only">
+            <a href="{{ url_for('next_ticket') }}" class="button">Next Ticket</a>
+          </div>
+        {% elif ticket.status == TicketStatus.resolved %}
+          <div class="twelve columns">Resolved</div>
+          <div class="twelve columns staff-only">
+            <a href="{{ url_for('next_ticket') }}" class="button">Next Ticket</a>
+          </div>
+        {% elif ticket.status == TicketStatus.deleted %}
+          <div class="twelve columns">Deleted</div>
+          <div class="twelve columns staff-only">
+            <a href="{{ url_for('next_ticket') }}" class="button">Next Ticket</a>
+          </div>
+        {% endif %} */}
+        </div>
+      </div>
+    );
   }
 }
 
@@ -109,7 +168,7 @@ ReactDOM.render(
   <ReactRouter.Router history={ReactRouter.browserHistory}>
     <ReactRouter.Route path="/" component={App}>
       <ReactRouter.IndexRoute component={Queue} />
-      {/* <ReactRouter.Route path=":ticket_id" component={Ticket} /> */}
+      <ReactRouter.Route path=":ticket_id" component={Ticket} />
     </ReactRouter.Route>
   </ReactRouter.Router>,
   document.getElementById('react-content')
