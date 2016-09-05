@@ -2,36 +2,21 @@
 {% from "macros.html" import render_ticket_row with context %}
 {% block body %}
 
-<div class="queue-container container">
-  <div class="column-headings">
-    <div class="container u-full-width">
-      <div class="row">
-        <div class="two columns no-hide">Name</div>
-        <div class="two columns">Queue Time</div>
-        <div class="two columns">Location</div>
-        <div class="two columns">Assignment</div>
-        <div class="two columns">Question</div>
-        <div class="two columns">Status</div>
-      </div>
-    </div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-2">Name</div>
+    <div class="col-md-2">Queue Time</div>
+    <div class="col-md-2">Location</div>
+    <div class="col-md-2">Assignment</div>
+    <div class="col-md-2">Question</div>
+    <div class="col-md-2">Status</div>
   </div>
 
-  <div class="queue" id="queue">
+  <div class="row queue">
     {% for ticket in tickets %}
       {{ render_ticket_row(ticket) }}
     {% endfor %}
   </div>
-  {% if my_ticket %}
-    <a class="button btn-bottom title" href="{{ url_for('ticket', ticket_id=my_ticket.id) }}">
-      View My Request
-    </a>
-  {% elif current_user.is_staff %}
-    <!-- nothing for staff here yet -->
-  {% else %}
-    <a class="button btn-bottom title" href="{{ url_for('create') }}">
-      Request Help
-    </a>
-  {% endif %}
 
 </div>
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>

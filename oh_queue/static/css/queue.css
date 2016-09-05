@@ -1,1 +1,30 @@
+/* Override bootstrap.min.css */
+.jumbotron {
+  margin-top: 10px;
+  background: #0072c1;
+  background: linear-gradient(to bottom, #0072c1 0%,#7db9e8 100%);
+}
+
+.jumbotron .btn {
+  color: #ffffff;
+  background-image: none;
+  background-color: transparent;
+  border-color: #ffffff;
+  font-size: 24px;
+  padding: 10px 20px 16px;
+}
+
+.page-header {
+  border: none;
+  color: #ffffff;
+}
+
+/* Override style.css */
+h2 {
+  border-bottom: none;
+}
+
+.navbar-default {
+  border: none;
+}
 

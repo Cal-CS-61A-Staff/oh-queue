@@ -1,46 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <!-- Yeah, you can probably break this page pretty easily.
-  Don't do it, though!
-  If you fancy helping me out with this, contact Kevin Chen (I'm one of the TAs).
-  Cookies will be had!-->
+  <head>
+    <meta name="description" content="CS 61A Queue">
+    <meta name="keywords" content ="CS61A, Computer Science, CS, 61A, Office Hours, Project, Homework, Party, Parties, Queue" />
+    <meta name="author" content="CS 61A Course Staff">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-  <meta charset="utf-8">
-  <title>CS61A OH Queue</title>
-  <meta name="description" content="cs61a office hour queue">
-  <meta name="author" content="">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mono-blue.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/queue.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
 
-  <!-- Mobile-specific -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
 
-  <!-- Fonts -->
-  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
-
-  <!-- CSS frameworks -->
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css">
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css">
-
-  <!-- App-specific CSS -->
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-
-  <!-- Javascript frameworks -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
-
-  <!-- App-specific JS -->
-  <script src="{{ url_for('static', filename='js/common.js') }}"></script>
-  {% if current_user.is_authenticated %}
-  <script>
-    var current_user_id = {{ current_user.id }};
-    {% if current_user.is_staff %}
+    <title>CS 61A Office Hours</title>
+    {% if current_user.is_authenticated %}
+    <script>
+      var current_user_id = {{ current_user.id }};
+      {% if current_user.is_staff %}
       var is_staff = true;
-    {% else %}
+      {% else %}
       var is_staff = false;
-    {% endif %}
-  </script>
-  <style>
+      {% endif %}
+    </script>
+    <style>
       {% if current_user.is_staff %}
       .staff-only {display: block !important}
       .student-only {display: none !important}
@@ -58,34 +46,64 @@
       {% endif %}
       .hidden, .user-{{ current_user.id }}-hidden {display: none !important}
       .user-{{ current_user.id }}-visible {display: block !important}
-  </style>
-  {% endif %}
-</head>
-<body>
-  <div class="container">
-    <section class="header row">
-      <a href="/" class="six columns">
-        <h4><b>CS 61A</b> Office Hour Queue</h4>
-      </a>
-      <div class="five columns">
-        {{ current_user.name }} ({{ current_user.email }})
-      </div>
-      <div>
-      <div class="one columns">
-        <a class="button" href="{{ url_for('auth.logout') }}">Log Out</a>
-      </div>
-    </section>
-  </div>
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible" role="alert">
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              {{ message }}
-            </div>
-        {% endfor %}
+    </style>
     {% endif %}
-  {% endwith %}
-  {% block body %}{% endblock %}
-</body>
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/"><strong>CS 61A</strong> Queue</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            {% if my_ticket %}
+              <li><a href="{{ url_for('ticket', ticket_id=my_ticket.id) }}">My Request</a></li>
+            {% elif current_user.is_staff %}
+              <!-- nothing for staff here yet -->
+            {% else %}
+              <li><a href="{{ url_for('create') }}">Request Help</a></li>
+            {% endif %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ current_user.name }}<span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                {% if current_user.is_staff %}
+                  <li><a href="/">Settings</a></li>
+                  <li><a href="/">Resolved</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('auth.logout') }}">Log out</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="jumbotron">
+      <div class="container">
+        <section class="page-header">
+          <h1>Hello, {{ current_user.name.split()[0] }}</h1>
+          <p>Signed in as {{ current_user.email }}</p>
+          {% if my_ticket %}
+            <h2><a class="btn btn-lg" href="{{ url_for('ticket', ticket_id=my_ticket.id) }}">My Request</a></h2>
+          {% elif current_user.is_staff %}
+            <!-- nothing for staff here yet -->
+          {% else %}
+            <h2><a class="btn btn-lg" href="{{ url_for('create') }}">Request Help</a></h2>
+          {% endif %}
+        </section>
+      </div>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    {% block body %}{% endblock %}
+  </body>
 </html>
