@@ -1,4 +1,7 @@
-/* Override bootstrap.min.css */
+h2 {
+  border-bottom: none;
+}
+
 .jumbotron {
   margin-top: 10px;
   background: #0072c1;
@@ -19,12 +22,8 @@
   color: #ffffff;
 }
 
-/* Override style.css */
-h2 {
-  border-bottom: none;
-}
-
-.navbar-default {
+.navbar-default,
+.navbar-default .navbar-collapse, .navbar-default .navbar-form {
   border: none;
 }
 
