@@ -28,3 +28,9 @@ h2 {
   border: none;
 }
 
+.navbar-default .navbar-nav > li > a {
+  font-size: 0.8em;
+  font-weight: bold;
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+}
