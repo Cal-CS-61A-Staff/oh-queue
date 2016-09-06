@@ -12,10 +12,11 @@ declare class Notification {
 }
 
 // External library declarations
+// TODO more interfaces
 declare var $: any;
 declare var io: (url: string, options: any) => any;
-declare var React: any;
-declare var ReactDOM: any;
+var React = require('react');
+var ReactDOM = require('react-dom');
 
 // External variables (set in HTML)
 declare var current_user_id: number;
