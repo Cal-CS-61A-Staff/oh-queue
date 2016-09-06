@@ -80,16 +80,23 @@ class Queue extends React.Component {
   }
 }
 
+function ticketStatus(ticket) {
+  if (ticket.status === 'pending') {
+    return 'Queued';
+  else if (ticket.status === 'resolved') {
+    return 'Resolved';
+  } else if (ticket.status === 'deleted') {
+    return 'Deleted';
+  } else if (ticket.helper_id === current_user_id) {
+    return 'Assigned to you';
+  } else {
+    return 'Being helped by ' + ticket.helper_name;
+  }
+}
+
 class TicketRow extends React.Component {
   render() {
     const ticket = this.props.ticket;
-    if (ticket.status === 'pending') {
-      var status = 'Queued';
-    } else if (ticket.helper_id === current_user_id) {
-      var status = 'Assigned to you';
-    } else {
-      var status = 'Being helped by ' + ticket.helper_name;
-    }
     return (
       <ReactRouter.Link className="queue-ticket row staff-link"
           to={ '/' + ticket.id }>
@@ -98,7 +105,7 @@ class TicketRow extends React.Component {
         <div className="two columns">{ ticket.location }</div>
         <div className="two columns">{ ticket.assignment }</div>
         <div className="two columns">{ ticket.question }</div>
-        <div className="two columns">{ status }</div>
+        <div className="two columns">{ ticketSstatus(ticket) }</div>
       </ReactRouter.Link>
     )
   }
@@ -107,6 +114,9 @@ class TicketRow extends React.Component {
 class Ticket extends React.Component {
   render() {
     const ticket = this.props.activeTickets.get(this.props.params.ticket_id);
+    const help = <button data-url="/delete"
+            data-confirm="Delete this ticket?"
+            class="btn delete">Delete</button>
     return (
       <div id="ticket" class="container">
         <a href="{{ url_for('index') }}">View Queue</a>
@@ -115,7 +125,21 @@ class Ticket extends React.Component {
         <div class="row">Location: <span class="location">{ ticket.location }</span></div>
         <div class="row">Assignment: <span class="assignment">{ ticket.assignment }</span></div>
         <div class="row">Question: <span class="question">{ ticket.question }</span></div>
-        <div class="row">
+        <div class="row">Status: <span class="status">{ ticket_status(status) }</span></div>
+        { buttons }
+        pending:
+          Help
+          Delete
+        assigned to you:
+          Put Back
+          Resolve
+          Resolve and Next
+        assigned to someone else:
+          Reassign to you
+          Next
+        not assigned to you:
+          Next
+
         {/* {% if ticket.status == TicketStatus.pending %}
           <div class="twelve columns">
             <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}"
