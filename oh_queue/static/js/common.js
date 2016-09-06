@@ -1,17 +1,75 @@
-function requestNotificationPermission() {
+// @flow
+
+// Browser API
+type NotificationOptions = {
+  body?: string;
+};
+
+declare class Notification {
+  static permission: string;
+  static requestPermission(): void;
+  constructor(message: string, options: NotificationOptions): Notification;
+}
+
+// External library declarations
+declare var $: any;
+declare var io: (url: string, options: any) => any;
+declare var React: any;
+declare var ReactDOM: any;
+
+// External variables (set in HTML)
+declare var current_user_id: number;
+
+// Types
+type TicketDetails = {
+  id: number,
+  user_id: number,
+  user_name: string,
+  created: string,
+  location: string,
+  assignment: string,
+  question: string,
+};
+
+type UnassignedTicket = TicketDetails & {
+  status: 'pending' | 'resolved' | 'deleted';
+};
+
+type AssignedTicket = TicketDetails & {
+  status: 'assigned';
+  helper_id: number;
+  helper_name: string;
+};
+
+type Ticket = UnassignedTicket | AssignedTicket;
+
+type ServerState = {
+  tickets: Array<Ticket>
+};
+
+type TicketEvent = {
+  ticket: Ticket
+};
+
+type State = {
+  activeTickets: Map<number, Ticket>
+}
+
+function requestNotificationPermission(): void {
   if ('Notification' in window && Notification.permission !== 'denied') {
     Notification.requestPermission();
   }
 }
 
-function notifyUser(text, options) {
+function notifyUser(text: string, options: NotificationOptions): void {
   if ('Notification' in window && Notification.permission === 'granted') {
     new Notification(text, options);
   }
 }
 
 function connectSocket() {
-  return io.connect('http://' + document.domain + ':' + location.port, {
+  let domain = document.domain ? document.domain : 'unknown_domain';
+  return io.connect('http://' + domain + ':' + location.port, {
     transports: ['websocket', 'polling'],
   });
 }
@@ -33,16 +91,18 @@ $(document).ready(function(){
 });
 
 class App extends React.Component {
+  state: State;
+
   constructor(props) {
     super(props);
     this.state = {
-      activeTickets: Immutable.Map(),
+      activeTickets: new Map(),
     };
 
     var socket = connectSocket();
 
-    socket.on('state', (state) => {
-      const activeTickets = Immutable.Map(
+    socket.on('state', (state: ServerState) => {
+      const activeTickets = new Map(
         state.tickets.map((ticket) => [ticket.id, ticket])
       );
       this.setState({
@@ -50,7 +110,7 @@ class App extends React.Component {
       })
     });
 
-    socket.on('event', (event) => {
+    socket.on('event', (event: TicketEvent) => {
       const ticket = event.ticket;
       const activeTickets = this.state.activeTickets.set(ticket.id, ticket);
       this.setState({
@@ -80,17 +140,19 @@ class Queue extends React.Component {
   }
 }
 
-function ticketStatus(ticket) {
-  if (ticket.status === 'pending') {
-    return 'Queued';
-  else if (ticket.status === 'resolved') {
+function ticketStatus(ticket: Ticket): string {
+  if (ticket.status === 'assigned') {
+    if (ticket.helper_id === current_user_id) {
+      return 'Assigned to you';
+    } else {
+      return 'Being helped by ' + ticket.helper_name;
+    }
+  } else if (ticket.status === 'resolved') {
     return 'Resolved';
   } else if (ticket.status === 'deleted') {
     return 'Deleted';
-  } else if (ticket.helper_id === current_user_id) {
-    return 'Assigned to you';
   } else {
-    return 'Being helped by ' + ticket.helper_name;
+    return 'Queued';
   }
 }
 
@@ -105,13 +167,13 @@ class TicketRow extends React.Component {
         <div className="two columns">{ ticket.location }</div>
         <div className="two columns">{ ticket.assignment }</div>
         <div className="two columns">{ ticket.question }</div>
-        <div className="two columns">{ ticketSstatus(ticket) }</div>
+        <div className="two columns">{ ticketStatus(ticket) }</div>
       </ReactRouter.Link>
     )
   }
 }
 
-class Ticket extends React.Component {
+class TicketPage extends React.Component {
   render() {
     const ticket = this.props.activeTickets.get(this.props.params.ticket_id);
     const help = <button data-url="/delete"
@@ -125,8 +187,8 @@ class Ticket extends React.Component {
         <div class="row">Location: <span class="location">{ ticket.location }</span></div>
         <div class="row">Assignment: <span class="assignment">{ ticket.assignment }</span></div>
         <div class="row">Question: <span class="question">{ ticket.question }</span></div>
-        <div class="row">Status: <span class="status">{ ticket_status(status) }</span></div>
-        { buttons }
+        <div class="row">Status: <span class="status">{ ticketStatus(ticket) }</span></div>
+        {/* { buttons }
         pending:
           Help
           Delete
@@ -138,7 +200,7 @@ class Ticket extends React.Component {
           Reassign to you
           Next
         not assigned to you:
-          Next
+          Next */}
 
         {/* {% if ticket.status == TicketStatus.pending %}
           <div class="twelve columns">
@@ -182,7 +244,6 @@ class Ticket extends React.Component {
             <a href="{{ url_for('next_ticket') }}" class="button">Next Ticket</a>
           </div>
         {% endif %} */}
-        </div>
       </div>
     );
   }
@@ -192,7 +253,7 @@ ReactDOM.render(
   <ReactRouter.Router history={ReactRouter.browserHistory}>
     <ReactRouter.Route path="/" component={App}>
       <ReactRouter.IndexRoute component={Queue} />
-      <ReactRouter.Route path=":ticket_id" component={Ticket} />
+      <ReactRouter.Route path=":ticket_id" component={TicketPage} />
     </ReactRouter.Route>
   </ReactRouter.Router>,
   document.getElementById('react-content')
