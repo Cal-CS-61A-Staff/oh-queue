@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/css/bootstrap-select.min.css">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mono-blue.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/queue.css') }}">
@@ -15,10 +16,11 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/js/bootstrap-select.min.js"></script>
     <script src="{{ url_for('static', filename='js/common.js') }}"></script>
 
-    <title>CS 61A Office Hours</title>
+    <title>CS 61A Queue</title>
     {% if current_user.is_authenticated %}
     <script>
       var current_user_id = {{ current_user.id }};
@@ -63,18 +65,14 @@
         <div class="collapse navbar-collapse" id="navbar-collapse-section">
           <ul class="nav navbar-nav navbar-right">
             {% if my_ticket %}
-              <li><a href="{{ url_for('ticket', ticket_id=my_ticket.id) }}">My Request</a></li>
-            {% elif current_user.is_staff %}
-              <!-- nothing for staff here yet -->
-            {% else %}
-              <li><a href="{{ url_for('create') }}">Request Help</a></li>
+            <li><a href="{{ url_for('ticket', ticket_id=my_ticket.id) }}">My Request</a></li>
             {% endif %}
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ current_user.name }}<span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">{{ current_user.name }} <span class="caret"></span></a>
               <ul class="dropdown-menu">
                 {% if current_user.is_staff %}
-                  <li><a href="/">Settings</a></li>
-                  <li><a href="/">Resolved</a></li>
+                <li><a href="/">Settings</a></li>
+                <li><a href="/">Resolved</a></li>
                 {% endif %}
               </ul>
             </li>
@@ -87,28 +85,91 @@
     <div class="jumbotron">
       <div class="container">
         <section class="page-header">
-          <h1>Hello, {{ current_user.name.split()[0] }}</h1>
-          <p>Signed in as {{ current_user.email }}</p>
-          {% if my_ticket %}
-            <h2><a class="btn btn-lg" href="{{ url_for('ticket', ticket_id=my_ticket.id) }}">My Request</a></h2>
-          {% elif current_user.is_staff %}
-            <!-- nothing for staff here yet -->
-          {% else %}
-            <h2><a class="btn btn-lg" href="{{ url_for('create') }}">Request Help</a></h2>
-          {% endif %}
+          <div class="row">
+            {% if not my_ticket %}
+            <div class="col-md-8">
+            {% else %}
+            <div class="col-md-12">
+            {% endif %}
+              <h1>Hello, {{ current_user.name.split()[0] }}</h1>
+              <p>Signed in as {{ current_user.email }}</p>
+              {% if my_ticket %}
+              <a class="btn btn-jumbo btn-outline" href="{{ url_for('ticket', ticket_id=my_ticket.id) }}">My Request</a>
+              {% elif current_user.is_staff %}
+              <!-- nothing for staff here yet -->
+              {% else %}
+              <h2><a class="btn btn-lg" href="{{ url_for('create') }}">Request Help</a></h2>
+              {% endif %}
+            </div>
+            {% if not my_ticket %}
+            <div class="col-md-4">
+              <form action="/create/" method="POST">
+                <div class="form-group">
+                  <select class="selectpicker form-control" id="location" name="location" title="Location" data-width="100%" required>
+                    <option>109 Morgan</option>
+                    <option>237 Cory</option>
+                    <option>241 Cory</option>
+                    <option>247 Cory</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <div class="input-group">
+                    <select class="selectpicker form-control" id="assignment" name="assignment" title="Assignment" data-live-search="true" data-size="8" data-width="auto" required>
+                      <option data-tokens="hog proj1">Hog</option>
+                      <option data-tokens="maps proj2">Maps</option>
+                      <option data-tokens="ants proj3">Ants</option>
+                      <option data-tokens="scheme proj4">Scheme</option>
+                      <option data-divider="true"></option>
+                      <option data-tokens="hw1">Homework 1</option>
+                      <option data-tokens="hw2">Homework 2</option>
+                      <option data-tokens="hw3">Homework 3</option>
+                      <option data-tokens="hw4">Homework 4</option>
+                      <option data-tokens="hw5">Homework 5</option>
+                      <option data-tokens="hw6">Homework 6</option>
+                      <option data-tokens="hw7">Homework 7</option>
+                      <option data-tokens="hw8">Homework 8</option>
+                      <option data-tokens="hw9">Homework 9</option>
+                      <option data-tokens="hw10">Homework 10</option>
+                      <option data-divider="true"></option>
+                      <option data-tokens="lab1">Lab 1</option>
+                      <option data-tokens="lab2">Lab 2</option>
+                      <option data-tokens="lab3">Lab 3</option>
+                      <option data-tokens="lab4">Lab 4</option>
+                      <option data-tokens="lab5">Lab 5</option>
+                      <option data-tokens="lab6">Lab 6</option>
+                      <option data-tokens="lab7">Lab 7</option>
+                      <option data-tokens="lab8">Lab 8</option>
+                      <option data-tokens="lab9">Lab 9</option>
+                      <option data-tokens="lab10">Lab 10</option>
+                      <option data-tokens="lab11">Lab 11</option>
+                      <option data-tokens="lab12">Lab 12</option>
+                      <option data-tokens="lab13">Lab 13</option>
+                    </select>
+                    <input style="width: auto" class="form-control" type="number" name="question" id="question" title="Question" required>
+                  </div>
+                </div>
+                <button class="btn btn-lg btn-outline" type="submit" value="Submit">Submit</button>
+              </form>
+            </div>
+            {% endif %}
+          </div>
         </section>
       </div>
-    </div>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      {{ message }}
-    </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-    {% block body %}{% endblock %}
+      </div>
+      <div class="container">
+        <div class="row">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            {{ message }}
+          </div>
+          {% endfor %}
+          {% endif %}
+          {% endwith %}
+        </div>
+        {% block body %}{% endblock %}
+      </div>
   </body>
 </html>
