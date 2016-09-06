@@ -17,15 +17,25 @@ Provides a web-based interface for requesting help during office hours. Allows s
 
     pip install -r requirements.txt
 
-3. Reset the database to create tables.
+3. Install JavaScript dependencies
+
+    npm install
+
+4. Reset the database to create tables.
 
     ./manage.py resetdb
 
-4. Run the server:
+5. Run the server:
 
     ./manage.py server
 
-5. Point your browser to http://localhost:5000.
+6. Point your browser to http://localhost:5000.
+
+## Development
+
+To type-check the JavaScript code, run
+
+    npm run-script flow
 
 ## Deployment
 
