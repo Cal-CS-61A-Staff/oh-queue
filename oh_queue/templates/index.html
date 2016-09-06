@@ -1,26 +1,21 @@
 {% extends "default.html" %}
 {% from "macros.html" import render_ticket_row with context %}
 {% block body %}
-
-<div class="container">
-  <div class="row">
-    <div class="col-md-2">Name</div>
-    <div class="col-md-2">Queue Time</div>
-    <div class="col-md-2">Location</div>
-    <div class="col-md-2">Assignment</div>
-    <div class="col-md-2">Question</div>
-    <div class="col-md-2">Status</div>
-  </div>
-
-  <div class="row queue">
+<div class="row">
+    <div class="col-xs-3 col-sm-2">Name</div>
+    <div class="hidden-xs col-sm-2 ">Queue Time</div>
+    <div class="col-xs-3 col-sm-2">Location</div>
+    <div class="col-xs-3 col-sm-2">Assignment</div>
+    <div class="hidden-xs col-sm-2">Question</div>
+    <div class="col-xs-3 col-sm-2">Status</div>
+</div>
+<div class="row">
     {% for ticket in tickets %}
-      {{ render_ticket_row(ticket) }}
+    {{ render_ticket_row(ticket) }}
     {% endfor %}
-  </div>
-
 </div>
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 <script>
-  var has_open_ticket = {{ 'true' if my_ticket else 'false' }};
+var has_open_ticket = {{ 'true' if my_ticket else 'false' }};
 </script>
 {% endblock %}

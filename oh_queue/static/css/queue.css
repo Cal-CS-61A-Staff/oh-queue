@@ -4,34 +4,9 @@ h2 {
   border-bottom: none;
 }
 
-
-.jumbotron {
-  margin-top: 10px;
-  background: #0072c1;
-  background: linear-gradient(to bottom, #0072c1 0%,#7db9e8 100%);
-}
-.jumbotron .btn-jumbo {
-  font-size: 24px;
-  padding: 10px 20px 16px;
-  line-height: 1.3333333;
-  border-radius: 6px;
-}
-
-
-.btn-outline {
-  color: #ffffff;
+hr {
   background-color: transparent;
-  border-color: #ffffff;
-}
-.btn-outline:hover, .btn-outline:active {
-  color: #ffffff;
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-
-.page-header {
-  border: none;
-  color: #ffffff;
+  border-top: 1px solid #eee;
 }
 
 
@@ -44,4 +19,46 @@ h2 {
   font-weight: bold;
   letter-spacing: 0.2rem;
   text-transform: uppercase;
+}
+
+
+.jumbotron.blue {
+  margin-top: 10px;
+  background: #0072c1;
+  background: linear-gradient(to bottom, #0072c1 0%,#acbfff 100%);
+}
+.jumbotron .btn-jumbo {
+  font-size: 24px;
+  padding: 6px 16px 10px;
+  border-radius: 6px;
+}
+
+.page-header {
+  border: none;
+  color: #fff;
+}
+
+.input-group {
+  width: 100%;
+}
+
+.request-form {
+  margin-top: 20px;
+}
+
+
+.btn-outline {
+  color: #fff;
+  background-image: none;
+  background-color: transparent;
+  border-color: #fff;
+}
+.btn-outline:hover, .btn-outline:active {
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.ticket {
+  margin-top: 40px;
+  margin-bottom: 40px;
 }
