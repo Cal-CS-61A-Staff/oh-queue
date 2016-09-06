@@ -19,6 +19,7 @@ declare var ReactDOM: any;
 
 // External variables (set in HTML)
 declare var current_user_id: number;
+declare var is_staff: bool;
 
 // Types
 type TicketDetails = {
@@ -52,7 +53,23 @@ type TicketEvent = {
 };
 
 type State = {
-  activeTickets: Map<number, Ticket>
+  tickets: Map<number, Ticket>
+}
+
+function ticketStatus(ticket: Ticket): string {
+  if (ticket.status === 'assigned') {
+    if (ticket.helper_id === current_user_id) {
+      return 'Assigned to you';
+    } else {
+      return 'Being helped by ' + ticket.helper_name;
+    }
+  } else if (ticket.status === 'resolved') {
+    return 'Resolved';
+  } else if (ticket.status === 'deleted') {
+    return 'Deleted';
+  } else {
+    return 'Queued';
+  }
 }
 
 function requestNotificationPermission(): void {
@@ -96,25 +113,25 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeTickets: new Map(),
+      tickets: new Map(),
     };
 
     var socket = connectSocket();
 
     socket.on('state', (state: ServerState) => {
-      const activeTickets = new Map(
+      const tickets = new Map(
         state.tickets.map((ticket) => [ticket.id, ticket])
       );
       this.setState({
-        activeTickets,
+        tickets,
       })
     });
 
     socket.on('event', (event: TicketEvent) => {
       const ticket = event.ticket;
-      const activeTickets = this.state.activeTickets.set(ticket.id, ticket);
+      const tickets = this.state.tickets.set(ticket.id, ticket);
       this.setState({
-        activeTickets,
+        tickets,
       })
     })
   }
@@ -127,126 +144,63 @@ class App extends React.Component {
   }
 }
 
-class Queue extends React.Component {
-  render() {
-    const items = this.props.activeTickets.sortBy(
-      ticket => -ticket.created
-    ).map(
-      ticket => <TicketRow key={ticket.id} ticket={ticket}/>
-    ).toArray()
-    return (
-      <div className="queue" >{items}</div>
-    );
-  }
-}
-
-function ticketStatus(ticket: Ticket): string {
-  if (ticket.status === 'assigned') {
-    if (ticket.helper_id === current_user_id) {
-      return 'Assigned to you';
-    } else {
-      return 'Being helped by ' + ticket.helper_name;
-    }
-  } else if (ticket.status === 'resolved') {
-    return 'Resolved';
-  } else if (ticket.status === 'deleted') {
-    return 'Deleted';
+const StaffLink = (props) => {
+  if (is_staff) {
+    return <ReactRouter.Link {...props}></ReactRouter.Link>
   } else {
-    return 'Queued';
+    return <div {...props}></div>
   }
 }
 
-class TicketRow extends React.Component {
-  render() {
-    const ticket = this.props.ticket;
-    return (
-      <ReactRouter.Link className="queue-ticket row staff-link"
-          to={ '/' + ticket.id }>
-        <div className="two columns">{ ticket.user_name }</div>
-        <div className="two columns">{ ticket.created }</div>
-        <div className="two columns">{ ticket.location }</div>
-        <div className="two columns">{ ticket.assignment }</div>
-        <div className="two columns">{ ticket.question }</div>
-        <div className="two columns">{ ticketStatus(ticket) }</div>
-      </ReactRouter.Link>
-    )
-  }
+const Queue = (props: State) => {
+  let tickets = Array.from(props.tickets.values());
+  tickets.sort((a, b) => b.id - a.id);
+  return (
+    <div className="queue">
+      { tickets.map(ticket => <TicketRow ticket={ticket}/>) }
+    </div>
+  );
 }
 
-class TicketPage extends React.Component {
-  render() {
-    const ticket = this.props.activeTickets.get(this.props.params.ticket_id);
-    const help = <button data-url="/delete"
-            data-confirm="Delete this ticket?"
-            class="btn delete">Delete</button>
-    return (
-      <div id="ticket" class="container">
-        <a href="{{ url_for('index') }}">View Queue</a>
-        <div class="row">Name: <span class="name">{ ticket.user_name }</span></div>
-        <div class="row">Queue Time: <span class="created">{ ticket.created }</span></div>
-        <div class="row">Location: <span class="location">{ ticket.location }</span></div>
-        <div class="row">Assignment: <span class="assignment">{ ticket.assignment }</span></div>
-        <div class="row">Question: <span class="question">{ ticket.question }</span></div>
-        <div class="row">Status: <span class="status">{ ticketStatus(ticket) }</span></div>
-        {/* { buttons }
-        pending:
-          Help
-          Delete
-        assigned to you:
-          Put Back
-          Resolve
-          Resolve and Next
-        assigned to someone else:
-          Reassign to you
-          Next
-        not assigned to you:
-          Next */}
+const TicketRow = (props: {ticket: Ticket}) => {
+  const ticket = props.ticket;
+  return (
+    <StaffLink className="queue-ticket row staff-link" to={ '/' + ticket.id }>
+      <div className="two columns">{ ticket.user_name }</div>
+      <div className="two columns">{ ticket.created }</div>
+      <div className="two columns">{ ticket.location }</div>
+      <div className="two columns">{ ticket.assignment }</div>
+      <div className="two columns">{ ticket.question }</div>
+      <div className="two columns">{ ticketStatus(ticket) }</div>
+    </StaffLink>
+  )
+}
 
-        {/* {% if ticket.status == TicketStatus.pending %}
-          <div class="twelve columns">
-            <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}"
-                    class="btn staff-only">Help</button>
-          </div>
-          <div class="twelve columns">
-            <button data-url="{{ url_for('delete', ticket_id=ticket.id) }}"
-                    data-confirm="Delete this ticket?"
-                    class="btn delete">Delete</button>
-          </div>
-        {% elif ticket.status == TicketStatus.assigned %}
-          <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
-            <button data-url="{{ url_for('unassign', ticket_id=ticket.id) }}">Put Back</button>
-          </div>
-          <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
-            <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}">
-              Resolve
-            </button>
-          </div>
-          <div class="twelve columns hidden user-{{ ticket.helper_id }}-visible">
-            <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}"
-                    data-redirect="{{ url_for('next_ticket') }}">Resolve and Next</button>
-          </div>
-          <div class="twelve columns user-{{ ticket.helper_id }}-hidden">Being helped by {{ ticket.helper.name }}</div>
-          <div class="twelve columns user-{{ ticket.helper_id }}-hidden staff-only">
-              <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}"
-                      data-confirm="Reassign this ticket?">Reassign</button>
-          </div>
-          <div class="twelve columns user-{{ ticket.helper_id }}-hidden staff-only">
-            <a href="{{ url_for('next_ticket') }}" class="button">Next Ticket</a>
-          </div>
-        {% elif ticket.status == TicketStatus.resolved %}
-          <div class="twelve columns">Resolved</div>
-          <div class="twelve columns staff-only">
-            <a href="{{ url_for('next_ticket') }}" class="button">Next Ticket</a>
-          </div>
-        {% elif ticket.status == TicketStatus.deleted %}
-          <div class="twelve columns">Deleted</div>
-          <div class="twelve columns staff-only">
-            <a href="{{ url_for('next_ticket') }}" class="button">Next Ticket</a>
-          </div>
-        {% endif %} */}
-      </div>
-    );
+type TicketPageParams = {
+  params: {
+    ticket_id: number,
+  },
+};
+
+const TicketPage = (props: State & TicketPageParams) => {
+  const ticket = props.tickets.get(props.params.ticket_id);
+  if (ticket == null) {
+    return <div></div>;  // TODO
   }
+  const help = <button data-url="/delete"
+          data-confirm="Delete this ticket?"
+          className="btn delete">Delete</button>
+  return (
+    <div id="ticket" className="container">
+      <ReactRouter.Link to='/'>View Queue</ReactRouter.Link>
+      <div className="row">Name: <span className="name">{ ticket.user_name }</span></div>
+      <div className="row">Queue Time: <span className="created">{ ticket.created }</span></div>
+      <div className="row">Location: <span className="location">{ ticket.location }</span></div>
+      <div className="row">Assignment: <span className="assignment">{ ticket.assignment }</span></div>
+      <div className="row">Question: <span className="question">{ ticket.question }</span></div>
+      <div className="row">Status: <span className="status">{ ticketStatus(ticket) }</span></div>
+    </div>
+  );
 }
 
 ReactDOM.render(
