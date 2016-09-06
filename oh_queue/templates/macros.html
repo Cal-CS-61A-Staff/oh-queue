@@ -1,72 +1,91 @@
 {% macro render_ticket_row(ticket) -%}
 <a class="row"
-      id="queue-ticket-{{ ticket.id }}"
-      href="{{ url_for('ticket', ticket_id=ticket.id) }}">
-  <div class="col-md-2">{{ ticket.user.name }}</div>
-  <div class="col-md-2">{{ ticket.created | datetime }}</div>
-  <div class="col-md-2">{{ ticket.location }}</div>
-  <div class="col-md-2">{{ ticket.assignment }}</div>
-  <div class="col-md-2">{{ ticket.question }}</div>
+   id="queue-ticket-{{ ticket.id }}"
+   href="{{ url_for('ticket', ticket_id=ticket.id) }}">
+  <div class="col-xs-3 col-sm-2">{{ ticket.user.name }}</div>
+  <div class="hidden-xs col-sm-2">{{ ticket.created | datetime }}</div>
+  <div class="col-xs-3 col-sm-2">{{ ticket.location }}</div>
+  <div class="col-xs-3 col-sm-2">{{ ticket.assignment }}</div>
+  <div class="hidden-xs col-sm-2">{{ ticket.question }}</div>
   {% if ticket.status == TicketStatus.pending %}
-    <div class="col-md-2">Queued</div>
+  <div class="col-xs-3 col-sm-2">Queued</div>
   {% elif ticket.status == TicketStatus.assigned %}
-    <div class="col-md-2 user-{{ ticket.helper_id }}-hidden">Being helped by {{ ticket.helper.name }}</div>
-    <div class="col-md-2 hidden user-{{ ticket.helper_id }}-visible">Assigned to you</div>
+  <div class="col-xs-3 col-sm-2 user-{{ ticket.helper_id }}-hidden">Being helped by {{ ticket.helper.name }}</div>
+  <div class="col-xs-3 col-sm-2 hidden user-{{ ticket.helper_id }}-visible">Assigned to you</div>
   {% endif %}
 </a>
 {%- endmacro %}
 
 {% macro render_ticket(ticket) -%}
-<div id="ticket" class="container">
-  <div class="row">
-  <div class="row">Name: <span class="name">{{ ticket.user.name }}</span></div>
-  <div class="row">Queue Time: <span class="created">{{ ticket.created | datetime }}</span></div>
-  <div class="row">Location: <span class="location">{{ ticket.location }}</span></div>
-  <div class="row">Assignment: <span class="assignment">{{ ticket.assignment }}</span></div>
-  <div class="row">Question: <span class="question">{{ ticket.question }}</span></div>
-  <div class="row">
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('index') }}">Queue</a></li>
+  <li>Request #{{ ticket.id }}</li>
+</ol>
+<div class="row ticket">
+  <div class="col-xs-12">
+    <img src="http://placehold.it/256x256" alt="{{ ticket.user.name }}'s avatar" class="center-block img-responsive img-circle img-thumbnail">
+    <h2 class="text-center">
+      {{ ticket.user.name }}
+      <small class="clearfix">{{ ticket.created | datetime }} in {{ ticket.location }}</small>
+    </h2>
+    <p class="lead text-center">
+    {% if ticket.status == TicketStatus.assigned %}
+    Being helped by {{ ticket.helper.name }}
+    {% elif ticket.status == TicketStatus.resolved %}
+    Resolved by {{ ticket.helper.name }}
+    {% elif ticket.status == TicketStatus.deleted %}
+    Deleted
+    {% endif %}
+    </p>
+    <h3 class="text-center">
+      <span class="label label-default">{{ ticket.assignment }} Q{{ ticket.question }}</span>
+    </h3>
+  </div>
+</div>
+<div class="row">
   {% if ticket.status == TicketStatus.pending %}
-    <div class="col-md-12">
+  <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+    <div class="well">
       <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}"
-              class="btn staff-only">Help</button>
-    </div>
-    <div class="col-md-12">
+              class="btn btn-primary btn-lg btn-block staff-only"
+              data-redirect="{{ url_for('ticket', ticket_id=ticket.id) }}">Help</button>
+      <hr class="staff-only">
       <button data-url="{{ url_for('delete', ticket_id=ticket.id) }}"
               data-confirm="Delete this ticket?"
-              class="btn">Delete</button>
+              class="btn btn-danger btn-lg btn-block"
+              data-redirect="{{ url_for('index') }}">Delete</button>
     </div>
-  {% elif ticket.status == TicketStatus.assigned %}
-    <div class="col-md-12 hidden user-{{ ticket.helper_id }}-visible">
-      <button data-url="{{ url_for('unassign', ticket_id=ticket.id) }}">Requeue</button>
-    </div>
-    <div class="col-md-12 hidden user-{{ ticket.helper_id }}-visible">
-      <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}">
-        Resolve
-      </button>
-    </div>
-    <div class="col-md-12 hidden user-{{ ticket.helper_id }}-visible">
-      <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}"
-              data-redirect="{{ url_for('next_ticket') }}">Resolve and Next</button>
-    </div>
-    <div class="col-md-12 user-{{ ticket.helper_id }}-hidden">Being helped by {{ ticket.helper.name }}</div>
-    <div class="col-md-12 user-{{ ticket.helper_id }}-hidden staff-only">
-        <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}"
-                data-confirm="Reassign this ticket?">Reassign</button>
-    </div>
-    <div class="col-md-12 user-{{ ticket.helper_id }}-hidden staff-only">
-      <a href="{{ url_for('next_ticket') }}" class="button">Next Ticket</a>
-    </div>
-  {% elif ticket.status == TicketStatus.resolved %}
-    <div class="col-md-12">Resolved</div>
-    <div class="col-md-12 staff-only">
-      <a href="{{ url_for('next_ticket') }}" class="button">Next Ticket</a>
-    </div>
-  {% elif ticket.status == TicketStatus.deleted %}
-    <div class="col-md-12">Deleted</div>
-    <div class="col-md-12 staff-only">
-      <a href="{{ url_for('next_ticket') }}" class="button">Next Ticket</a>
-    </div>
-  {% endif %}
   </div>
+  {% elif ticket.status == TicketStatus.assigned %}
+  <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 hidden user-{{ ticket.helper_id }}-visible">
+    <div class="well">
+      <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}"
+              class="btn btn-primary btn-lg btn-block"
+              data-redirect="{{ url_for('next_ticket') }}">Resolve and Next</button>
+      <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}"
+              class="btn btn-default btn-lg btn-block"
+              data-redirect="{{ url_for('index') }}">Resolve</button>
+      <hr>
+      <button data-url="{{ url_for('unassign', ticket_id=ticket.id) }}"
+              class="btn btn-default btn-lg btn-block"
+              data-redirect="{{ url_for('index') }}">Requeue</button>
+    </div>
+  </div>
+  <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 user-{{ ticket.helper_id }}-hidden staff-only">
+    <div class="well">
+      <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}"
+              data-confirm="Reassign this ticket?"
+              class="btn btn-warning btn-lg btn-block"
+              data-redirect="{{ url_for('ticket', ticket_id=ticket.id) }}">Reassign</button>
+      <a href="{{ url_for('next_ticket') }}" class="btn btn-default btn-lg btn-block">Next Ticket</a>
+    </div>
+  </div>
+  {% elif ticket.status == TicketStatus.resolved or ticket.status == TicketStatus.deleted %}
+  <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 staff-only">
+    <div class="well">
+      <a href="{{ url_for('next_ticket') }}" class="btn btn-default btn-lg btn-block">Next Ticket</a>
+    </div>
+  </div>
+  {% endif %}
 </div>
 {%- endmacro %}
