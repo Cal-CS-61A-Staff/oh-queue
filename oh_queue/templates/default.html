@@ -97,16 +97,8 @@
               <div class="request-form">
                 <form action="/create/" method="POST">
                   <div class="form-group form-group-lg">
-                    <select class="selectpicker form-control" id="location" name="location" title="Location" data-width="100%" data-style="btn-lg btn-default" required>
-                      <option>109 Morgan</option>
-                      <option>237 Cory</option>
-                      <option>241 Cory</option>
-                      <option>247 Cory</option>
-                    </select>
-                  </div>
-                  <div class="form-group form-group-lg">
                     <div class="input-group">
-                      <select class="selectpicker form-control" id="assignment" name="assignment" title="Assignment" data-live-search="true" data-size="8" data-width="70%" data-style="btn-lg btn-default" required>
+                      <select class="selectpicker form-control" id="assignment" name="assignment" title="Assignment" data-live-search="true" data-size="8" data-width="60%" data-style="btn-lg btn-default" required>
                         <option data-tokens="hog proj1">Hog</option>
                         <option data-tokens="maps proj2">Maps</option>
                         <option data-tokens="ants proj3">Ants</option>
@@ -137,9 +129,19 @@
                         <option data-tokens="lab12">Lab 12</option>
                         <option data-tokens="lab13">Lab 13</option>
                       </select>
-                      <input style="width: 30%" class="form-control" type="number" name="question" id="question" title="Question" min="0" step="1" required>
-                      <span class="input-group-btn">
-                        <button class="btn btn-lg btn-default" type="submit" value="Submit">Submit</button>
+                      <input style="width: 40%;" class="form-control" type="number" name="question" id="question" title="Question" min="0" step="1" required>
+                    </div>
+                  </div>
+                  <div class="form-group form-group-lg">
+                    <div class="input-group">
+                        <select class="selectpicker form-control" id="location" name="location" title="Location" data-width="100%" data-style="btn-lg btn-default" required>
+                            <option>109 Morgan</option>
+                            <option>237 Cory</option>
+                            <option>241 Cory</option>
+                            <option>247 Cory</option>
+                        </select>
+                      <span class="input-group-btn" style="width: 40%;">
+                        <button class="btn btn-lg btn-default" style="width: 100%;" type="submit" value="Submit">Request Help</button>
                       </span>
                     </div>
                   </div>
