@@ -1,5 +1,9 @@
 /** CS 61A Office Hours Queue. */
 
+body {
+  padding-top: 50px;
+}
+
 h2 {
   border-bottom: none;
 }
@@ -23,13 +27,12 @@ hr {
 
 
 .jumbotron.blue {
-  margin-top: 10px;
   background: #0072c1;
   background: linear-gradient(to bottom, #0072c1 0%,#acbfff 100%);
 }
 .jumbotron .btn-jumbo {
   font-size: 24px;
-  padding: 6px 16px 10px;
+  padding: 16px 16px 20px;
   border-radius: 6px;
 }
 
@@ -43,7 +46,7 @@ hr {
 }
 
 .request-form {
-  margin-top: 20px;
+  margin-top: 25px;
 }
 
 

@@ -1,5 +1,5 @@
 {% macro render_ticket_row(ticket) -%}
-<a class="row"
+<a class="row staff-link"
    id="queue-ticket-{{ ticket.id }}"
    href="{{ url_for('ticket', ticket_id=ticket.id) }}">
   <div class="col-xs-3 col-sm-2">{{ ticket.user.name }}</div>
@@ -18,10 +18,6 @@
 
 {% macro render_ticket(ticket) -%}
 <div id="ticket">
-  <ol class="breadcrumb">
-    <li><a href="{{ url_for('index') }}">Queue</a></li>
-    <li>Request #{{ ticket.id }}</li>
-  </ol>
   <div class="row ticket">
     <div class="col-xs-12">
       <h2 class="text-center">
