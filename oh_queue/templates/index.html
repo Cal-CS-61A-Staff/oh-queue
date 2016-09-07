@@ -76,18 +76,18 @@
 {% endif %}
 {% endblock %}
 {% block body %}
-<div class="row">
+<div id="queue" class="queue">
+  <div class="row">
     <div class="col-xs-3 col-sm-2">Name</div>
     <div class="hidden-xs col-sm-2 ">Queue Time</div>
     <div class="col-xs-3 col-sm-2">Location</div>
     <div class="col-xs-3 col-sm-2">Assignment</div>
     <div class="hidden-xs col-sm-2">Question</div>
     <div class="col-xs-3 col-sm-2">Status</div>
-</div>
-<div class="row">
-    {% for ticket in tickets %}
-    {{ render_ticket_row(ticket) }}
-    {% endfor %}
+  </div>
+  {% for ticket in tickets %}
+  {{ render_ticket_row(ticket) }}
+  {% endfor %}
 </div>
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 <script>

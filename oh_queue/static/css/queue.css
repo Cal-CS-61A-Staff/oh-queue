@@ -32,7 +32,7 @@ hr {
 }
 .jumbotron .btn-jumbo {
   font-size: 24px;
-  padding: 16px 16px 20px;
+  padding: 16px;
   border-radius: 6px;
 }
 
@@ -48,6 +48,11 @@ hr {
 .request-form {
   margin-top: 25px;
 }
+
+
+.queue {
+  margin-top: 30px;
+ }
 
 
 .btn-outline {

@@ -1,19 +1,21 @@
 {% macro render_ticket_row(ticket) -%}
-<a class="row staff-link"
-   id="queue-ticket-{{ ticket.id }}"
-   href="{{ url_for('ticket', ticket_id=ticket.id) }}">
-  <div class="col-xs-3 col-sm-2">{{ ticket.user.name }}</div>
-  <div class="hidden-xs col-sm-2">{{ ticket.created | datetime }}</div>
-  <div class="col-xs-3 col-sm-2">{{ ticket.location }}</div>
-  <div class="col-xs-3 col-sm-2">{{ ticket.assignment }}</div>
-  <div class="hidden-xs col-sm-2">{{ ticket.question }}</div>
-  {% if ticket.status == TicketStatus.pending %}
-  <div class="col-xs-3 col-sm-2">Queued</div>
-  {% elif ticket.status == TicketStatus.assigned %}
-  <div class="col-xs-3 col-sm-2 user-{{ ticket.helper_id }}-hidden">Being helped by {{ ticket.helper.name }}</div>
-  <div class="col-xs-3 col-sm-2 hidden user-{{ ticket.helper_id }}-visible">Assigned to you</div>
-  {% endif %}
-</a>
+<div class="row">
+  <a class="row staff-link"
+     id="queue-ticket-{{ ticket.id }}"
+     href="{{ url_for('ticket', ticket_id=ticket.id) }}">
+    <div class="col-xs-3 col-sm-2">{{ ticket.user.name }}</div>
+    <div class="hidden-xs col-sm-2">{{ ticket.created | datetime }}</div>
+    <div class="col-xs-3 col-sm-2">{{ ticket.location }}</div>
+    <div class="col-xs-3 col-sm-2">{{ ticket.assignment }}</div>
+    <div class="hidden-xs col-sm-2">{{ ticket.question }}</div>
+    {% if ticket.status == TicketStatus.pending %}
+    <div class="col-xs-3 col-sm-2">Queued</div>
+    {% elif ticket.status == TicketStatus.assigned %}
+    <div class="col-xs-3 col-sm-2 user-{{ ticket.helper_id }}-hidden">Being helped by {{ ticket.helper.name }}</div>
+    <div class="col-xs-3 col-sm-2 hidden user-{{ ticket.helper_id }}-visible">Assigned to you</div>
+    {% endif %}
+  </a>
+</div>
 {%- endmacro %}
 
 {% macro render_ticket(ticket) -%}
