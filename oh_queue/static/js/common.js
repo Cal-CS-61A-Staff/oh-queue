@@ -169,9 +169,10 @@ const TicketRow = ({ticket}: {ticket: Ticket}) => {
 }
 
 const TicketPage = (
-  {state, params}: {state: State, params: {ticketID: number}}
+  {state, params}: {state: State, params: {ticketID: string}}
 ) => {
-  const ticket = state.tickets.get(params.ticketID);
+  const ticketID = parseInt(params.ticketID, 10);
+  const ticket = state.tickets.get(ticketID);
   if (ticket == null) {
     return <div></div>;  // TODO
   }
