@@ -1,6 +1,6 @@
 {% macro render_ticket_row(ticket) -%}
-<div class="row">
-  <a class="row staff-link"
+<div class="row{% if my_ticket != ticket %} staff-link{% else %} highlight{% endif %}">
+  <a class="row{% if my_ticket != ticket %} staff-link{% endif %}"
      id="queue-ticket-{{ ticket.id }}"
      href="{{ url_for('ticket', ticket_id=ticket.id) }}">
     <div class="col-xs-3 col-sm-2">{{ ticket.user.name }}</div>
