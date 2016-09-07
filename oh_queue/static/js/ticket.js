@@ -3,22 +3,23 @@ $(document).ready(function(){
 
   requestNotificationPermission();
 
-  socket.on('resolve', function (message) {
-    $('#ticket').replaceWith(message.html);
-  });
-
   socket.on('assign', function (message) {
     if (message.user_id == current_user_id) {
       notifyUser("61A Queue: Your name has been called by " + message.helper_name, {});
     }
-    $('#ticket').replaceWith(message.html);
+    updateTicket(message);
   });
 
-  socket.on('unassign', function (message) {
-    $('#ticket').replaceWith(message.html);
-  });
+  updateTicket(message) {
+    if (message.ticket_id = ticket_id) {
+      $('#ticket').replaceWith(message.html);
+    }
+  }
 
-  socket.on('delete', function (message) {
-    $('#ticket').replaceWith(message.html);
-  });
+  socket.on('unassign', updateTicket);
+
+  socket.on('delete', updateTicket);
+
+  socket.on('resolve', updateTicket);
+
 });

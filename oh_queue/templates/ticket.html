@@ -4,4 +4,7 @@
 {% block body %}
 {{ render_ticket(ticket) }}
 <script src="{{ url_for('static', filename='js/ticket.js') }}"></script>
+<script>
+  var ticket_id = {{ ticket.id }};
+</script>
 {% endblock %}
