@@ -1,4 +1,5 @@
 import datetime
+import json
 import pytz
 
 from flask import (
@@ -42,14 +43,14 @@ def ticket_json(ticket):
     return {
         'id': ticket.id,
         'status': ticket.status.name,
-        'user_id': ticket.user_id,
-        'user_name': ticket.user.name,
+        'userID': ticket.user_id,
+        'userName': ticket.user.name,
         'created': format_datetime(ticket.created),
         'location': ticket.location,
         'assignment': ticket.assignment,
         'question': ticket.question,
-        'helper_id': ticket.helper_id,
-        'helper_name': ticket.helper and ticket.helper.name,
+        'helperID': ticket.helper_id,
+        'helperName': ticket.helper and ticket.helper.name,
     }
 
 def get_my_ticket():
@@ -74,8 +75,12 @@ def index():
        Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
     ).order_by(Ticket.created).all()
     my_ticket = get_my_ticket()
+    pageInitialStateMessage = json.dumps({
+        'tickets': [ticket_json(ticket) for ticket in tickets],
+    })
     return render_template('index.html', tickets=tickets, my_ticket=my_ticket,
-                current_user=current_user, date=datetime.datetime.now())
+        pageInitialStateMessage=pageInitialStateMessage,
+        current_user=current_user, date=datetime.datetime.now())
 
 @app.route('/create/', methods=['GET', 'POST'])
 @login_required

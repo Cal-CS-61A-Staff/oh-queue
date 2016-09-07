@@ -19,15 +19,3 @@ assets_env.register('common.js',
     filters=babel,
     output='public/common.js',
 )
-
-assets_env.register('index.js',
-    'js/index.js',
-    filters=babel,
-    output='public/index.js',
-)
-
-assets_env.register('ticket.js',
-    'js/ticket.js',
-    filters=babel,
-    output='public/ticket.js',
-)

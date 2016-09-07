@@ -15,62 +15,66 @@ declare class Notification {
 // TODO more interfaces
 declare var $: any;
 declare var io: (url: string, options: any) => any;
-var React = require('react');
-var ReactDOM = require('react-dom');
+declare var React: any;
+declare var ReactDOM: any;
 
-// External variables (set in HTML)
-declare var current_user_id: number;
-declare var is_staff: bool;
-
-// Types
-type TicketDetails = {
+type Ticket = {
   id: number,
-  user_id: number,
-  user_name: string,
+  status: 'pending' | 'assigned' | 'resolved' | 'deleted',
+  userID: number,
+  userName: string,
   created: string,
   location: string,
   assignment: string,
   question: string,
-};
-
-type UnassignedTicket = TicketDetails & {
-  status: 'pending' | 'resolved' | 'deleted';
-};
-
-type AssignedTicket = TicketDetails & {
-  status: 'assigned';
-  helper_id: number;
-  helper_name: string;
-};
-
-type Ticket = UnassignedTicket | AssignedTicket;
-
-type ServerState = {
-  tickets: Array<Ticket>
-};
-
-type TicketEvent = {
-  ticket: Ticket
+  helperID: ?number,
+  helperName: ?string,
 };
 
 type State = {
-  tickets: Map<number, Ticket>
+  // map ticket id to ticket info for all known tickets
+  tickets: Map<number, Ticket>,
+};
+
+type InitialStateMessage = {
+  tickets: Array<Ticket>,
+};
+
+type EventMessage = {
+  ticket: Ticket,
+};
+
+// set in HTML
+declare var currentUserID: number;
+declare var isStaff: bool;
+declare var pageInitialStateMessage: InitialStateMessage;
+
+function initialState({tickets}: InitialStateMessage): State {
+  return {
+    tickets: new Map(tickets.map(ticket => [ticket.id, ticket])),
+  };
+}
+
+function updateState(state: State, {ticket}: EventMessage): State {
+  state.tickets.set(ticket.id, ticket);
+  return state;
 }
 
 function ticketStatus(ticket: Ticket): string {
   if (ticket.status === 'assigned') {
-    if (ticket.helper_id === current_user_id) {
+    if (ticket.helperID === currentUserID) {
       return 'Assigned to you';
-    } else {
-      return 'Being helped by ' + ticket.helper_name;
+    } else if (ticket.helperName) {
+      return 'Being helped by ' + ticket.helperName;
     }
   } else if (ticket.status === 'resolved') {
     return 'Resolved';
   } else if (ticket.status === 'deleted') {
     return 'Deleted';
-  } else {
+  } else if (ticket.status === 'pending') {
     return 'Queued';
   }
+  throw Error('Unknown ticket status');
 }
 
 function requestNotificationPermission(): void {
@@ -113,61 +117,48 @@ class App extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      tickets: new Map(),
-    };
+    this.state = initialState(pageInitialStateMessage);
 
     var socket = connectSocket();
 
-    socket.on('state', (state: ServerState) => {
-      const tickets = new Map(
-        state.tickets.map((ticket) => [ticket.id, ticket])
-      );
-      this.setState({
-        tickets,
-      })
+    socket.on('initial-state', (data: InitialStateMessage) => {
+      this.setState(initialState(data));
     });
 
-    socket.on('event', (event: TicketEvent) => {
-      const ticket = event.ticket;
-      const tickets = this.state.tickets.set(ticket.id, ticket);
-      this.setState({
-        tickets,
-      })
-    })
+    socket.on('event', (data: EventMessage) => {
+      this.setState(updateState(this.state, data));
+    });
   }
 
   render() {
     // Pass state to children in props
-    return (
-      <div>{ React.cloneElement(this.props.children, this.state) }</div>
-    );
+    return React.cloneElement(this.props.children, {state: this.state});
   }
 }
 
 const StaffLink = (props) => {
-  if (is_staff) {
-    return <ReactRouter.Link {...props}></ReactRouter.Link>
+  if (isStaff) {
+    return <ReactRouter.Link {...props}/>
   } else {
-    return <div {...props}></div>
+    return <div {...props}/>
   }
 }
 
-const Queue = (props: State) => {
-  let tickets = Array.from(props.tickets.values());
-  tickets.sort((a, b) => b.id - a.id);
+const Queue = ({state}: {state: State}) => {
+  const activeTickets = Array.from(state.tickets.values()).filter(ticket =>
+    ticket.status === 'pending' || ticket.status === 'assigned'
+  ).sort((a, b) => b.id - a.id);
   return (
     <div className="queue">
-      { tickets.map(ticket => <TicketRow ticket={ticket}/>) }
+      { activeTickets.map(ticket => <TicketRow ticket={ticket}/>) }
     </div>
   );
 }
 
-const TicketRow = (props: {ticket: Ticket}) => {
-  const ticket = props.ticket;
+const TicketRow = ({ticket}: {ticket: Ticket}) => {
   return (
     <StaffLink className="queue-ticket row staff-link" to={ '/' + ticket.id }>
-      <div className="two columns">{ ticket.user_name }</div>
+      <div className="two columns">{ ticket.userName }</div>
       <div className="two columns">{ ticket.created }</div>
       <div className="two columns">{ ticket.location }</div>
       <div className="two columns">{ ticket.assignment }</div>
@@ -177,14 +168,10 @@ const TicketRow = (props: {ticket: Ticket}) => {
   )
 }
 
-type TicketPageParams = {
-  params: {
-    ticket_id: number,
-  },
-};
-
-const TicketPage = (props: State & TicketPageParams) => {
-  const ticket = props.tickets.get(props.params.ticket_id);
+const TicketPage = (
+  {state, params}: {state: State, params: {ticketID: number}}
+) => {
+  const ticket = state.tickets.get(params.ticketID);
   if (ticket == null) {
     return <div></div>;  // TODO
   }
@@ -194,7 +181,7 @@ const TicketPage = (props: State & TicketPageParams) => {
   return (
     <div id="ticket" className="container">
       <ReactRouter.Link to='/'>View Queue</ReactRouter.Link>
-      <div className="row">Name: <span className="name">{ ticket.user_name }</span></div>
+      <div className="row">Name: <span className="name">{ ticket.userName }</span></div>
       <div className="row">Queue Time: <span className="created">{ ticket.created }</span></div>
       <div className="row">Location: <span className="location">{ ticket.location }</span></div>
       <div className="row">Assignment: <span className="assignment">{ ticket.assignment }</span></div>
@@ -208,7 +195,7 @@ ReactDOM.render(
   <ReactRouter.Router history={ReactRouter.browserHistory}>
     <ReactRouter.Route path="/" component={App}>
       <ReactRouter.IndexRoute component={Queue} />
-      <ReactRouter.Route path=":ticket_id" component={TicketPage} />
+      <ReactRouter.Route path=":ticketID" component={TicketPage} />
     </ReactRouter.Route>
   </ReactRouter.Router>,
   document.getElementById('react-content')

@@ -32,10 +32,3 @@
   {% endif %}
 </div>
 {% endblock %}
-
-{% block js %}
-{{ macros.js_asset('index.js') }}
-<script>
-  var has_open_ticket = {{ 'true' if my_ticket else 'false' }};
-</script>
-{% endblock %}

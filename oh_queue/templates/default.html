@@ -28,12 +28,13 @@
 
   {% if current_user.is_authenticated %}
   <script>
-    var current_user_id = {{ current_user.id }};
+    var currentUserID = {{ current_user.id }};
     {% if current_user.is_staff %}
-      var is_staff = true;
+      var isStaff = true;
     {% else %}
-      var is_staff = false;
+      var isStaff = false;
     {% endif %}
+    var pageInitialStateMessage = {{ pageInitialStateMessage|safe }};
   </script>
   <style>
       {% if current_user.is_staff %}
