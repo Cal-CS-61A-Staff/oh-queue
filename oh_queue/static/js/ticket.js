@@ -10,7 +10,7 @@ $(document).ready(function(){
     updateTicket(message);
   });
 
-  updateTicket(message) {
+  function updateTicket(message) {
     if (message.ticket_id = ticket_id) {
       $('#ticket').replaceWith(message.html);
     }
