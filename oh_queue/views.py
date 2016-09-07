@@ -1,17 +1,18 @@
 import datetime
+import json
 import pytz
 
 from flask import (
-    jsonify, redirect, flash, render_template, render_template_string, request, url_for
+    abort, jsonify, redirect, flash, render_template, render_template_string,
+    request, url_for
 )
 from flask_login import current_user, login_required
+from flask_socketio import emit
 
 from oh_queue import app, db, socketio
 from oh_queue.models import Ticket, TicketStatus, TicketEvent, TicketEventType
 
 def emit_event(ticket, event_type):
-    # TODO log
-
     ticket_event = TicketEvent(
         event_type=event_type,
         ticket=ticket,
@@ -33,12 +34,39 @@ def emit_event(ticket, event_type):
         'row_html': module.render_ticket_row(ticket=ticket),
         'html': module.render_ticket(ticket=ticket)
     })
+    socketio.emit('event', {
+        'type': event_type.name,
+        'ticket': ticket_json(ticket)
+    })
+
+def ticket_json(ticket):
+    return {
+        'id': ticket.id,
+        'status': ticket.status.name,
+        'userID': ticket.user_id,
+        'userName': ticket.user.name,
+        'created': format_datetime(ticket.created),
+        'location': ticket.location,
+        'assignment': ticket.assignment,
+        'question': ticket.question,
+        'helperID': ticket.helper_id,
+        'helperName': ticket.helper and ticket.helper.name,
+    }
 
 def get_my_ticket():
   return Ticket.query.filter(
       Ticket.user_id == current_user.id,
       Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned]),
   ).one_or_none()
+
+@socketio.on('connect')
+def connect():
+    tickets = Ticket.query.filter(
+       Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
+    ).order_by(Ticket.created).all()
+    emit('state', {
+        'tickets': [ticket_json(ticket) for ticket in tickets],
+    })
 
 @app.route('/')
 @login_required
@@ -47,8 +75,12 @@ def index():
        Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
     ).order_by(Ticket.created).all()
     my_ticket = get_my_ticket()
+    pageInitialStateMessage = json.dumps({
+        'tickets': [ticket_json(ticket) for ticket in tickets],
+    })
     return render_template('index.html', tickets=tickets, my_ticket=my_ticket,
-                current_user=current_user, date=datetime.datetime.now())
+        pageInitialStateMessage=pageInitialStateMessage,
+        current_user=current_user, date=datetime.datetime.now())
 
 @app.route('/create/', methods=['GET', 'POST'])
 @login_required
@@ -161,11 +193,3 @@ local_timezone = pytz.timezone(app.config['LOCAL_TIMEZONE'])
 def format_datetime(timestamp):
     time = pytz.utc.localize(timestamp).astimezone(local_timezone)
     return time.strftime('%I:%M %p')
-
-# Caching
-
-@app.after_request
-def disable_caching(response):
-    response.headers.add('Cache-Control',
-        'no-cache, max-age=0, must-revalidate, no-store')
-    return response
