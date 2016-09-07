@@ -11,7 +11,7 @@ $(document).ready(function(){
   });
 
   function updateTicket(message) {
-    if (message.ticket_id = ticket_id) {
+    if (message.id === ticket_id) {
       $('#ticket').replaceWith(message.html);
     }
   }
