@@ -32,7 +32,7 @@ hr {
 }
 .jumbotron .btn-jumbo {
   font-size: 24px;
-  padding: 16px;
+  padding: 20px;
   border-radius: 6px;
 }
 
@@ -46,18 +46,21 @@ hr {
 }
 
 .request-form {
-  margin-top: 25px;
+  margin-top: 20px;
 }
 
 
 .queue {
-  margin-top: 30px;
- }
-.queue.row {
-  padding: 20px 0;
+  margin-top: 10px;
 }
-.highlight {
-  background-color: #d9edf7;
+.queue .row {
+  padding: 15px 0;
+}
+
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 
