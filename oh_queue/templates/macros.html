@@ -1,10 +1,8 @@
 {% macro render_ticket_row(ticket) -%}
 <div class="row user-{{ ticket.user_id }}-highlight"
      id="queue-ticket-{{ ticket.id }}">
-    {% if current_user.is_staff %}
     <a class="staff-link user-{{ ticket.user_id }}-link"
      href="{{ url_for('ticket', ticket_id=ticket.id) }}">
-    {% endif %}
       <div class="col-xs-3 col-sm-2 truncate">{{ ticket.user.name | title }}</div>
 
       <div class="hidden-xs col-sm-2 truncate">{{ ticket.created | datetime }}</div>
@@ -17,10 +15,7 @@
       <div class="col-xs-3 col-sm-2 user-{{ ticket.helper_id }}-hidden truncate">Being helped by {{ ticket.helper.name }}</div>
       <div class="col-xs-3 col-sm-2 hidden user-{{ ticket.helper_id }}-visible truncate">Assigned to you</div>
       {% endif %}
-    {% if current_user.is_staff %}
      </a>
-    {% endif %}
-
 </div>
 {%- endmacro %}
 
