@@ -3,7 +3,7 @@
      id="queue-ticket-{{ ticket.id }}">
   <a class="staff-link user-{{ ticket.user_id }}-link"
      href="{{ url_for('ticket', ticket_id=ticket.id) }}">
-    <div class="col-xs-3 col-sm-2 truncate">{{ ticket.user.name }}</div>
+    <div class="col-xs-3 col-sm-2 truncate">{{ ticket.user.name | capitalize }}</div>
     <div class="hidden-xs col-sm-2 truncate">{{ ticket.created | datetime }}</div>
     <div class="col-xs-3 col-sm-2 truncate">{{ ticket.location }}</div>
     <div class="col-xs-3 col-sm-2 truncate">{{ ticket.assignment }}</div>
@@ -28,9 +28,9 @@
       </h2>
       <p class="lead text-center">
       {% if ticket.status == TicketStatus.assigned %}
-      Being helped by {{ ticket.helper.name }}
+      Being helped by {{ ticket.helper.name | capitalize }}
       {% elif ticket.status == TicketStatus.resolved %}
-      Resolved by {{ ticket.helper.name }}
+      Resolved by {{ ticket.helper.name | capitalize }}
       {% elif ticket.status == TicketStatus.deleted %}
       Deleted
       {% endif %}
