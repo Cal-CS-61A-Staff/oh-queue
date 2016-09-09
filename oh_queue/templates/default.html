@@ -12,6 +12,9 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mono-blue.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/queue.css') }}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/offline-js/0.7.17/themes/offline-theme-default.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/offline-js/0.7.17/themes/offline-language-english.css">
+
     <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
 
     <script>
@@ -32,6 +35,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/js/bootstrap-select.min.js"></script>
+
     <script src="{{ url_for('static', filename='js/common.js') }}"></script>
 
     <title>CS 61A Queue</title>
@@ -128,4 +132,6 @@
       {% block body %}{% endblock %}
     </div>
   </body>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/offline-js/0.7.17/offline.js"></script>
 </html>
