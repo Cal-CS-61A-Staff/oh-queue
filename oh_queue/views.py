@@ -58,13 +58,18 @@ def create():
         return redirect(url_for('ticket', ticket_id=my_ticket.id))
     elif request.method == 'POST':
         # Create a new ticket and add it to persistent storage
+        if not (request.form.get('assignment') and request.form.get('question')
+                and request.form.get('location')):
+            flash("You must specify all of the fields", "warning")
+            return redirect(url_for('index'))
         ticket = Ticket(
             status=TicketStatus.pending,
             user=current_user,
-            assignment=request.form['assignment'],
-            question=request.form['question'],
-            location=request.form['location'],
+            assignment=request.form.get('assignment'),
+            question=request.form.get('question'),
+            location=request.form.get('location'),
         )
+
         db.session.add(ticket)
         db.session.commit()
 
