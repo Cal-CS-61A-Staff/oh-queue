@@ -10,7 +10,9 @@ $(document).ready(function(){
     var details = {
       body: message.user_name + " - " + message.assignment + message.question + " in " + message.location
     }
-    notifyUser("OH Queue: " + message.user_name + " in " + message.location, details);
+    if (is_staff) {
+      notifyUser("OH Queue: " + message.user_name + " in " + message.location, details);
+    }
   });
 
   socket.on('resolve', function (message) {
