@@ -42,14 +42,19 @@ def get_my_ticket():
   ).one_or_none()
 
 @app.route('/')
-@login_required
 def index():
-    tickets = Ticket.query.filter(
-       Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
-    ).order_by(Ticket.created).all()
-    my_ticket = get_my_ticket()
-    return render_template('index.html', tickets=tickets, my_ticket=my_ticket,
-                current_user=current_user, date=datetime.datetime.now())
+    if current_user.is_authenticated:
+        tickets = Ticket.query.filter(
+           Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
+        ).order_by(Ticket.created).all()
+        my_ticket = get_my_ticket()
+        return render_template('index.html',
+            tickets=tickets,
+            my_ticket=my_ticket,
+            current_user=current_user,
+            date=datetime.datetime.now())
+    else:
+        return render_template('landing.html', current_user=current_user)
 
 @app.route('/create/', methods=['GET', 'POST'])
 @login_required

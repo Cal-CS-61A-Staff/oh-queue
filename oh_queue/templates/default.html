@@ -91,12 +91,14 @@
             {% if my_ticket %}
             <li><a href="{{ url_for('ticket', ticket_id=my_ticket.id) }}">My Request</a></li>
             {% endif %}
+            {% if current_user.is_authenticated %}
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">{{ current_user.name }} <span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a href="{{ url_for('auth.logout') }}">Log out</a></li>
               </ul>
             </li>
+            {% endif %}
           </ul>
         </div>
       </div>
