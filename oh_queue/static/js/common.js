@@ -11,7 +11,7 @@ function notifyUser(text, options) {
 }
 
 function connectSocket() {
-  return io.connect('http://' + document.domain + ':' + location.port, {
+  return io.connect('//' + document.domain + ':' + location.port, {
     transports: ['websocket', 'polling'],
   });
 }
