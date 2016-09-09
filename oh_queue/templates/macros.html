@@ -1,20 +1,26 @@
 {% macro render_ticket_row(ticket) -%}
 <div class="row user-{{ ticket.user_id }}-highlight"
      id="queue-ticket-{{ ticket.id }}">
-  <a class="staff-link user-{{ ticket.user_id }}-link"
+    {% if current_user.is_staff %}
+    <a class="staff-link user-{{ ticket.user_id }}-link"
      href="{{ url_for('ticket', ticket_id=ticket.id) }}">
-    <div class="col-xs-3 col-sm-2 truncate">{{ ticket.user.name | capitalize }}</div>
-    <div class="hidden-xs col-sm-2 truncate">{{ ticket.created | datetime }}</div>
-    <div class="col-xs-3 col-sm-2 truncate">{{ ticket.location }}</div>
-    <div class="col-xs-3 col-sm-2 truncate">{{ ticket.assignment }}</div>
-    <div class="hidden-xs col-sm-2 truncate">{{ ticket.question }}</div>
-    {% if ticket.status == TicketStatus.pending %}
-    <div class="col-xs-3 col-sm-2 truncate">Queued</div>
-    {% elif ticket.status == TicketStatus.assigned %}
-    <div class="col-xs-3 col-sm-2 user-{{ ticket.helper_id }}-hidden truncate">Being helped by {{ ticket.helper.name }}</div>
-    <div class="col-xs-3 col-sm-2 hidden user-{{ ticket.helper_id }}-visible truncate">Assigned to you</div>
     {% endif %}
-  </a>
+      <div class="col-xs-3 col-sm-2 truncate">{{ ticket.user.name | title }}</div>
+
+      <div class="hidden-xs col-sm-2 truncate">{{ ticket.created | datetime }}</div>
+      <div class="col-xs-3 col-sm-2 truncate">{{ ticket.location }}</div>
+      <div class="col-xs-3 col-sm-2 truncate">{{ ticket.assignment }}</div>
+      <div class="hidden-xs col-sm-2 truncate">{{ ticket.question }}</div>
+      {% if ticket.status == TicketStatus.pending %}
+      <div class="col-xs-3 col-sm-2 truncate">Queued</div>
+      {% elif ticket.status == TicketStatus.assigned %}
+      <div class="col-xs-3 col-sm-2 user-{{ ticket.helper_id }}-hidden truncate">Being helped by {{ ticket.helper.name }}</div>
+      <div class="col-xs-3 col-sm-2 hidden user-{{ ticket.helper_id }}-visible truncate">Assigned to you</div>
+      {% endif %}
+    {% if current_user.is_staff %}
+     </a>
+    {% endif %}
+
 </div>
 {%- endmacro %}
 
@@ -28,9 +34,9 @@
       </h2>
       <p class="lead text-center">
       {% if ticket.status == TicketStatus.assigned %}
-      Being helped by {{ ticket.helper.name | capitalize }}
+      Being helped by {{ ticket.helper.name | title }}
       {% elif ticket.status == TicketStatus.resolved %}
-      Resolved by {{ ticket.helper.name | capitalize }}
+      Resolved by {{ ticket.helper.name | title }}
       {% elif ticket.status == TicketStatus.deleted %}
       Deleted
       {% endif %}
