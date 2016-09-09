@@ -69,7 +69,7 @@ def login():
     return auth.ok_auth.authorize(callback=callback)
 
 
-@auth.route('/try-login/')
+@auth.route('/assist/')
 def try_login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
