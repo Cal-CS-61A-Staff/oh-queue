@@ -1,5 +1,5 @@
 from flask import Blueprint, abort, redirect, render_template, request, session, url_for
-from flask_login import LoginManager, login_user, logout_user
+from flask_login import LoginManager, login_user, logout_user, current_user
 from flask_oauthlib.client import OAuth, OAuthException
 
 from werkzeug import security
@@ -65,6 +65,14 @@ def user_from_email(name, email, is_staff):
 
 @auth.route('/login/')
 def login():
+    callback = url_for(".authorized", _external=True)
+    return auth.ok_auth.authorize(callback=callback)
+
+
+@auth.route('/try-login/')
+def try_login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
     callback = url_for(".authorized", _external=True)
     return auth.ok_auth.authorize(callback=callback)
 
