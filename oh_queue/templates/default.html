@@ -38,6 +38,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/js/bootstrap-select.min.js"></script>
 
+    <!-- Should be loaded before common.js -->
+    <script src="https://cdn.ravenjs.com/3.3.0/raven.min.js"></script>
+    <script>Raven.config('https://b295358cb42a4151bb615c6731e92ca6@sentry.cs61a.org/15').install() </script>
     <script src="{{ url_for('static', filename='js/common.js') }}"></script>
 
     <title>CS 61A Queue</title>
