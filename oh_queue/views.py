@@ -35,26 +35,15 @@ def emit_event(ticket, event_type):
         'html': module.render_ticket(ticket=ticket)
     })
 
-def get_my_ticket():
-  return Ticket.query.filter(
-      Ticket.user_id == current_user.id,
-      Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned]),
-  ).one_or_none()
 
 @app.route('/')
 def index():
-    if current_user.is_authenticated:
-        tickets = Ticket.query.filter(
-           Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
-        ).order_by(Ticket.created).all()
-        my_ticket = get_my_ticket()
-        return render_template('index.html',
-            tickets=tickets,
-            my_ticket=my_ticket,
-            current_user=current_user,
-            date=datetime.datetime.now())
-    else:
-        return render_template('landing.html', current_user=current_user)
+    tickets = Ticket.by_status([TicketStatus.pending, TicketStatus.assigned])
+    my_ticket = Ticket.for_user(current_user)
+    return render_template('index.html',
+        tickets=tickets,
+        my_ticket=my_ticket,
+        date=datetime.datetime.now())
 
 @app.route('/create/', methods=['GET', 'POST'])
 @login_required
@@ -63,7 +52,7 @@ def create():
     connected clients.
     """
     # TODO use WTForms
-    my_ticket = get_my_ticket()
+    my_ticket = Ticket.for_user(current_user)
     if my_ticket:
         flash("You're already on the queue!", 'warning')
         return redirect(url_for('ticket', ticket_id=my_ticket.id))
@@ -108,7 +97,7 @@ def ticket(ticket_id):
     if not current_user.is_staff and current_user.id != ticket.user_id:
         abort(404)
     return render_template('ticket.html', ticket=ticket,
-                current_user=current_user, date=datetime.datetime.now())
+                           date=datetime.datetime.now())
 
 @app.route('/<int:ticket_id>/delete/', methods=['POST'])
 @login_required

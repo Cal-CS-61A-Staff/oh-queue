@@ -31,6 +31,13 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(255), nullable=False)
     is_staff = db.Column(db.Boolean, default=False)
 
+    @property
+    def short_name(self):
+        first_name = self.name.split()[0]
+        if '@' in first_name:
+            return first_name.rsplit('@')[0]
+        return first_name
+
 TicketStatus = enum.Enum('TicketStatus', 'pending assigned resolved deleted')
 
 class Ticket(db.Model):
@@ -52,6 +59,25 @@ class Ticket(db.Model):
 
     user = db.relationship(User, foreign_keys=[user_id])
     helper = db.relationship(User, foreign_keys=[helper_id])
+
+    @classmethod
+    def for_user(cls, user):
+        if user and user.is_authenticated:
+            return cls.query.filter(
+              cls.user_id == user.id,
+              cls.status.in_([TicketStatus.pending, TicketStatus.assigned]),
+            ).one_or_none()
+
+    @classmethod
+    def by_status(cls, status=None):
+        """ Tickets in any of the states as status.
+        @param status: Iterable containing TicketStatus values
+        """
+        if status is None:
+            status = [TicketStatus.pending, TicketStatus.assigned]
+        return cls.query.filter(
+           cls.status.in_(status)
+        ).order_by(cls.created).all()
 
 TicketEventType = enum.Enum(
     'TicketEventType',

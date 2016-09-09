@@ -14,6 +14,20 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/queue.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
 
+    <script>
+      {% if current_user.is_authenticated %}
+      var current_user_id = {{ current_user.id }};
+      {% else %}
+      var current_user_id = null;
+      {% endif %}
+
+      {% if current_user.is_staff %}
+      var is_staff = true;
+      {% else %}
+      var is_staff = false;
+      {% endif %}
+    </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -22,14 +36,6 @@
 
     <title>CS 61A Queue</title>
     {% if current_user.is_authenticated %}
-    <script>
-      var current_user_id = {{ current_user.id }};
-      {% if current_user.is_staff %}
-      var is_staff = true;
-      {% else %}
-      var is_staff = false;
-      {% endif %}
-    </script>
     <style>
       {% if current_user.is_staff %}
       .staff-only {

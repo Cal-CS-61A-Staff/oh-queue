@@ -7,12 +7,23 @@
     <section class="page-header">
       <div class="row">
         <div class="col-md-7 col-lg-8">
-          <h1 class="truncate">Hello, {{ current_user.name.split()[0] }}</h1>
-          <p class="truncate">Signed in as {{ current_user.email }}</p>
+        {% if current_user.is_authenticated %}
+          <h1 class="truncate">Hello, {{ current_user.short_name }}</h1>
+          {% if my_ticket %}
+            <p class="truncate">Signed in as {{ current_user.email }}</p>
+          {% else %}
+            <p class="truncate">Fill out the form to request help</p>
+          {% endif %}
+        {% else %}
+          <h1 class="truncate">Hi! Please sign in</h1>
+          <p class="truncate">Sign with your course OK account to request help</p>
+        {% endif %}
         </div>
         <div class="col-md-5 col-lg-4">
           <div class="request-form">
-            {% if my_ticket %}
+            {% if not current_user.is_authenticated %}
+              <a class="btn btn-block btn-jumbo btn-outline" href="{{ url_for('auth.login') }}">Sign in with Ok</a>
+            {% elif my_ticket %}
             <a class="btn btn-block btn-jumbo btn-outline" href="{{ url_for('ticket', ticket_id=my_ticket.id) }}">My Request</a>
             {% else %}
             <form action="/create/" method="POST">
