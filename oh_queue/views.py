@@ -6,6 +6,7 @@ from flask import (
     request, url_for
 )
 from flask_login import current_user, login_required
+from flask_socketio import emit
 
 from oh_queue import app, db, socketio
 from oh_queue.models import Ticket, TicketStatus, TicketEvent, TicketEventType
@@ -34,7 +35,36 @@ def emit_event(ticket, event_type):
         'row_html': module.render_ticket_row(ticket=ticket),
         'html': module.render_ticket(ticket=ticket)
     })
+    socketio.emit('event', {
+        'type': event_type.name,
+        'ticket': ticket_json(ticket)
+    })
 
+def ticket_json(ticket):
+    return {
+        'id': ticket.id,
+        'status': ticket.status.name,
+        'user_id': ticket.user_id,
+        'user_name': ticket.user.name,
+        'created': format_datetime(ticket.created),
+        'location': ticket.location,
+        'assignment': ticket.assignment,
+        'question': ticket.question,
+        'helper_id': ticket.helper_id,
+        'helper_name': ticket.helper and ticket.helper.name,
+    }
+
+
+@socketio.on('connect')
+def connect():
+    tickets = Ticket.query.filter(
+        Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
+    ).order_by(Ticket.created).all()
+    emit('state', {
+        'tickets': [ticket_json(ticket) for ticket in tickets],
+        'isAuthenticated': current_user.is_authenticated,
+        'currentUser': current_user.name if current_user.is_authenticated else ""
+    })
 
 @app.route('/')
 def index():

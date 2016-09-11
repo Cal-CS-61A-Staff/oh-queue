@@ -15,6 +15,7 @@ assets_env.register('style.css',
 )
 
 assets_env.register('common.js',
+    'js/components/app.js',
     'js/common.js',
     filters=babel,
     output='public/common.js',

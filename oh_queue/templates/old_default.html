@@ -51,55 +51,82 @@
 
 
     <title>CS 61A Queue</title>
-
     {% if current_user.is_authenticated %}
-      <style>
-        {% if current_user.is_staff %}
-        .staff-only {
-          display: block !important;
-        }
-        .student-only {
-          display: none !important;
-        }
-        .staff-link:hover {
-          background: #eee;
-          transition: background 0.2s;
-          cursor: pointer;
-        }
-        {% else %}
-        .staff-only {
-          display: none !important;
-        }
-        .student-only {
-          display: block !important;
-        }
-        .staff-link {
-          color: #333;
-          pointer-events: none;
-        }
-        {% endif %}
-        .hidden, .user-{{ current_user.id }}-hidden {
-          display: none !important;
-        }
-        .user-{{ current_user.id }}-visible {
-          display: block !important;
-        }
-        .user-{{ current_user.id }}-highlight {
-          color: #31708f;
-          background-color: #d9edf7;
-          border: 1px solid #bce8f1;
-          border-radius: 4px;
-          font-weight: bold;
-        }
-        .user-{{ current_user.id }}-link {
-          color: #31708f;
-          pointer-events: auto;
-        }
-      </style>
+    <style>
+      {% if current_user.is_staff %}
+      .staff-only {
+        display: block !important;
+      }
+      .student-only {
+        display: none !important;
+      }
+      .staff-link:hover {
+        background: #eee;
+        transition: background 0.2s;
+        cursor: pointer;
+      }
+      {% else %}
+      .staff-only {
+        display: none !important;
+      }
+      .student-only {
+        display: block !important;
+      }
+      .staff-link {
+        color: #333;
+        pointer-events: none;
+      }
+      {% endif %}
+      .hidden, .user-{{ current_user.id }}-hidden {
+        display: none !important;
+      }
+      .user-{{ current_user.id }}-visible {
+        display: block !important;
+      }
+      .user-{{ current_user.id }}-highlight {
+        color: #31708f;
+        background-color: #d9edf7;
+        border: 1px solid #bce8f1;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+      .user-{{ current_user.id }}-link {
+        color: #31708f;
+        pointer-events: auto;
+      }
+    </style>
     {% endif %}
-
   </head>
   <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><strong>CS 61A</strong> Queue</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            {% if my_ticket %}
+            <li><a href="{{ url_for('ticket', ticket_id=my_ticket.id) }}">My Request</a></li>
+            {% endif %}
+            {% if current_user.is_authenticated %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">{{ current_user.name }} <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="{{ url_for('auth.logout') }}">Log out</a></li>
+              </ul>
+            </li>
+            {% else %}
+              <li><a href="{{ url_for('auth.login') }}">Staff Login</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
     {% block header %}{% endblock %}
     <div class="container">
       {% with messages = get_flashed_messages(with_categories=true) %}

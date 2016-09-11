@@ -32,7 +32,35 @@ $(document).ready(function(){
   });
 });
 
+class Ticket extends React.Component {
+  render() {
+    const ticket = this.props.ticket;
+    const href = '/' + ticket.id + '/';
+    const htmlID = 'queue-ticket-' + ticket.id;
+    if (ticket.status === 'pending') {
+      var status = 'Queued';
+    } else if (ticket.helper_id === current_user_id) {
+      var status = 'Assigned to you';
+    } else {
+      var status = 'Being helped by ' + ticket.helper_name;
+    }
+    return (
+      <a className="queue-ticket row staff-link" id={ htmlID } href={ href }>
+        <div className="two columns">{ ticket.user_name }</div>
+        <div className="two columns">{ ticket.created }</div>
+        <div className="two columns">{ ticket.location }</div>
+        <div className="two columns">{ ticket.assignment }</div>
+        <div className="two columns">{ ticket.question }</div>
+        <div className="two columns">{ status }</div>
+      </a>
+    )
+  }
+}
+
 ReactDOM.render(
-  <h1>Hello, world!</h1>,
+  <ReactRouter.Router history={ReactRouter.browserHistory}>
+    <ReactRouter.Route path="/" component={App}></ReactRouter.Route>
+  </ReactRouter.Router>,
+
   document.getElementById('content')
 );
