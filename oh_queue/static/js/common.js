@@ -45,17 +45,38 @@ class Ticket extends React.Component {
       var status = 'Being helped by ' + ticket.helper_name;
     }
     return (
-      <a className="queue-ticket row staff-link" id={ htmlID } href={ href }>
-        <div className="two columns">{ ticket.user_name }</div>
-        <div className="two columns">{ ticket.created }</div>
-        <div className="two columns">{ ticket.location }</div>
-        <div className="two columns">{ ticket.assignment }</div>
-        <div className="two columns">{ ticket.question }</div>
-        <div className="two columns">{ status }</div>
-      </a>
+      <div className={"row user-" + ticket.user_id  + "-highlight"} id={ htmlID }>
+        <a className={"staff-link user-" + ticket.user_id + "-link"} href={ href }>
+          <div className="col-xs-3 col-sm-2 truncate">{ ticket.user_name }</div>
+          <div className="hidden-xs col-sm-2 truncate">{ ticket.created }</div>
+          <div className="col-xs-3 col-sm-2 truncate">{ ticket.location }</div>
+          <div className="col-xs-3 col-sm-2 truncate">{ ticket.assignment }</div>
+          <div className="hidden-xs col-sm-2 truncate">{ ticket.question }</div>
+
+          {(() => {
+
+            if (ticket.status == 'pending') {
+              return (
+                <div className="col-xs-3 col-sm-2 truncate">Queued</div>
+              );
+            } else if (ticket.status == 'assigned') {
+              return (
+                <div>
+                  <div className="col-xs-3 col-sm-2 user-{{ ticket.helper_id }}-hidden truncate">Being helped by { ticket.helper_name }</div>
+                  <div className="col-xs-3 col-sm-2 hidden user-{{ ticket.helper_id }}-visible truncate">Assigned to you</div>
+                </div>
+              );
+            }
+
+          })()}
+
+         </a>
+      </div>
     )
   }
 }
+
+
 
 ReactDOM.render(
   <ReactRouter.Router history={ReactRouter.browserHistory}>

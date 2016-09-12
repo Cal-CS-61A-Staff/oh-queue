@@ -35,10 +35,6 @@ def emit_event(ticket, event_type):
         'row_html': module.render_ticket_row(ticket=ticket),
         'html': module.render_ticket(ticket=ticket)
     })
-    socketio.emit('event', {
-        'type': event_type.name,
-        'ticket': ticket_json(ticket)
-    })
 
 def ticket_json(ticket):
     return {
@@ -63,7 +59,10 @@ def connect():
     emit('state', {
         'tickets': [ticket_json(ticket) for ticket in tickets],
         'isAuthenticated': current_user.is_authenticated,
-        'currentUser': current_user.name if current_user.is_authenticated else ""
+        'currentUser': current_user.name if current_user.is_authenticated else "",
+        'isStaff': current_user.is_staff if current_user.is_authenticated else "",
+        'email': current_user.email if current_user.is_authenticated else "",
+        'shortName': current_user.short_name if current_user.is_authenticated else ""
     })
 
 @app.route('/')

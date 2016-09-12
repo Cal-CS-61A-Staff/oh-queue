@@ -15,16 +15,12 @@ assets_env.register('style.css',
 )
 
 assets_env.register('common.js',
+    'js/components/jumbotron.js',
+    'js/components/queue.js',
     'js/components/app.js',
     'js/common.js',
     filters=babel,
     output='public/common.js',
-)
-
-assets_env.register('index.js',
-    'js/index.js',
-    filters=babel,
-    output='public/index.js',
 )
 
 assets_env.register('ticket.js',

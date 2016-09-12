@@ -4,32 +4,62 @@ class App extends React.Component {
     super(props);
     this.state = {
       activeTickets: [],
+      isAuthenticated: false,
       myTicket: null,
     };
 
     var socket = connectSocket();
 
     socket.on('state', (state) => {
+      console.log(state.isAuthenticated);
       const activeTickets = [];
       state.tickets.forEach((ticket) => { activeTickets.push([ticket.id, ticket]); });
       this.setState({ 
         activeTickets: activeTickets,
         isAuthenticated: state.isAuthenticated,
-        currentUser: state.currentUser
+        currentUser: state.currentUser,
+        isStaff: state.isStaff,
+        email: state.email,
+        shortName: state.shortName
       });
     });
 
-    socket.on('event', (event) => {
-      console.log(event.name);
-      const ticket = event.ticket;
-      const activeTickets = this.state.activeTickets.set(ticket.id, ticket);
-      this.setState({
-        activeTickets,
-      })
-    })
+    socket.on('create', function(message) {
+      $('#queue').append(message.row_html);
+      var details = {
+        body: message.user_name + " - " + message.assignment + message.question + " in " + message.location
+      }
+      if (is_staff) {
+        notifyUser("OH Queue: " + message.user_name + " in " + message.location, details);
+      }
+    });
+
+    socket.on('resolve', function (message) {
+      $('#queue-ticket-' + message.id).remove();
+    });
+
+    socket.on('assign', function (message) {
+      if (message.user_id == current_user_id) {
+        notifyUser("61A Queue: Your name has been called by " + message.helper_name, {});
+      }
+      $('#queue-ticket-' + message.id).replaceWith(message.row_html);
+    });
+
+    socket.on('unassign', function (message) {
+      $('#queue-ticket-' + message.id).replaceWith(message.row_html);
+    });
+
+    socket.on('delete', function (message) {
+      $('#queue-ticket-' + message.id).remove();
+    });
+
   }
 
   render() {
+
+    if (this.state.isStaff || this.state.myTicket) {
+      requestNotificationPermission();
+    }
 
     const items = this.state.activeTickets.sort((a, b) => a[1].created > b[1].created)
                                           .map((ticket) => <Ticket key={ticket[0]} ticket={ticket[1]} />);
@@ -78,8 +108,15 @@ class App extends React.Component {
           </div>
         </nav>
 
+        <Queue 
+          isStaff={this.state.isStaff} 
+          tickets={this.state.activeTickets} 
+          isAuthenticated={this.state.isAuthenticated}
+          shortName={this.state.shortName}
+          email={this.state.email}
+          myTicket={this.state.myTicket}
+        />
 
-        <div className="queue" >{items}</div>
       </div>
     );
   }
