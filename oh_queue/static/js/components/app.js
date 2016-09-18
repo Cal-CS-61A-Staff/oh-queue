@@ -56,7 +56,6 @@ class App extends React.Component {
   }
 
   render() {
-
     if (this.state.isStaff || this.state.myTicket) {
       requestNotificationPermission();
     }
@@ -108,14 +107,15 @@ class App extends React.Component {
           </div>
         </nav>
 
-        <Queue 
-          isStaff={this.state.isStaff} 
-          tickets={this.state.activeTickets} 
-          isAuthenticated={this.state.isAuthenticated}
-          shortName={this.state.shortName}
-          email={this.state.email}
-          myTicket={this.state.myTicket}
-        />
+        {this.props.children && React.cloneElement(this.props.children, {
+          isStaff: this.state.isStaff,
+          tickets: this.state.activeTickets,
+          isAuthenticated: this.state.isAuthenticated,
+          shortName: this.state.shortName,
+          email: this.state.email,
+          myTicket: this.state.myTicket,
+          params: this.props.params
+        })}
 
       </div>
     );
