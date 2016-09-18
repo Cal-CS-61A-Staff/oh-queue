@@ -23,18 +23,7 @@ def emit_event(ticket, event_type):
     db.session.commit()
     template = app.jinja_env.get_template('macros.html')
     module = template.make_module({'request': request})
-    socketio.emit(event_type.name, {
-        'id': ticket.id,
-        'user_id': ticket.user_id,
-        'user_name': ticket.user.name,
-        'add_date': format_datetime(ticket.created),
-        'location': ticket.location,
-        'assignment': ticket.assignment,
-        'question': ticket.question,
-        'helper_name': ticket.helper and ticket.helper.name,
-        'row_html': module.render_ticket_row(ticket=ticket),
-        'html': module.render_ticket(ticket=ticket)
-    })
+    socketio.emit(event_type.name, ticket_json(ticket))
 
 def ticket_json(ticket):
     return {
@@ -127,11 +116,12 @@ def next_ticket():
 @app.route('/<int:ticket_id>/')
 @login_required
 def ticket(ticket_id):
-    ticket = Ticket.query.get_or_404(ticket_id)
-    if not current_user.is_staff and current_user.id != ticket.user_id:
-        abort(404)
-    return render_template('ticket.html', ticket=ticket,
-                           date=datetime.datetime.now())
+    tickets = Ticket.by_status([TicketStatus.pending, TicketStatus.assigned])
+    my_ticket = Ticket.for_user(current_user)
+    return render_template('index.html',
+        tickets=tickets,
+        my_ticket=my_ticket,
+        date=datetime.datetime.now())
 
 @app.route('/<int:ticket_id>/delete/', methods=['POST'])
 @login_required

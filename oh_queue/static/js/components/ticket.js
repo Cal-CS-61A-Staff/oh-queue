@@ -10,6 +10,11 @@ class Ticket extends React.Component {
     } else {
       var status = 'Being helped by ' + ticket.helper_name;
     }
+
+    if (ticket.status == "deleted") {
+      return (<div></div>);
+    }
+
     return (
       <div className={"row user-" + ticket.user_id  + "-highlight"} id={ htmlID }>
         <ReactRouter.Link to={ href } className={"staff-link user-" + ticket.user_id + "-link"}>
@@ -28,8 +33,8 @@ class Ticket extends React.Component {
             } else if (ticket.status == 'assigned') {
               return (
                 <div>
-                  <div className="col-xs-3 col-sm-2 user-{{ ticket.helper_id }}-hidden truncate">Being helped by { ticket.helper_name }</div>
-                  <div className="col-xs-3 col-sm-2 hidden user-{{ ticket.helper_id }}-visible truncate">Assigned to you</div>
+                  <div className={"col-xs-3 col-sm-2 user-" + ticket.helper_id + "-hidden truncate"}>Being helped by { ticket.helper_name }</div>
+                  <div className={"col-xs-3 col-sm-2 hidden user-" + ticket.helper_id + "-visible truncate"}>Assigned to you</div>
                 </div>
               );
             }

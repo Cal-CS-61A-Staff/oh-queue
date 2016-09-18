@@ -49,8 +49,18 @@ class App extends React.Component {
       $('#queue-ticket-' + message.id).replaceWith(message.row_html);
     });
 
-    socket.on('delete', function (message) {
-      $('#queue-ticket-' + message.id).remove();
+    socket.on('delete', (ticket) => {
+      const activeTickets = [];
+      this.state.activeTickets.forEach((ticketArray) => {
+        debugger;
+        if (ticket.id === ticketArray[1].id) {
+          activeTickets.push([ticket.id, ticket]);
+        } else {
+          activeTickets.push(ticketArray);
+        }
+      });
+
+      this.setState({ activeTickets })
     });
 
   }
@@ -74,7 +84,7 @@ class App extends React.Component {
                 <span className="icon-bar"></span>
                 <span className="icon-bar"></span>
               </button>
-              <a className="navbar-brand" href="/"><strong>CS 61A</strong> Queue</a>
+              <ReactRouter.Link className="navbar-brand" to="/"><strong>CS 61A</strong> Queue</ReactRouter.Link>
             </div>
             <div className="collapse navbar-collapse" id="navbar-collapse-section">
               <ul className="nav navbar-nav navbar-right">
