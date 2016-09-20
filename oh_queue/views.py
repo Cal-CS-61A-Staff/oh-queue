@@ -39,7 +39,6 @@ def ticket_json(ticket):
         'helper_name': ticket.helper and ticket.helper.name,
     }
 
-
 @socketio.on('connect')
 def connect():
     tickets = Ticket.query.filter(

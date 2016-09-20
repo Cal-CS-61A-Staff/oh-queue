@@ -2,7 +2,7 @@ class Queue extends React.Component {
   render() {
 
     const items = this.props.tickets.sort((a, b) => a[1].created > b[1].created)
-                                      .map((ticket) => <Ticket key={ticket[0]} ticket={ticket[1]} />);
+                                      .map((ticket) => <Ticket key={ticket[0]} ticket={ticket[1]} isAuthenticated={this.props.isAuthenticated} />);
 
     return(
       <div>

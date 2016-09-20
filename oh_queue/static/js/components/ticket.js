@@ -11,7 +11,7 @@ class Ticket extends React.Component {
       var status = 'Being helped by ' + ticket.helper_name;
     }
 
-    if (ticket.status == "deleted") {
+    if (ticket.status == "deleted" || ticket.status == "resolved") {
       return (<div></div>);
     }
 

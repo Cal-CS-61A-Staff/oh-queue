@@ -24,35 +24,64 @@ class App extends React.Component {
       });
     });
 
-    socket.on('create', function(message) {
-      $('#queue').append(message.row_html);
+    socket.on('create', (ticket) => {
+      const activeTickets = this.state.activeTickets;
+      activeTickets.push([ticket.id, ticket]);
+      this.setState({ activeTickets });
       var details = {
-        body: message.user_name + " - " + message.assignment + message.question + " in " + message.location
+        body: ticket.user_name + " - " + ticket.assignment + ticket.question + " in " + ticket.location
       }
-      if (is_staff) {
-        notifyUser("OH Queue: " + message.user_name + " in " + message.location, details);
+      if (this.state.isStaff) {
+        notifyUser("OH Queue: " + ticket.user_name + " in " + ticket.location, details);
       }
     });
 
-    socket.on('resolve', function (message) {
-      $('#queue-ticket-' + message.id).remove();
+    socket.on('resolve', (ticket) => {
+      const activeTickets = [];
+      this.state.activeTickets.forEach((ticketArray) => {
+        if (ticket.id === ticketArray[1].id) {
+          activeTickets.push([ticket.id, ticket]);
+        } else {
+          activeTickets.push(ticketArray);
+        }
+      });
+
+      this.setState({ activeTickets })
     });
 
-    socket.on('assign', function (message) {
-      if (message.user_id == current_user_id) {
-        notifyUser("61A Queue: Your name has been called by " + message.helper_name, {});
+    socket.on('assign', (ticket) => {
+      if (ticket.user_id == current_user_id) {
+        notifyUser("61A Queue: Your name has been called by " + ticket.helper_name, {});
       }
-      $('#queue-ticket-' + message.id).replaceWith(message.row_html);
+      
+      const activeTickets = [];
+      this.state.activeTickets.forEach((ticketArray) => {
+        if (ticket.id === ticketArray[1].id) {
+          activeTickets.push([ticket.id, ticket]);
+        } else {
+          activeTickets.push(ticketArray);
+        }
+      });
+
+      this.setState({ activeTickets })
     });
 
-    socket.on('unassign', function (message) {
-      $('#queue-ticket-' + message.id).replaceWith(message.row_html);
+    socket.on('unassign', (ticket) => {
+      const activeTickets = [];
+      this.state.activeTickets.forEach((ticketArray) => {
+        if (ticket.id === ticketArray[1].id) {
+          activeTickets.push([ticket.id, ticket]);
+        } else {
+          activeTickets.push(ticketArray);
+        }
+      });
+
+      this.setState({ activeTickets })
     });
 
     socket.on('delete', (ticket) => {
       const activeTickets = [];
       this.state.activeTickets.forEach((ticketArray) => {
-        debugger;
         if (ticket.id === ticketArray[1].id) {
           activeTickets.push([ticket.id, ticket]);
         } else {
@@ -70,8 +99,6 @@ class App extends React.Component {
       requestNotificationPermission();
     }
 
-    const items = this.state.activeTickets.sort((a, b) => a[1].created > b[1].created)
-                                          .map((ticket) => <Ticket key={ticket[0]} ticket={ticket[1]} />);
     const myTicket = this.state.myTicket ? <Ticket key={this.state.myTicket.id} ticket={this.state.myTicket} /> : null;
 
     return (
