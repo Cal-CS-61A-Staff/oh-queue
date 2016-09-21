@@ -1,5 +1,25 @@
 /* React Components */
 class App extends React.Component {
+
+  handleResponse(response) {
+    if (response.event == "next") {
+      var ticket = response.data;
+      const activeTickets = [];
+      this.state.activeTickets.forEach((ticketArray) => {
+        if (ticket.id === ticketArray[1].id) {
+          activeTickets.push([ticket.id, ticket]);
+        } else {
+          activeTickets.push(ticketArray);
+        }
+      });
+      this.setState({ activeTickets })
+
+      ReactRouter.browserHistory.push('/' + ticket.id + '/');
+    } else if (response.event == "queue") {
+      ReactRouter.browserHistory.push('/');
+    }
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -7,6 +27,20 @@ class App extends React.Component {
       isAuthenticated: false,
       myTicket: null,
     };
+
+    $('body').on('click', '[data-url]', (event) => {
+      var confirmQ = $(event.target).attr('data-confirm');
+      if (typeof confirmQ === 'string') {
+        if (!confirm(confirmQ)) return;
+      }
+      var redirectUrl = $(event.target).attr('data-redirect');
+
+      $.post($(event.target).attr('data-url'), this.handleResponse.bind(this)).then((function (event) {
+        if (typeof redirectUrl === 'string') {
+          $.post(redirectUrl, this.handleResponse.bind(this))
+        }
+      }).bind(this));
+    });
 
     var socket = connectSocket();
 

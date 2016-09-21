@@ -15,6 +15,7 @@ class TicketView extends React.Component {
     let assignURL = "/" + ticket.id + "/assign/";
     let resolveURL = "/" + ticket.id + "/resolve/";
     let unassignURL = "/" + ticket.id + "/unassign/";
+    let nextURL = "/next/"
 
     return(
       <div id="ticket">
@@ -69,7 +70,7 @@ class TicketView extends React.Component {
                     <div className="well">
                       <button data-url={resolveURL}
                               className="btn btn-primary btn-lg btn-block"
-                              data-redirect="{{ url_for('next_ticket') }}">Resolve and Next</button>
+                              data-redirect={nextURL}>Resolve and Next</button>
                       <button data-url={resolveURL}
                               className="btn btn-default btn-lg btn-block">Resolve</button>
                       <hr />
@@ -82,7 +83,8 @@ class TicketView extends React.Component {
                       <button data-url={assignURL}
                               data-confirm="Reassign this ticket?"
                               className="btn btn-warning btn-lg btn-block">Reassign</button>
-                      <a href="{{ url_for('next_ticket') }}" className="btn btn-default btn-lg btn-block">Next Ticket</a>
+                      <button data-url={nextURL}
+                              className="btn btn-default btn-lg btn-block">Next Ticket</button>
                     </div>
                   </div>
                 </div>
@@ -93,7 +95,8 @@ class TicketView extends React.Component {
 
                 <div className="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 staff-only">
                   <div className="well">
-                    <a href="{{ url_for('next_ticket') }}" className="btn btn-default btn-lg btn-block">Next Ticket</a>
+                    <button data-url={nextURL}
+                            className="btn btn-default btn-lg btn-block">Next Ticket</button>
                   </div>
                 </div>
 

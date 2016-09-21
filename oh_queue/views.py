@@ -95,7 +95,7 @@ def create():
     else:
         return render_template('create.html')
 
-@app.route('/next/')
+@app.route('/next/', methods=['POST'])
 @login_required
 def next_ticket():
     """Redirects to the user's first assigned but unresolved ticket.
@@ -105,22 +105,17 @@ def next_ticket():
         Ticket.helper_id == current_user.id,
         Ticket.status == TicketStatus.assigned).first()
     if ticket:
-        return redirect(url_for('ticket', ticket_id=ticket.id))
+        return jsonify({"event": "next", "data": ticket_json(ticket)})
     ticket = Ticket.query.filter(
         Ticket.status == TicketStatus.pending).first()
     if ticket:
-        return redirect(url_for('ticket', ticket_id=ticket.id))
-    return redirect(url_for('index'))
+        return jsonify({"event": "next", "data": ticket_json(ticket)})
+    return jsonify({"event": "queue"})
 
 @app.route('/<int:ticket_id>/')
 @login_required
 def ticket(ticket_id):
-    tickets = Ticket.by_status([TicketStatus.pending, TicketStatus.assigned])
-    my_ticket = Ticket.for_user(current_user)
-    return render_template('index.html',
-        tickets=tickets,
-        my_ticket=my_ticket,
-        date=datetime.datetime.now())
+    return redirect(url_for('index'))
 
 @app.route('/<int:ticket_id>/delete/', methods=['POST'])
 @login_required
