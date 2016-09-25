@@ -1,6 +1,57 @@
 class TicketView extends React.Component {
+  constructor(props) {
+    super(props);
 
+    this.assign = this.assign.bind(this);
+    this.delete = this.delete.bind(this);
+    this.resolveAndNext = this.resolveAndNext.bind(this);
+    this.resolve = this.resolve.bind(this);
+    this.unassign = this.unassign.bind(this);
+    this.reassign = this.reassign.bind(this);
+    this.next = this.next.bind(this);
+  }
 
+  assign() {
+    let ticketID = this.props.params.id;
+    socket.emit('assign', ticketID);
+  }
+
+  delete() {
+    let ticketID = this.props.params.id;
+    if (!confirm("Delete this ticket?")) return;
+    socket.emit('delete', ticketID);
+  }
+
+  resolveAndNext() {
+    let ticketID = this.props.params.id;
+    socket.emit('resolve', ticketID, this.goToTicket)
+  }
+
+  resolve() {
+    let ticketID = this.props.params.id;
+    socket.emit('resolve', ticketID);
+  }
+
+  unassign() {
+    let ticketID = this.props.params.id;
+    socket.emit('unassign', ticketID);
+  }
+
+  reassign() {
+    let ticketID = this.props.params.id;
+    if (!confirm("Reassign this ticket?")) return;
+    socket.emit('assign', ticketID);
+  }
+
+  next() {
+    let ticketID = this.props.params.id;
+    socket.emit('next', ticketID, this.goToTicket);
+  }
+
+  goToTicket(nextTicketID) {
+    let url = nextTicketID ? '/' + nextTicketID : '/';
+    ReactRouter.browserHistory.push(url);
+  }
 
   render() {
 
@@ -11,11 +62,6 @@ class TicketView extends React.Component {
     }
 
     let ticket = this.props.tickets.filter((ticketArray) => ticketArray[0] == this.props.params.id)[0][1];
-    let deleteURL = "/" + ticket.id + "/delete/";
-    let assignURL = "/" + ticket.id + "/assign/";
-    let resolveURL = "/" + ticket.id + "/resolve/";
-    let unassignURL = "/" + ticket.id + "/unassign/";
-    let nextURL = "/next/"
 
     return(
       <div id="ticket">
@@ -28,8 +74,8 @@ class TicketView extends React.Component {
             </h2>
 
             <p className="lead text-center">
-            {(() => { 
-              if (ticket.status == "assigned") { 
+            {(() => {
+              if (ticket.status == "assigned") {
                 return "Being helped by " + ticket.helper_name;
               } else if (ticket.status == "resolved") {
                 return "Resolved by " + ticket.helper_name;
@@ -47,17 +93,16 @@ class TicketView extends React.Component {
         </div>
 
         <div className="row">
-          {(() => { 
-            if (ticket.status == "pending") { 
+          {(() => {
+            if (ticket.status == "pending") {
               return (
 
                 <div className="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
                   <div className="well">
-                    <button data-url={assignURL}
+                    <button onClick={this.assign}
                             className="btn btn-primary btn-lg btn-block staff-only">Help</button>
                     <hr className="staff-only"/>
-                    <button data-url={deleteURL}
-                            data-confirm="Delete this ticket?"
+                    <button onClick={this.delete}
                             className="btn btn-danger btn-lg btn-block">Delete</button>
                   </div>
                 </div>
@@ -68,22 +113,20 @@ class TicketView extends React.Component {
                 <div>
                   <div className={"col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 hidden user-" + ticket.helper_id + "-visible"}>
                     <div className="well">
-                      <button data-url={resolveURL}
-                              className="btn btn-primary btn-lg btn-block"
-                              data-redirect={nextURL}>Resolve and Next</button>
-                      <button data-url={resolveURL}
+                      <button onClick={this.resolveAndNext}
+                              className="btn btn-primary btn-lg btn-block">Resolve and Next</button>
+                      <button onClick={this.resolve}
                               className="btn btn-default btn-lg btn-block">Resolve</button>
                       <hr />
-                      <button data-url={unassignURL}
+                      <button onClick={this.unassign}
                               className="btn btn-default btn-lg btn-block">Requeue</button>
                     </div>
                   </div>
                   <div className={"col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 user-" + ticket.helper_id + "-hidden staff-only"}>
                     <div className="well">
-                      <button data-url={assignURL}
-                              data-confirm="Reassign this ticket?"
+                      <button onClick={this.reassign}
                               className="btn btn-warning btn-lg btn-block">Reassign</button>
-                      <button data-url={nextURL}
+                      <button onClick={this.next}
                               className="btn btn-default btn-lg btn-block">Next Ticket</button>
                     </div>
                   </div>
@@ -95,7 +138,7 @@ class TicketView extends React.Component {
 
                 <div className="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 staff-only">
                   <div className="well">
-                    <button data-url={nextURL}
+                    <button onClick={this.next}
                             className="btn btn-default btn-lg btn-block">Next Ticket</button>
                   </div>
                 </div>

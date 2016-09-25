@@ -1,25 +1,5 @@
 /* React Components */
 class App extends React.Component {
-
-  handleResponse(response) {
-    if (response.event == "next") {
-      var ticket = response.data;
-      const activeTickets = [];
-      this.state.activeTickets.forEach((ticketArray) => {
-        if (ticket.id === ticketArray[1].id) {
-          activeTickets.push([ticket.id, ticket]);
-        } else {
-          activeTickets.push(ticketArray);
-        }
-      });
-      this.setState({ activeTickets })
-
-      ReactRouter.browserHistory.push('/' + ticket.id + '/');
-    } else if (response.event == "queue") {
-      ReactRouter.browserHistory.push('/');
-    }
-  }
-
   constructor(props) {
     super(props);
     this.state = {
@@ -28,27 +8,11 @@ class App extends React.Component {
       myTicket: null,
     };
 
-    $('body').on('click', '[data-url]', (event) => {
-      var confirmQ = $(event.target).attr('data-confirm');
-      if (typeof confirmQ === 'string') {
-        if (!confirm(confirmQ)) return;
-      }
-      var redirectUrl = $(event.target).attr('data-redirect');
-
-      $.post($(event.target).attr('data-url'), this.handleResponse.bind(this)).then((function (event) {
-        if (typeof redirectUrl === 'string') {
-          $.post(redirectUrl, this.handleResponse.bind(this))
-        }
-      }).bind(this));
-    });
-
-    var socket = connectSocket();
-
     socket.on('state', (state) => {
       console.log(state.isAuthenticated);
       const activeTickets = [];
       state.tickets.forEach((ticket) => { activeTickets.push([ticket.id, ticket]); });
-      this.setState({ 
+      this.setState({
         activeTickets: activeTickets,
         isAuthenticated: state.isAuthenticated,
         currentUser: state.currentUser,
@@ -87,7 +51,7 @@ class App extends React.Component {
       if (ticket.user_id == current_user_id) {
         notifyUser("61A Queue: Your name has been called by " + ticket.helper_name, {});
       }
-      
+
       const activeTickets = [];
       this.state.activeTickets.forEach((ticketArray) => {
         if (ticket.id === ticketArray[1].id) {
@@ -150,8 +114,8 @@ class App extends React.Component {
             <div className="collapse navbar-collapse" id="navbar-collapse-section">
               <ul className="nav navbar-nav navbar-right">
 
-                {(() => { 
-                  if (this.state.myTicket) { 
+                {(() => {
+                  if (this.state.myTicket) {
                     return <li><a href="{{ url_for('ticket', ticket_id=my_ticket.id) }}">My Request</a></li>;
                   } else {
                     return "";

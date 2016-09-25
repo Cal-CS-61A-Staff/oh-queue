@@ -95,76 +95,62 @@ def create():
     else:
         return render_template('create.html')
 
-@app.route('/next/', methods=['POST'])
-@login_required
-def next_ticket():
-    """Redirects to the user's first assigned but unresolved ticket.
-    If none exist, redirects to the first unassigned ticket.
+def get_next_ticket():
+    """Return the user's first assigned but unresolved ticket.
+    If none exist, return to the first unassigned ticket.
     """
     ticket = Ticket.query.filter(
         Ticket.helper_id == current_user.id,
         Ticket.status == TicketStatus.assigned).first()
     if ticket:
-        return jsonify({"event": "next", "data": ticket_json(ticket)})
-    ticket = Ticket.query.filter(
+        return ticket
+    return Ticket.query.filter(
         Ticket.status == TicketStatus.pending).first()
+
+@socketio.on('next')
+def next_ticket(ticket_id):
+    ticket = get_next_ticket()
     if ticket:
-        return jsonify({"event": "next", "data": ticket_json(ticket)})
-    return jsonify({"event": "queue"})
+        return ticket.id
 
-@app.route('/<int:ticket_id>/')
-@login_required
-def ticket(ticket_id):
-    return redirect(url_for('index'))
-
-@app.route('/<int:ticket_id>/delete/', methods=['POST'])
-@login_required
+@socketio.on('delete')
 def delete(ticket_id):
-    ticket = Ticket.query.get_or_404(ticket_id)
+    ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.deleted
     db.session.commit()
 
     emit_event(ticket, TicketEventType.delete)
-    return jsonify(result='success')
 
-@app.route('/<int:ticket_id>/resolve/', methods=['POST'])
-@login_required
+@socketio.on('resolve')
 def resolve(ticket_id):
-    ticket = Ticket.query.get_or_404(ticket_id)
+    ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.resolved
     ticket.helper_id = current_user.id
     db.session.commit()
 
     emit_event(ticket, TicketEventType.resolve)
-    return jsonify(result='success')
 
-@app.route('/<int:ticket_id>/assign/', methods=['POST'])
-@login_required
+    ticket = get_next_ticket()
+    if ticket:
+        return ticket.id
+
+@socketio.on('assign')
 def assign(ticket_id):
-    ticket = Ticket.query.get_or_404(ticket_id)
+    ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.assigned
     ticket.helper_id = current_user.id
     db.session.commit()
 
     emit_event(ticket, TicketEventType.assign)
-    return jsonify(result='success')
 
-@app.route('/<int:ticket_id>/unassign/', methods=['POST'])
-@login_required
+@socketio.on('unassign')
 def unassign(ticket_id):
-    ticket = Ticket.query.get_or_404(ticket_id)
+    ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.pending
     ticket.helper_id = None
     db.session.commit()
 
     emit_event(ticket, TicketEventType.unassign)
-    return jsonify(result='success')
-
-@app.route('/<int:ticket_id>/rate/', methods=['GET', 'POST'])
-@login_required
-def rate(ticket_id):
-    ticket = Ticket.query.get_or_404(ticket_id)
-    abort(404)  # TODO
 
 # Filters
 

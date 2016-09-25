@@ -16,6 +16,8 @@ function connectSocket() {
   });
 }
 
+var socket = connectSocket();
+
 ReactDOM.render(
   <ReactRouter.Router history={ReactRouter.browserHistory}>
     <ReactRouter.Route path="/" component={App}>
