@@ -62,7 +62,7 @@ class Jumbotron extends React.Component {
                     );
                   } else if (this.props.myTicket) {
                     return (
-                      <a className="btn btn-block btn-jumbo btn-outline" href="{{ url_for('ticket', ticket_id=my_ticket.id) }}">My Request</a>
+                      <ReactRouter.Link to={'/' + this.props.myTicket.id} className="btn btn-block btn-jumbo btn-outline">My Request</ReactRouter.Link>
                     );
                   } else {
                     return (

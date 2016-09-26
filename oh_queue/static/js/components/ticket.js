@@ -5,7 +5,7 @@ class Ticket extends React.Component {
     const htmlID = 'queue-ticket-' + ticket.id;
     if (ticket.status === 'pending') {
       var status = 'Queued';
-    } else if (ticket.helper_id === current_user_id) {
+    } else if (ticket.helper_id === this.props.currentUserID) {
       var status = 'Assigned to you';
     } else {
       var status = 'Being helped by ' + ticket.helper_name;
@@ -44,7 +44,7 @@ class Ticket extends React.Component {
 
          </ReactRouter.Link>
     } else {
-      ticketRow = 
+      ticketRow =
         <a href="/login/" className={"staff-link user-" + ticket.user_id + "-link"}>
           <div className="col-xs-3 col-sm-2 truncate">{ ticket.user_name }</div>
           <div className="hidden-xs col-sm-2 truncate">{ ticket.created }</div>

@@ -6,7 +6,6 @@ class App extends React.Component {
       loaded: false,
       activeTickets: [],
       isAuthenticated: false,
-      myTicket: null,
     };
 
     socket.on('state', (state) => {
@@ -18,6 +17,7 @@ class App extends React.Component {
         activeTickets: activeTickets,
         isAuthenticated: state.isAuthenticated,
         currentUser: state.currentUser,
+        currentUserID: state.currentUserID,
         isStaff: state.isStaff,
         email: state.email,
         shortName: state.shortName
@@ -50,7 +50,7 @@ class App extends React.Component {
     });
 
     socket.on('assign', (ticket) => {
-      if (ticket.user_id == current_user_id) {
+      if (ticket.user_id == this.state.currentUserID) {
         notifyUser("61A Queue: Your name has been called by " + ticket.helper_name, {});
       }
 
@@ -95,11 +95,17 @@ class App extends React.Component {
   }
 
   render() {
-    if (this.state.isStaff || this.state.myTicket) {
+    let tickets = this.state.activeTickets;
+    let myTicketArray = tickets.find((ticketArray) => {
+      let ticket = ticketArray[1];
+      return ticket.user_id === this.state.currentUserID &&
+        (ticket.status === 'pending' || ticket.status === 'assigned');
+    });
+    let myTicket = myTicketArray ? myTicketArray[1] : null;
+
+    if (this.state.isStaff || myTicket) {
       requestNotificationPermission();
     }
-
-    const myTicket = this.state.myTicket ? <Ticket key={this.state.myTicket.id} ticket={this.state.myTicket} /> : null;
 
     if (!this.state.loaded) return null;
 
@@ -119,8 +125,8 @@ class App extends React.Component {
               <ul className="nav navbar-nav navbar-right">
 
                 {(() => {
-                  if (this.state.myTicket) {
-                    return <li><a href="{{ url_for('ticket', ticket_id=my_ticket.id) }}">My Request</a></li>;
+                  if (myTicket) {
+                    return <li><ReactRouter.Link to={'/' + myTicket.id}>My Request</ReactRouter.Link></li>;
                   } else {
                     return "";
                   }
@@ -150,9 +156,10 @@ class App extends React.Component {
           isStaff: this.state.isStaff,
           tickets: this.state.activeTickets,
           isAuthenticated: this.state.isAuthenticated,
+          currentUserID: this.state.currentUserID,
           shortName: this.state.shortName,
           email: this.state.email,
-          myTicket: this.state.myTicket,
+          myTicket: myTicket,
           params: this.props.params
         })}
 
