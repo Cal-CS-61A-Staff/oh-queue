@@ -13,6 +13,10 @@ class Jumbotron extends React.Component {
     socket.emit('create', formData, goToTicket);
   }
 
+  componentDidMount() {
+    $('.selectpicker').selectpicker('refresh');
+  }
+
   render() {
 
     if (this.props.myTicket) {
@@ -65,7 +69,7 @@ class Jumbotron extends React.Component {
                       <form id="request-form">
                         <div className="form-group form-group-lg">
                           <div className="input-group">
-                            <select className="form-control width-60" id="assignment" name="assignment" title="Assignment" required>
+                            <select className="selectpicker form-control width-60" data-live-search="true" data-size="8" data-width="60%" data-style="btn-lg btn-default" data-select-on-tab="true" id="assignment" name="assignment" title="Assignment" required>
                               <option data-tokens="hog proj1 project 1">Hog</option>
                               <option data-tokens="maps proj2 project 2">Maps</option>
                               <option data-tokens="ants proj3 project 3">Ants</option>
@@ -103,7 +107,7 @@ class Jumbotron extends React.Component {
                         </div>
                         <div className="form-group form-group-lg">
                           <div className="input-group">
-                            <select className="form-control width-60" id="location" name="location" title="Location" required>
+                            <select className="selectpicker form-control width-60" id="location" data-width="100%" data-style="btn-lg btn-default" data-select-on-tab="true" name="location" title="Location" required>
                               <option>109 Morgan</option>
                               <option>237 Cory</option>
                               <option>241 Cory</option>
