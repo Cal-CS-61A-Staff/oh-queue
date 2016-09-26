@@ -3,6 +3,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loaded: false,
       activeTickets: [],
       isAuthenticated: false,
       myTicket: null,
@@ -13,6 +14,7 @@ class App extends React.Component {
       const activeTickets = [];
       state.tickets.forEach((ticket) => { activeTickets.push([ticket.id, ticket]); });
       this.setState({
+        loaded: true,
         activeTickets: activeTickets,
         isAuthenticated: state.isAuthenticated,
         currentUser: state.currentUser,
@@ -98,6 +100,8 @@ class App extends React.Component {
     }
 
     const myTicket = this.state.myTicket ? <Ticket key={this.state.myTicket.id} ticket={this.state.myTicket} /> : null;
+
+    if (!this.state.loaded) return null;
 
     return (
       <div>
