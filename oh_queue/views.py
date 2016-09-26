@@ -1,11 +1,8 @@
 import datetime
 import pytz
 
-from flask import (
-    abort, jsonify, redirect, flash, render_template, render_template_string,
-    request, url_for
-)
-from flask_login import current_user, login_required
+from flask import render_template
+from flask_login import current_user
 from flask_socketio import emit
 
 from oh_queue import app, db, socketio
@@ -21,8 +18,6 @@ def emit_event(ticket, event_type):
     )
     db.session.add(ticket_event)
     db.session.commit()
-    template = app.jinja_env.get_template('macros.html')
-    module = template.make_module({'request': request})
     socketio.emit(event_type.name, ticket_json(ticket))
 
 def ticket_json(ticket):
