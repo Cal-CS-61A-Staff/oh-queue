@@ -54,13 +54,9 @@ def connect():
     })
 
 @app.route('/')
-def index():
-    tickets = Ticket.by_status([TicketStatus.pending, TicketStatus.assigned])
-    my_ticket = Ticket.for_user(current_user)
-    return render_template('index.html',
-        tickets=tickets,
-        my_ticket=my_ticket,
-        date=datetime.datetime.now())
+@app.route('/<int:ticket_id>/')
+def index(*args, **kwargs):
+    return render_template('index.html')
 
 @socketio.on('create')
 def create(form):
