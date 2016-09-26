@@ -62,38 +62,31 @@ def index():
         my_ticket=my_ticket,
         date=datetime.datetime.now())
 
-@app.route('/create/', methods=['GET', 'POST'])
-@login_required
-def create():
+@socketio.on('create')
+def create(form):
     """Stores a new ticket to the persistent database, and emits it to all
     connected clients.
     """
-    # TODO use WTForms
     my_ticket = Ticket.for_user(current_user)
     if my_ticket:
-        flash("You're already on the queue!", 'warning')
-        return redirect(url_for('ticket', ticket_id=my_ticket.id))
-    elif request.method == 'POST':
-        # Create a new ticket and add it to persistent storage
-        if not (request.form.get('assignment') and request.form.get('question')
-                and request.form.get('location')):
-            flash("You must specify all of the fields", "warning")
-            return redirect(url_for('index'))
-        ticket = Ticket(
-            status=TicketStatus.pending,
-            user=current_user,
-            assignment=request.form.get('assignment'),
-            question=request.form.get('question'),
-            location=request.form.get('location'),
-        )
+        return my_ticket.id
+    # Create a new ticket and add it to persistent storage
+    if not (form.get('assignment') and form.get('question')
+            and form.get('location')):
+        return
+    ticket = Ticket(
+        status=TicketStatus.pending,
+        user=current_user,
+        assignment=form.get('assignment'),
+        question=form.get('question'),
+        location=form.get('location'),
+    )
 
-        db.session.add(ticket)
-        db.session.commit()
+    db.session.add(ticket)
+    db.session.commit()
 
-        emit_event(ticket, TicketEventType.create)
-        return redirect(url_for('index'))
-    else:
-        return render_template('create.html')
+    emit_event(ticket, TicketEventType.create)
+    return ticket.id
 
 def get_next_ticket():
     """Return the user's first assigned but unresolved ticket.

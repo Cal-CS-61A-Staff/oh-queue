@@ -24,7 +24,7 @@ class TicketView extends React.Component {
 
   resolveAndNext() {
     let ticketID = this.props.params.id;
-    socket.emit('resolve', ticketID, this.goToTicket)
+    socket.emit('resolve', ticketID, goToTicket)
   }
 
   resolve() {
@@ -45,12 +45,7 @@ class TicketView extends React.Component {
 
   next() {
     let ticketID = this.props.params.id;
-    socket.emit('next', ticketID, this.goToTicket);
-  }
-
-  goToTicket(nextTicketID) {
-    let url = nextTicketID ? '/' + nextTicketID : '/';
-    ReactRouter.browserHistory.push(url);
+    socket.emit('next', ticketID, goToTicket);
   }
 
   render() {

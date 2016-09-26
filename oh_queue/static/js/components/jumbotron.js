@@ -1,6 +1,17 @@
 class Jumbotron extends React.Component {
+  constructor(props) {
+    super(props);
+    this.submit = this.submit.bind(this);
+  }
 
-
+  submit(e) {
+    e.preventDefault();
+    let formData = {};
+    $('#request-form').serializeArray().forEach((input) => {
+      formData[input.name] = input.value;
+    });
+    socket.emit('create', formData, goToTicket);
+  }
 
   render() {
 
@@ -17,8 +28,8 @@ class Jumbotron extends React.Component {
           <div className="row">
 
             <div className="col-md-7 col-lg-8">
-              {(() => { 
-                if (this.props.isAuthenticated) { 
+              {(() => {
+                if (this.props.isAuthenticated) {
                   return (
                     <div>
                       <h1 className="truncate">Hello, { this.props.shortName }</h1>
@@ -40,8 +51,8 @@ class Jumbotron extends React.Component {
               <div className="request-form">
 
 
-                {(() => { 
-                  if (!this.props.isAuthenticated) { 
+                {(() => {
+                  if (!this.props.isAuthenticated) {
                     return (
                       <a className="btn btn-block btn-jumbo btn-outline" href="/login/">Sign in with Ok</a>
                     );
@@ -51,7 +62,7 @@ class Jumbotron extends React.Component {
                     );
                   } else {
                     return (
-                      <form action="/create/" method="POST">
+                      <form id="request-form">
                         <div className="form-group form-group-lg">
                           <div className="input-group">
                             <select className="form-control width-60" id="assignment" name="assignment" title="Assignment" required>
@@ -100,7 +111,7 @@ class Jumbotron extends React.Component {
                               <option>Other</option>
                             </select>
                             <span className="input-group-btn width-40 pull-left">
-                              <button className="btn btn-lg btn-default" type="submit" value="Submit">Request<span className="hidden-xs"> Help</span></button>
+                              <button className="btn btn-lg btn-default" onClick={this.submit}>Request<span className="hidden-xs"> Help</span></button>
                             </span>
                           </div>
                         </div>
