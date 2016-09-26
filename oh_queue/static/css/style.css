@@ -340,3 +340,11 @@ table.lined td {
 .composition-version {
   height:100%;
 }
+
+.width-40 {
+  width: 40% !important;
+}
+
+.width-60 {
+  width: 60% !important;
+}

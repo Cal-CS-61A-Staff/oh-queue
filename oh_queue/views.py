@@ -1,11 +1,9 @@
 import datetime
 import pytz
 
-from flask import (
-    abort, jsonify, redirect, flash, render_template, render_template_string,
-    request, url_for
-)
-from flask_login import current_user, login_required
+from flask import render_template
+from flask_login import current_user
+from flask_socketio import emit
 
 from oh_queue import app, db, socketio
 from oh_queue.models import Ticket, TicketStatus, TicketEvent, TicketEventType
@@ -20,138 +18,123 @@ def emit_event(ticket, event_type):
     )
     db.session.add(ticket_event)
     db.session.commit()
-    template = app.jinja_env.get_template('macros.html')
-    module = template.make_module({'request': request})
-    socketio.emit(event_type.name, {
+    socketio.emit(event_type.name, ticket_json(ticket))
+
+def ticket_json(ticket):
+    return {
         'id': ticket.id,
+        'status': ticket.status.name,
         'user_id': ticket.user_id,
         'user_name': ticket.user.name,
-        'add_date': format_datetime(ticket.created),
+        'created': format_datetime(ticket.created),
         'location': ticket.location,
         'assignment': ticket.assignment,
         'question': ticket.question,
+        'helper_id': ticket.helper_id,
         'helper_name': ticket.helper and ticket.helper.name,
-        'row_html': module.render_ticket_row(ticket=ticket),
-        'html': module.render_ticket(ticket=ticket)
+    }
+
+@socketio.on('connect')
+def connect():
+    tickets = Ticket.query.filter(
+        Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
+    ).order_by(Ticket.created).all()
+    emit('state', {
+        'tickets': [ticket_json(ticket) for ticket in tickets],
+        'isAuthenticated': current_user.is_authenticated,
+        'currentUser': current_user.name if current_user.is_authenticated else "",
+        'isStaff': current_user.is_staff if current_user.is_authenticated else "",
+        'email': current_user.email if current_user.is_authenticated else "",
+        'shortName': current_user.short_name if current_user.is_authenticated else ""
     })
 
-
 @app.route('/')
-def index():
-    tickets = Ticket.by_status([TicketStatus.pending, TicketStatus.assigned])
-    my_ticket = Ticket.for_user(current_user)
-    return render_template('index.html',
-        tickets=tickets,
-        my_ticket=my_ticket,
-        date=datetime.datetime.now())
+@app.route('/<int:ticket_id>/')
+def index(*args, **kwargs):
+    return render_template('index.html')
 
-@app.route('/create/', methods=['GET', 'POST'])
-@login_required
-def create():
+@socketio.on('create')
+def create(form):
     """Stores a new ticket to the persistent database, and emits it to all
     connected clients.
     """
-    # TODO use WTForms
     my_ticket = Ticket.for_user(current_user)
     if my_ticket:
-        flash("You're already on the queue!", 'warning')
-        return redirect(url_for('ticket', ticket_id=my_ticket.id))
-    elif request.method == 'POST':
-        # Create a new ticket and add it to persistent storage
-        if not (request.form.get('assignment') and request.form.get('question')
-                and request.form.get('location')):
-            flash("You must specify all of the fields", "warning")
-            return redirect(url_for('index'))
-        ticket = Ticket(
-            status=TicketStatus.pending,
-            user=current_user,
-            assignment=request.form.get('assignment'),
-            question=request.form.get('question'),
-            location=request.form.get('location'),
-        )
+        return my_ticket.id
+    # Create a new ticket and add it to persistent storage
+    if not (form.get('assignment') and form.get('question')
+            and form.get('location')):
+        return
+    ticket = Ticket(
+        status=TicketStatus.pending,
+        user=current_user,
+        assignment=form.get('assignment'),
+        question=form.get('question'),
+        location=form.get('location'),
+    )
 
-        db.session.add(ticket)
-        db.session.commit()
+    db.session.add(ticket)
+    db.session.commit()
 
-        emit_event(ticket, TicketEventType.create)
-        return redirect(url_for('index'))
-    else:
-        return render_template('create.html')
+    emit_event(ticket, TicketEventType.create)
+    return ticket.id
 
-@app.route('/next/')
-@login_required
-def next_ticket():
-    """Redirects to the user's first assigned but unresolved ticket.
-    If none exist, redirects to the first unassigned ticket.
+def get_next_ticket():
+    """Return the user's first assigned but unresolved ticket.
+    If none exist, return to the first unassigned ticket.
     """
     ticket = Ticket.query.filter(
         Ticket.helper_id == current_user.id,
         Ticket.status == TicketStatus.assigned).first()
     if ticket:
-        return redirect(url_for('ticket', ticket_id=ticket.id))
-    ticket = Ticket.query.filter(
+        return ticket
+    return Ticket.query.filter(
         Ticket.status == TicketStatus.pending).first()
+
+@socketio.on('next')
+def next_ticket(ticket_id):
+    ticket = get_next_ticket()
     if ticket:
-        return redirect(url_for('ticket', ticket_id=ticket.id))
-    return redirect(url_for('index'))
+        return ticket.id
 
-@app.route('/<int:ticket_id>/')
-@login_required
-def ticket(ticket_id):
-    ticket = Ticket.query.get_or_404(ticket_id)
-    if not current_user.is_staff and current_user.id != ticket.user_id:
-        abort(404)
-    return render_template('ticket.html', ticket=ticket,
-                           date=datetime.datetime.now())
-
-@app.route('/<int:ticket_id>/delete/', methods=['POST'])
-@login_required
+@socketio.on('delete')
 def delete(ticket_id):
-    ticket = Ticket.query.get_or_404(ticket_id)
+    ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.deleted
     db.session.commit()
 
     emit_event(ticket, TicketEventType.delete)
-    return jsonify(result='success')
 
-@app.route('/<int:ticket_id>/resolve/', methods=['POST'])
-@login_required
+@socketio.on('resolve')
 def resolve(ticket_id):
-    ticket = Ticket.query.get_or_404(ticket_id)
+    ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.resolved
     ticket.helper_id = current_user.id
     db.session.commit()
 
     emit_event(ticket, TicketEventType.resolve)
-    return jsonify(result='success')
 
-@app.route('/<int:ticket_id>/assign/', methods=['POST'])
-@login_required
+    ticket = get_next_ticket()
+    if ticket:
+        return ticket.id
+
+@socketio.on('assign')
 def assign(ticket_id):
-    ticket = Ticket.query.get_or_404(ticket_id)
+    ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.assigned
     ticket.helper_id = current_user.id
     db.session.commit()
 
     emit_event(ticket, TicketEventType.assign)
-    return jsonify(result='success')
 
-@app.route('/<int:ticket_id>/unassign/', methods=['POST'])
-@login_required
+@socketio.on('unassign')
 def unassign(ticket_id):
-    ticket = Ticket.query.get_or_404(ticket_id)
+    ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.pending
     ticket.helper_id = None
     db.session.commit()
 
     emit_event(ticket, TicketEventType.unassign)
-    return jsonify(result='success')
-
-@app.route('/<int:ticket_id>/rate/', methods=['GET', 'POST'])
-@login_required
-def rate(ticket_id):
-    ticket = Ticket.query.get_or_404(ticket_id)
-    abort(404)  # TODO
 
 # Filters
 
@@ -161,11 +144,3 @@ local_timezone = pytz.timezone(app.config['LOCAL_TIMEZONE'])
 def format_datetime(timestamp):
     time = pytz.utc.localize(timestamp).astimezone(local_timezone)
     return time.strftime('%I:%M %p')
-
-# Caching
-
-@app.after_request
-def disable_caching(response):
-    response.headers.add('Cache-Control',
-        'no-cache, max-age=0, must-revalidate, no-store')
-    return response

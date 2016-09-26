@@ -1,86 +1,11 @@
-{% macro render_ticket_row(ticket) -%}
-<div class="row user-{{ ticket.user_id }}-highlight"
-     id="queue-ticket-{{ ticket.id }}">
-    <a class="staff-link user-{{ ticket.user_id }}-link"
-     href="{{ url_for('ticket', ticket_id=ticket.id) }}">
-      <div class="col-xs-3 col-sm-2 truncate">{{ ticket.user.name | title }}</div>
-
-      <div class="hidden-xs col-sm-2 truncate">{{ ticket.created | datetime }}</div>
-      <div class="col-xs-3 col-sm-2 truncate">{{ ticket.location }}</div>
-      <div class="col-xs-3 col-sm-2 truncate">{{ ticket.assignment }}</div>
-      <div class="hidden-xs col-sm-2 truncate">{{ ticket.question }}</div>
-      {% if ticket.status == TicketStatus.pending %}
-      <div class="col-xs-3 col-sm-2 truncate">Queued</div>
-      {% elif ticket.status == TicketStatus.assigned %}
-      <div class="col-xs-3 col-sm-2 user-{{ ticket.helper_id }}-hidden truncate">Being helped by {{ ticket.helper.name }}</div>
-      <div class="col-xs-3 col-sm-2 hidden user-{{ ticket.helper_id }}-visible truncate">Assigned to you</div>
-      {% endif %}
-     </a>
-</div>
+{% macro js_asset(name) -%}
+{% for url in assets_env[name].urls() %}
+<script type="text/javascript" src="{{ url }}"></script>
+{% endfor %}
 {%- endmacro %}
 
-{% macro render_ticket(ticket) -%}
-<div id="ticket">
-  <div class="row ticket">
-    <div class="col-xs-12">
-      <h2 class="text-center">
-        {{ ticket.user.name }}
-        <small class="clearfix">{{ ticket.created | datetime }} in {{ ticket.location }}</small>
-      </h2>
-      <p class="lead text-center">
-      {% if ticket.status == TicketStatus.assigned %}
-      Being helped by {{ ticket.helper.name | title }}
-      {% elif ticket.status == TicketStatus.resolved %}
-      Resolved by {{ ticket.helper.name | title }}
-      {% elif ticket.status == TicketStatus.deleted %}
-      Deleted
-      {% endif %}
-      </p>
-      <h3 class="text-center">
-        <span class="label label-default">{{ ticket.assignment }} Q{{ ticket.question }}</span>
-      </h3>
-    </div>
-  </div>
-  <div class="row">
-    {% if ticket.status == TicketStatus.pending %}
-    <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
-      <div class="well">
-        <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}"
-                class="btn btn-primary btn-lg btn-block staff-only">Help</button>
-        <hr class="staff-only">
-        <button data-url="{{ url_for('delete', ticket_id=ticket.id) }}"
-                data-confirm="Delete this ticket?"
-                class="btn btn-danger btn-lg btn-block">Delete</button>
-      </div>
-    </div>
-    {% elif ticket.status == TicketStatus.assigned %}
-    <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 hidden user-{{ ticket.helper_id }}-visible">
-      <div class="well">
-        <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}"
-                class="btn btn-primary btn-lg btn-block"
-                data-redirect="{{ url_for('next_ticket') }}">Resolve and Next</button>
-        <button data-url="{{ url_for('resolve', ticket_id=ticket.id) }}"
-                class="btn btn-default btn-lg btn-block">Resolve</button>
-        <hr>
-        <button data-url="{{ url_for('unassign', ticket_id=ticket.id) }}"
-                class="btn btn-default btn-lg btn-block">Requeue</button>
-      </div>
-    </div>
-    <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 user-{{ ticket.helper_id }}-hidden staff-only">
-      <div class="well">
-        <button data-url="{{ url_for('assign', ticket_id=ticket.id) }}"
-                data-confirm="Reassign this ticket?"
-                class="btn btn-warning btn-lg btn-block">Reassign</button>
-        <a href="{{ url_for('next_ticket') }}" class="btn btn-default btn-lg btn-block">Next Ticket</a>
-      </div>
-    </div>
-    {% elif ticket.status == TicketStatus.resolved or ticket.status == TicketStatus.deleted %}
-    <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 staff-only">
-      <div class="well">
-        <a href="{{ url_for('next_ticket') }}" class="btn btn-default btn-lg btn-block">Next Ticket</a>
-      </div>
-    </div>
-    {% endif %}
-  </div>
-</div>
+{% macro css_asset(name) -%}
+{% for url in assets_env[name].urls() %}
+<link rel="stylesheet" type="text/css" href="{{ url }}">
+{% endfor %}
 {%- endmacro %}

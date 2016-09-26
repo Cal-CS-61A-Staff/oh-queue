@@ -16,18 +16,20 @@ function connectSocket() {
   });
 }
 
-$(document).ready(function(){
-  // Bind event listeners
-  $('body').on('click', '[data-url]', function(event) {
-    var confirmQ = $(this).attr('data-confirm');
-    if (typeof confirmQ === 'string') {
-      if (!confirm(confirmQ)) return;
-    }
-    var redirectUrl = $(this).attr('data-redirect');
-    $.post($(this).attr('data-url')).then(function (event) {
-      if (typeof redirectUrl === 'string') {
-        window.location.href = redirectUrl;
-      }
-    });
-  });
-});
+function goToTicket(nextTicketID) {
+  let url = nextTicketID ? '/' + nextTicketID : '/';
+  ReactRouter.browserHistory.push(url);
+}
+
+var socket = connectSocket();
+
+ReactDOM.render(
+  <ReactRouter.Router history={ReactRouter.browserHistory}>
+    <ReactRouter.Route path="/" component={App}>
+      <ReactRouter.IndexRoute component={Queue}/>
+      <ReactRouter.Route path="/:id" component={TicketView}/>
+    </ReactRouter.Route>
+  </ReactRouter.Router>,
+
+  document.getElementById('content')
+);
