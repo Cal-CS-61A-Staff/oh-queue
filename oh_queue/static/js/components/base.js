@@ -1,7 +1,7 @@
 let Base = ({state, children}) => {
   let myTicket = getMyTicket(state);
 
-  if ((state.currentUser && state.currentUser.isStaff) || myTicket) {
+  if (isStaff(state) || myTicket) {
     requestNotificationPermission();
   }
 

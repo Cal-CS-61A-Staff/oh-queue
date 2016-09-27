@@ -84,3 +84,22 @@ hr {
   display: block;
   margin: 20%;
 }
+
+.highlight {
+  color: #31708f;
+  background-color: #d9edf7;
+  border: 1px solid #bce8f1;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.ticket-link:hover {
+  background: #eee;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.disabled-link {
+  color: #333;
+  pointer-events: none;
+}

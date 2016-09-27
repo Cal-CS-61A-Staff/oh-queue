@@ -45,9 +45,10 @@ function isActive(ticket: Ticket): boolean {
   return ticket.status === 'pending' || ticket.status === 'assigned';
 }
 
-function ticketStatus(ticket: Ticket): string {
+function ticketStatus(state: State, ticket: Ticket): string {
   if (ticket.status === 'assigned' && ticket.helper) {
-    return 'Being helped by ' + ticket.helper.name;
+    let isYou = state.currentUser && state.currentUser.id === ticket.helper.id;
+    return 'Being helped by ' + (isYou ? 'you' : ticket.helper.name);
   } else if (ticket.status === 'resolved' && ticket.helper) {
     return 'Resolved by ' + ticket.helper.name;
   } else if (ticket.status === 'deleted') {
@@ -55,6 +56,10 @@ function ticketStatus(ticket: Ticket): string {
   } else {
     return 'Queued';
   }
+}
+
+function isStaff(state: State): boolean {
+  return state.currentUser && state.currentUser.isStaff;
 }
 
 function getTicket(state: State, id: number): ?Ticket {
