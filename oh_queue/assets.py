@@ -29,6 +29,7 @@ def glob_assets(pattern):
 
 assets_env.register('common.js',
     *glob_assets('js/components/*.js'),
+    'js/state.js',
     'js/common.js',  # must be last
     filters=babel,
     output='public/common.js',

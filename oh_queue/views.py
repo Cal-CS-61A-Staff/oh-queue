@@ -8,9 +8,28 @@ from flask_socketio import emit
 from oh_queue import app, db, socketio
 from oh_queue.models import Ticket, TicketStatus, TicketEvent, TicketEventType
 
-def emit_event(ticket, event_type):
-    # TODO log
+def user_json(user):
+    return {
+        'id': user.id,
+        'email': user.email,
+        'name': user.name,
+        'isStaff': user.is_staff,
+    }
 
+def ticket_json(ticket):
+    return {
+        'id': ticket.id,
+        'status': ticket.status.name,
+        'user': user_json(ticket.user),
+        # TODO use ISO 8601 and format on client
+        'created': format_datetime(ticket.created),
+        'location': ticket.location,
+        'assignment': ticket.assignment,
+        'question': ticket.question,
+        'helper': ticket.helper and user_json(ticket.helper),
+    }
+
+def emit_event(ticket, event_type):
     ticket_event = TicketEvent(
         event_type=event_type,
         ticket=ticket,
@@ -18,35 +37,20 @@ def emit_event(ticket, event_type):
     )
     db.session.add(ticket_event)
     db.session.commit()
-    socketio.emit(event_type.name, ticket_json(ticket))
-
-def ticket_json(ticket):
-    return {
-        'id': ticket.id,
-        'status': ticket.status.name,
-        'user_id': ticket.user_id,
-        'user_name': ticket.user.name,
-        'created': format_datetime(ticket.created),
-        'location': ticket.location,
-        'assignment': ticket.assignment,
-        'question': ticket.question,
-        'helper_id': ticket.helper_id,
-        'helper_name': ticket.helper and ticket.helper.name,
-    }
+    socketio.emit('event', {
+        'type': event_type.name,
+        'ticket': ticket_json(ticket),
+    })
 
 @socketio.on('connect')
 def connect():
     tickets = Ticket.query.filter(
         Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
-    ).order_by(Ticket.created).all()
+    ).all()
     emit('state', {
         'tickets': [ticket_json(ticket) for ticket in tickets],
-        'isAuthenticated': current_user.is_authenticated,
-        'currentUser': current_user.name if current_user.is_authenticated else "",
-        'currentUserID': current_user.id if current_user.is_authenticated else "",
-        'isStaff': current_user.is_staff if current_user.is_authenticated else "",
-        'email': current_user.email if current_user.is_authenticated else "",
-        'shortName': current_user.short_name if current_user.is_authenticated else ""
+        'currentUser':
+            user_json(current_user) if current_user.is_authenticated else None,
     })
 
 @app.route('/')
