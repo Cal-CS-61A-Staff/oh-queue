@@ -76,9 +76,9 @@ function setTicket(state: State, ticket: Ticket): void {
 function getActiveTickets(state: State): Array<Ticket> {
   let active = Array.from(state.tickets.values()).filter(isActive);
   return active.sort((a, b) => {
-    if (a.created > b.created) {
+    if (a.created < b.created) {
       return -1;
-    } else if (a.created < b.created) {
+    } else if (a.created > b.created) {
       return 1;
     } else {
       return 0;

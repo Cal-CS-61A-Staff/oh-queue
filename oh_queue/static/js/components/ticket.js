@@ -1,6 +1,6 @@
-let Ticket = ({state, ticket}) => {
+let Ticket = ({state, ticket, myTicket}) => {
   return (
-    <TicketLink state={state} ticket={ticket}>
+    <TicketLink state={state} ticket={ticket} myTicket={myTicket}>
       <div className="col-xs-3 col-sm-2 truncate">{ticket.user.name}</div>
       <div className="hidden-xs col-sm-2 truncate">{ticket.created}</div>
       <div className="col-xs-3 col-sm-2 truncate">{ticket.location}</div>
@@ -11,9 +11,8 @@ let Ticket = ({state, ticket}) => {
   );
 }
 
-let TicketLink = ({state, ticket, children}) => {
-  // my ticket
-  if (state.currentUser && state.currentUser.id === ticket.user.id) {
+let TicketLink = ({state, ticket, myTicket, children}) => {
+  if (myTicket && myTicket.id === ticket.id) {
     return (
       <div className="row highlight">
         <ReactRouter.Link to={`/${ticket.id}`} className="ticket-link">

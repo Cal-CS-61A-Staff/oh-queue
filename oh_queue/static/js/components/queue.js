@@ -1,11 +1,11 @@
 let Queue = ({state}) => {
+  let myTicket = getMyTicket(state);
   let items = getActiveTickets(state).map(ticket =>
-    <Ticket state={state} ticket={ticket}/>
+    <Ticket state={state} ticket={ticket} myTicket={myTicket}/>
   );
-
   return (
     <div>
-      <Jumbotron state={state}/>
+      {!isStaff(state) && <Jumbotron state={state} myTicket={myTicket}/>}
       <div id="queue" className="queue container">
         <div className="row">
           <div className="col-xs-3 col-sm-2">Name</div>
@@ -17,8 +17,6 @@ let Queue = ({state}) => {
         </div>
         <div className="queue">{items}</div>
       </div>
-
     </div>
-
   );
 }
