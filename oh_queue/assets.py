@@ -15,9 +15,10 @@ assets_env.register('style.css',
 )
 
 assets_env.register('common.js',
+'js/components/app.js',
     'js/components/jumbotron.js',
+    'js/components/navbar.js',
     'js/components/queue.js',
-    'js/components/app.js',
     'js/components/ticket.js',
     'js/components/ticket_view.js',
     'js/common.js',

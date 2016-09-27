@@ -109,48 +109,16 @@ class App extends React.Component {
 
     if (!this.state.loaded) return null;
 
+    // TODO hack for navbar
+    let currentUser = {
+      isAuthenticated: this.state.isAuthenticated,
+      id: this.state.currentUserID,
+      name: this.state.currentUser,
+    };
+
     return (
       <div>
-        <nav className="navbar navbar-default navbar-fixed-top">
-          <div className="container">
-            <div className="navbar-header">
-              <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
-                <span className="icon-bar"></span>
-                <span className="icon-bar"></span>
-                <span className="icon-bar"></span>
-              </button>
-              <ReactRouter.Link className="navbar-brand" to="/"><strong>CS 61A</strong> Queue</ReactRouter.Link>
-            </div>
-            <div className="collapse navbar-collapse" id="navbar-collapse-section">
-              <ul className="nav navbar-nav navbar-right">
-
-                {(() => {
-                  if (myTicket) {
-                    return <li><ReactRouter.Link to={'/' + myTicket.id}>My Request</ReactRouter.Link></li>;
-                  } else {
-                    return "";
-                  }
-                })()}
-
-                {(() => {
-                  if (this.state.isAuthenticated) {
-                    return (
-                      <li className="dropdown">
-                        <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button">{ this.state.currentUser } <span className="caret"></span></a>
-                        <ul className="dropdown-menu">
-                          <li><a href="/logout/">Log out</a></li>
-                        </ul>
-                      </li>
-                    )
-                  } else {
-                    return (<li><a href="/login/">Staff Login</a></li>)
-                  }
-                })()}
-
-              </ul>
-            </div>
-          </div>
-        </nav>
+        <Navbar currentUser={currentUser} myTicket={myTicket} />
 
         {this.props.children && React.cloneElement(this.props.children, {
           isStaff: this.state.isStaff,
