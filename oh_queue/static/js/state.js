@@ -27,13 +27,19 @@ type State = {
   /* May be null if the user is not logged in. */
   currentUser: ?User,
   /* True on page load, before the initial websocket connection. */
-  loading: boolean,
+  loaded: boolean,
   /* All known tickets, including ones that have been resolved or deleted.
    * We may have to load past tickets asynchronously though.
    * This is an ES6 Map from ticket ID to the ticket data.
    */
   tickets: Map<number, Ticket>,
 };
+
+let initialState: State = {
+  currentUser: null,
+  loaded: false,
+  tickets: new Map(),
+}
 
 function isActive(ticket: Ticket): boolean {
   return ticket.status === 'pending' || ticket.status === 'assigned';
@@ -49,6 +55,14 @@ function ticketStatus(ticket: Ticket): string {
   } else {
     return 'Queued';
   }
+}
+
+function getTicket(state: State, id: number): ?Ticket {
+  return state.tickets.get(id);
+}
+
+function setTicket(state: State, ticket: Ticket): void {
+  state.tickets.set(ticket.id, ticket);
 }
 
 /* Return an array of tickets that are pending or assigned, sorted by queue

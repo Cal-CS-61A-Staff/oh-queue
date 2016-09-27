@@ -21,15 +21,8 @@ function goToTicket(nextTicketID) {
   ReactRouter.browserHistory.push(url);
 }
 
-var socket = connectSocket();
+let app = ReactDOM.render(<App/>, document.getElementById('content'));
 
-ReactDOM.render(
-  <ReactRouter.Router history={ReactRouter.browserHistory}>
-    <ReactRouter.Route path="/" component={App}>
-      <ReactRouter.IndexRoute component={Queue}/>
-      <ReactRouter.Route path="/:id" component={TicketView}/>
-    </ReactRouter.Route>
-  </ReactRouter.Router>,
-
-  document.getElementById('content')
-);
+let socket = connectSocket();
+socket.on('state', (data) => app.updateState(data));
+socket.on('event', (data) => app.updateTicket(data.ticket));

@@ -1,15 +1,16 @@
 class Queue extends React.Component {
   render() {
+    return null;
 
     const items = this.props.tickets.sort((a, b) => a[1].created > b[1].created)
                                       .map((ticket) => <Ticket key={ticket[0]} ticket={ticket[1]} isAuthenticated={this.props.isAuthenticated} />);
 
     return(
       <div>
-        {(() => { 
-          if (!this.props.isStaff) { 
+        {(() => {
+          if (!this.props.isStaff) {
             return (
-              <Jumbotron 
+              <Jumbotron
                 isAuthenticated={this.props.isAuthenticated}
                 shortName={this.props.shortName}
                 email={this.props.email}

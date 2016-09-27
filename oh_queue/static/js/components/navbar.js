@@ -1,5 +1,5 @@
 /* React Components */
-let Navbar = (props) => {
+let Navbar = ({currentUser, myTicket}) => {
   return (
     <nav className="navbar navbar-default navbar-fixed-top">
       <div className="container">
@@ -15,16 +15,16 @@ let Navbar = (props) => {
           <ul className="nav navbar-nav navbar-right">
 
             {(() => {
-              if (props.myTicket) {
-                return <li><ReactRouter.Link to={'/' + props.myTicket.id}>My Request</ReactRouter.Link></li>;
+              if (myTicket) {
+                return <li><ReactRouter.Link to={'/' + myTicket.id}>My Request</ReactRouter.Link></li>;
               }
             })()}
 
             {(() => {
-              if (props.currentUser.isAuthenticated) {
+              if (currentUser != null) {
                 return (
                   <li className="dropdown">
-                    <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button">{ props.currentUser.name} <span className="caret"></span></a>
+                    <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button">{currentUser.name} <span className="caret"></span></a>
                     <ul className="dropdown-menu">
                       <li><a href="/logout/">Log out</a></li>
                     </ul>
