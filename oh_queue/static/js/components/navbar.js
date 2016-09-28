@@ -16,7 +16,7 @@ let Navbar = ({currentUser, myTicket}) => {
 
             {(() => {
               if (myTicket) {
-                return <li><ReactRouter.Link to={'/' + myTicket.id}>My Request</ReactRouter.Link></li>;
+                return <li><ReactRouter.Link to={`/${myTicket.id}/`}>My Request</ReactRouter.Link></li>;
               }
             })()}
 
