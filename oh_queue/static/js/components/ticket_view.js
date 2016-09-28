@@ -15,7 +15,7 @@ class TicketView extends React.Component {
 
     if (ticket == null) {
       if (isLoading(state, id)) {
-        return <div/>;  // TODO spinner instead of blank screen
+        return null;  // TODO loading indicator instead of blank screen
       } else {
         return <NotFound/>;
       }

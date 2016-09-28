@@ -5,6 +5,7 @@ let Base = ({state, children}) => {
     requestNotificationPermission();
   }
 
+  // TODO loading indicator instead of blank screen
   if (!state.loaded) return null;
 
   return (

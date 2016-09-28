@@ -1,3 +1,20 @@
+/* This component holds the global application state, and manages the websocket
+ * connection. To update the state, call a method on the global "app" object,
+ * e.g. as
+ *
+ *     app.addMessage("Something bad happened", "danger");
+ *
+ * Because it sits at the root of React heirarchy, any state changes in the app
+ * will cause the entire app to re-render, so any state changes are reflected
+ * instantly.
+ *
+ * All other React components are "stateless". Many of them are simply pure
+ * functions that take the state and produce HTML. A few are slightly more
+ * complicated in that they have to interact with jQuery or the network.
+ *
+ * NB: calling app methods inside a render() method will result in an infinite
+ * loop.
+ */
 class App extends React.Component {
   constructor(props) {
     super(props);

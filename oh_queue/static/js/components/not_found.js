@@ -1,3 +1,4 @@
+// TODO make this prettier
 let NotFound = () =>
   <div className="container">
     <div className="row">

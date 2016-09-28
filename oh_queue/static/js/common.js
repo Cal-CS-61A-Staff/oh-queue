@@ -16,4 +16,6 @@ function connectSocket() {
   });
 }
 
+// The one and only app. Other components may reference this variable.
+// See components/app.js for more documentation
 let app = ReactDOM.render(<App/>, document.getElementById('content'));
