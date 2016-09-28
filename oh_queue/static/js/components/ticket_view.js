@@ -10,7 +10,8 @@ let TicketView = ({state, params}) => {
   }
 
   return (
-    <div id="ticket">
+    <div className="container">
+      <Messages messages={state.messages}/>
       <div className="row ticket">
         <div className="col-xs-12">
           <h2 className="text-center">

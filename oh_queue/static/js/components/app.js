@@ -26,6 +26,18 @@ class App extends React.Component {
     this.setState(state);
   }
 
+  addMessage(message, category) {
+    let state = this.state;
+    addMessage(state, message, category);
+    this.setState(state);
+  }
+
+  clearMessage(id) {
+    let state = this.state;
+    clearMessage(state, id);
+    this.setState(state);
+  }
+
   render() {
     // Give route components (e.g. Queue, TicketView) the state
     let state = this.state;

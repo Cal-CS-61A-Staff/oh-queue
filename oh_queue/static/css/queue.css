@@ -179,3 +179,7 @@ hr {
     -webkit-transform: rotate(359deg);
   }
 }
+
+.messages {
+  margin: 15px 0 0 0;
+}

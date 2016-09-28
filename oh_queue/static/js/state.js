@@ -23,6 +23,13 @@ type Ticket = {
   helper: ?User,
 };
 
+type Message = {
+  id: number,
+  category: string,  // e.g. "danger", "warning"
+  text: string,
+  visible: boolean,
+};
+
 type State = {
   /* May be null if the user is not logged in. */
   currentUser: ?User,
@@ -35,6 +42,9 @@ type State = {
    * This is an ES6 Map from ticket ID to the ticket data.
    */
   tickets: Map<number, Ticket>,
+  /* Flashed messages. */
+  messages: Array<Message>,
+  nextMessageID: number,
 };
 
 let initialState: State = {
@@ -42,6 +52,8 @@ let initialState: State = {
   loaded: false,
   offline: true,
   tickets: new Map(),
+  messages: [],
+  nextMessageID: 1,
 }
 
 function isActive(ticket: Ticket): boolean {
@@ -62,7 +74,7 @@ function ticketStatus(state: State, ticket: Ticket): string {
 }
 
 function isStaff(state: State): boolean {
-  return state.currentUser && state.currentUser.isStaff;
+  return state.currentUser != null && state.currentUser.isStaff;
 }
 
 function getTicket(state: State, id: number): ?Ticket {
@@ -98,4 +110,21 @@ function getMyTicket(state: State): ?Ticket {
   return Array.from(state.tickets.values()).find(ticket =>
     isActive(ticket) && ticket.user.id === userID
   );
+}
+
+function addMessage(state: State, text: string, category: string): void {
+  state.messages.push({
+    id: state.nextMessageID,
+    text,
+    category,
+    visible: true,
+  });
+  state.nextMessageID += 1;
+}
+
+function clearMessage(state: State, id: number): void {
+  let message = state.messages.find((message) => message.id === id);
+  if (message) {
+    message.visible = false;
+  }
 }
