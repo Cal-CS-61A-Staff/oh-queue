@@ -42,6 +42,8 @@ type State = {
    * This is an ES6 Map from ticket ID to the ticket data.
    */
   tickets: Map<number, Ticket>,
+  /* Ticket IDs for any tickets we are currently loading. */
+  loadingTickets: Set<number>,
   /* Flashed messages. */
   messages: Array<Message>,
   nextMessageID: number,
@@ -52,6 +54,7 @@ let initialState: State = {
   loaded: false,
   offline: true,
   tickets: new Map(),
+  loadingTickets: new Set(),
   messages: [],
   nextMessageID: 1,
 }
@@ -83,6 +86,21 @@ function getTicket(state: State, id: number): ?Ticket {
 
 function setTicket(state: State, ticket: Ticket): void {
   state.tickets.set(ticket.id, ticket);
+}
+
+function loadTicket(state: State, id: number): void {
+  state.loadingTickets.add(id);
+}
+
+function isLoading(state: State, id: number): boolean {
+  return state.loadingTickets.has(id);
+}
+
+function receiveTicket(state: State, id: number, ticket: ?Ticket) {
+  if (ticket != null) {
+    setTicket(state, ticket);
+  }
+  state.loadingTickets.delete(id);
 }
 
 /* Return an array of tickets that are pending or assigned, sorted by queue

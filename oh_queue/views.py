@@ -165,6 +165,12 @@ def unassign(ticket_id):
 
     emit_event(ticket, TicketEventType.unassign)
 
+@socketio.on('load_ticket')
+def load_ticket(ticket_id):
+    ticket = Ticket.query.get(ticket_id)
+    if ticket:
+        return ticket_json(ticket)
+
 # Filters
 
 local_timezone = pytz.timezone(app.config['LOCAL_TIMEZONE'])

@@ -1,45 +1,60 @@
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state =  initialState;
+    this.state = initialState;
+
+    let socket = connectSocket();
+    this.socket = socket;
+    socket.on('connect', () => app.setOffline(false));
+    socket.on('disconnect', () => app.setOffline(true));
+    socket.on('state', (data) => app.updateState(data));
+    socket.on('event', (data) => app.updateTicket(data.ticket));
+  }
+
+  refresh() {
+    this.setState(this.state);
   }
 
   setOffline(offline) {
-    let state = this.state;
-    state.offline = offline;
-    this.setState(state);
+    this.state.offline = offline;
+    this.refresh();
   }
 
   updateState(data) {
-    let state = this.state;
-    state.loaded = true;
-    state.currentUser = data.currentUser;
+    this.state.loaded = true;
+    this.state.currentUser = data.currentUser;
     for (var ticket of data.tickets) {
-      setTicket(state, ticket);
+      setTicket(this.state, ticket);
     }
-    this.setState(state);
+    this.refresh();
   }
 
   updateTicket(ticket) {
-    let state = this.state;
-    setTicket(state, ticket);
-    this.setState(state);
+    setTicket(this.state, ticket);
+    this.refresh();
+  }
+
+  loadTicket(id) {
+    loadTicket(this.state, id);
+    this.refresh();
+    this.socket.emit('load_ticket', id, (ticket) => {
+      receiveTicket(this.state, id, ticket);
+      this.refresh();
+    });
   }
 
   addMessage(message, category) {
-    let state = this.state;
-    addMessage(state, message, category);
-    this.setState(state);
+    addMessage(this.state, message, category);
+    this.refresh();
   }
 
   clearMessage(id) {
-    let state = this.state;
-    clearMessage(state, id);
-    this.setState(state);
+    clearMessage(this.state, id);
+    this.refresh();
   }
 
   makeRequest(eventType, request, follow_redirect=false) {
-    socket.emit(eventType, request, (response) => {
+    this.socket.emit(eventType, request, (response) => {
       if (response == null) {
         return;
       }
