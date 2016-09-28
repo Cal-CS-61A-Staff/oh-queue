@@ -1,7 +1,7 @@
 import datetime
 import pytz
 
-from flask import render_template
+from flask import render_template, url_for
 from flask_login import current_user
 from flask_socketio import emit
 
@@ -60,6 +60,22 @@ def index(*args, **kwargs):
 
 # TODO permissions on socket actions
 
+def socket_error(message, category='danger', ticket_id=None):
+    return {
+        'messages': [
+            {
+                'category': category,
+                'text': message,
+            },
+        ],
+        'redirect': url_for('index', ticket_id=ticket_id),
+    }
+
+def socket_redirect(ticket_id=None):
+    return {
+        'redirect': url_for('index', ticket_id=ticket_id),
+    }
+
 @socketio.on('create')
 def create(form):
     """Stores a new ticket to the persistent database, and emits it to all
@@ -67,11 +83,18 @@ def create(form):
     """
     my_ticket = Ticket.for_user(current_user)
     if my_ticket:
-        return my_ticket.id
+        return socket_error(
+            'You are already on the queue',
+            category='warning',
+            ticket_id=my_ticket.ticket_id,
+        )
     # Create a new ticket and add it to persistent storage
     if not (form.get('assignment') and form.get('question')
             and form.get('location')):
-        return
+        return socket_error(
+            'You must fill out all the fields',
+            category='warning',
+        )
     ticket = Ticket(
         status=TicketStatus.pending,
         user=current_user,
@@ -84,7 +107,7 @@ def create(form):
     db.session.commit()
 
     emit_event(ticket, TicketEventType.create)
-    return ticket.id
+    return socket_redirect(ticket_id=ticket.id)
 
 def get_next_ticket():
     """Return the user's first assigned but unresolved ticket.
@@ -93,16 +116,17 @@ def get_next_ticket():
     ticket = Ticket.query.filter(
         Ticket.helper_id == current_user.id,
         Ticket.status == TicketStatus.assigned).first()
+    if not ticket:
+        ticket = Ticket.query.filter(
+            Ticket.status == TicketStatus.pending).first()
     if ticket:
-        return ticket
-    return Ticket.query.filter(
-        Ticket.status == TicketStatus.pending).first()
+        return socket_redirect(ticket_id=ticket.id)
+    else:
+        return socket_redirect()
 
 @socketio.on('next')
 def next_ticket(ticket_id):
-    ticket = get_next_ticket()
-    if ticket:
-        return ticket.id
+    return get_next_ticket()
 
 @socketio.on('delete')
 def delete(ticket_id):
@@ -121,9 +145,7 @@ def resolve(ticket_id):
 
     emit_event(ticket, TicketEventType.resolve)
 
-    ticket = get_next_ticket()
-    if ticket:
-        return ticket.id
+    return get_next_ticket()
 
 @socketio.on('assign')
 def assign(ticket_id):

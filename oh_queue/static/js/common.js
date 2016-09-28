@@ -16,11 +16,6 @@ function connectSocket() {
   });
 }
 
-function goToTicket(nextTicketID) {
-  let url = nextTicketID ? `/${nextTicketID}/` : '/';
-  ReactRouter.browserHistory.push(url);
-}
-
 let app = ReactDOM.render(<App/>, document.getElementById('content'));
 
 let socket = connectSocket();

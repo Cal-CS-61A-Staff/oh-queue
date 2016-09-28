@@ -38,6 +38,21 @@ class App extends React.Component {
     this.setState(state);
   }
 
+  makeRequest(eventType, request, follow_redirect=false) {
+    socket.emit(eventType, request, (response) => {
+      if (response == null) {
+        return;
+      }
+      let messages = response.messages || [];
+      for (var message of messages) {
+        this.addMessage(message.text, message.category);
+      }
+      if (follow_redirect && response.redirect) {
+        ReactRouter.browserHistory.push(response.redirect);
+      }
+    });
+  }
+
   render() {
     // Give route components (e.g. Queue, TicketView) the state
     let state = this.state;

@@ -5,7 +5,7 @@ class RequestForm extends React.Component {
     $('#request-form').serializeArray().forEach((input) => {
       formData[input.name] = input.value;
     });
-    socket.emit('create', formData, goToTicket);
+    app.makeRequest('create', formData, true);
   }
 
   componentDidMount() {

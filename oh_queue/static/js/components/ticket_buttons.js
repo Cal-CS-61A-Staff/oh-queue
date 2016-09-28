@@ -11,33 +11,33 @@ class TicketButtons extends React.Component {
   }
 
   assign() {
-    socket.emit('assign', this.props.ticket.id);
+    app.makeRequest('assign', this.props.ticket.id);
   }
 
   delete() {
     if (!confirm("Delete this ticket?")) return;
-    socket.emit('delete', this.props.ticket.id);
+    app.makeRequest('delete', this.props.ticket.id);
   }
 
   resolveAndNext() {
-    socket.emit('resolve', this.props.ticket.id, goToTicket)
+    app.makeRequest('resolve', this.props.ticket.id, true)
   }
 
   resolve() {
-    socket.emit('resolve', this.props.ticket.id);
+    app.makeRequest('resolve', this.props.ticket.id);
   }
 
   unassign() {
-    socket.emit('unassign', this.props.ticket.id);
+    app.makeRequest('unassign', this.props.ticket.id);
   }
 
   reassign() {
     if (!confirm("Reassign this ticket?")) return;
-    socket.emit('assign', this.props.ticket.id);
+    app.makeRequest('assign', this.props.ticket.id);
   }
 
   next() {
-    socket.emit('next', this.props.ticket.id, goToTicket);
+    app.makeRequest('next', this.props.ticket.id, true);
   }
 
   render() {
@@ -66,7 +66,7 @@ class TicketButtons extends React.Component {
       if (ticket.helper.id === state.currentUser.id) {
         topButtons.push(makeButton('Resolve and Next', 'primary', this.resolveAndNext));
         topButtons.push(makeButton('Resolve', 'default', this.resolve));
-        bottomButtons.push(makeButton('Requeue', 'default', this.assign));
+        bottomButtons.push(makeButton('Requeue', 'default', this.unassign));
       } else {
         topButtons.push(makeButton('Reassign', 'warning', this.reassign));
         topButtons.push(makeButton('Next Ticket', 'default', this.next));
