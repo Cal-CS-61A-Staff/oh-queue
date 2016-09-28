@@ -1,4 +1,5 @@
 import datetime
+import functools
 import pytz
 
 from flask import render_template, url_for
@@ -42,23 +43,10 @@ def emit_event(ticket, event_type):
         'ticket': ticket_json(ticket),
     })
 
-@socketio.on('connect')
-def connect():
-    tickets = Ticket.query.filter(
-        Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
-    ).all()
-    emit('state', {
-        'tickets': [ticket_json(ticket) for ticket in tickets],
-        'currentUser':
-            user_json(current_user) if current_user.is_authenticated else None,
-    })
-
 @app.route('/')
 @app.route('/<int:ticket_id>/')
 def index(*args, **kwargs):
     return render_template('index.html')
-
-# TODO permissions on socket actions
 
 def socket_error(message, category='danger', ticket_id=None):
     return {
@@ -76,7 +64,38 @@ def socket_redirect(ticket_id=None):
         'redirect': url_for('index', ticket_id=ticket_id),
     }
 
+def socket_unauthorized():
+    return socket_error("You don't have permission to do that")
+
+def logged_in(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwds):
+        if not current_user.is_authenticated:
+            return socket_unauthorized()
+        return f(*args, **kwds)
+    return wrapper
+
+def is_staff(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwds):
+        if not (current_user.is_authenticated and current_user.is_staff):
+            return socket_unauthorized()
+        return f(*args, **kwds)
+    return wrapper
+
+@socketio.on('connect')
+def connect():
+    tickets = Ticket.query.filter(
+        Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
+    ).all()
+    emit('state', {
+        'tickets': [ticket_json(ticket) for ticket in tickets],
+        'currentUser':
+            user_json(current_user) if current_user.is_authenticated else None,
+    })
+
 @socketio.on('create')
+@logged_in
 def create(form):
     """Stores a new ticket to the persistent database, and emits it to all
     connected clients.
@@ -125,18 +144,23 @@ def get_next_ticket():
         return socket_redirect()
 
 @socketio.on('next')
+@is_staff
 def next_ticket(ticket_id):
     return get_next_ticket()
 
 @socketio.on('delete')
+@logged_in
 def delete(ticket_id):
     ticket = Ticket.query.get(ticket_id)
+    if not (current_user.is_staff or ticket.user.id == current_user.id):
+        return socket_unauthorized()
     ticket.status = TicketStatus.deleted
     db.session.commit()
 
     emit_event(ticket, TicketEventType.delete)
 
 @socketio.on('resolve')
+@is_staff
 def resolve(ticket_id):
     ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.resolved
@@ -148,6 +172,7 @@ def resolve(ticket_id):
     return get_next_ticket()
 
 @socketio.on('assign')
+@is_staff
 def assign(ticket_id):
     ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.assigned
@@ -157,6 +182,7 @@ def assign(ticket_id):
     emit_event(ticket, TicketEventType.assign)
 
 @socketio.on('unassign')
+@is_staff
 def unassign(ticket_id):
     ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.pending
@@ -166,6 +192,7 @@ def unassign(ticket_id):
     emit_event(ticket, TicketEventType.unassign)
 
 @socketio.on('load_ticket')
+@is_staff
 def load_ticket(ticket_id):
     ticket = Ticket.query.get(ticket_id)
     if ticket:
