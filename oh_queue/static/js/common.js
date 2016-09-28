@@ -16,18 +16,6 @@ function connectSocket() {
   });
 }
 
-$(document).ready(function(){
-  // Bind event listeners
-  $('body').on('click', '[data-url]', function(event) {
-    var confirmQ = $(this).attr('data-confirm');
-    if (typeof confirmQ === 'string') {
-      if (!confirm(confirmQ)) return;
-    }
-    var redirectUrl = $(this).attr('data-redirect');
-    $.post($(this).attr('data-url')).then(function (event) {
-      if (typeof redirectUrl === 'string') {
-        window.location.href = redirectUrl;
-      }
-    });
-  });
-});
+// The one and only app. Other components may reference this variable.
+// See components/app.js for more documentation
+let app = ReactDOM.render(<App/>, document.getElementById('content'));

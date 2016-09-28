@@ -9,11 +9,13 @@ manager = Manager(app)
 @manager.command
 def seed():
     print('Seeding...')
-    for i in range(5):
-        name, email = "Bear, Oski{}".format(i), "test{}@cs61a.org".format(i)
-        student = User(name=name, email=email)
-        db.session.add(student)
-        db.session.commit()
+    for i in range(20):
+        name, email = "Oski Bear {}".format(i), "test{}@cs61a.org".format(i)
+        student = User.query.filter_by(email=email).one_or_none()
+        if not student:
+            student = User(name=name, email=email)
+            db.session.add(student)
+            db.session.commit()
 
         ticket = Ticket(user=student, status=TicketStatus.pending,
                         assignment='Hog', question=5,
