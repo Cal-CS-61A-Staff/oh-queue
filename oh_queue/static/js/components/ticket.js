@@ -15,7 +15,7 @@ let TicketLink = ({state, ticket, myTicket, children}) => {
   if (myTicket && myTicket.id === ticket.id) {
     return (
       <div className="row highlight">
-        <ReactRouter.Link to={`/${ticket.id}`} className="ticket-link">
+        <ReactRouter.Link to={`/${ticket.id}/`} className="ticket-link">
           {children}
         </ReactRouter.Link>
       </div>
@@ -23,12 +23,12 @@ let TicketLink = ({state, ticket, myTicket, children}) => {
   } else if (isStaff(state)) {  // staff
     return (
       <div className="row">
-        <ReactRouter.Link to={`/${ticket.id}`} className="ticket-link">
+        <ReactRouter.Link to={`/${ticket.id}/`} className="ticket-link">
           {children}
         </ReactRouter.Link>
       </div>
     );
-    destination = `/${ticket.id}`;
+    destination = `/${ticket.id}/`;
   } else if (state.currentUser) {  // student and logged in
     return (
       <div className="row">

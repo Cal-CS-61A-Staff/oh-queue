@@ -17,7 +17,7 @@ function connectSocket() {
 }
 
 function goToTicket(nextTicketID) {
-  let url = nextTicketID ? '/' + nextTicketID : '/';
+  let url = nextTicketID ? `/${nextTicketID}/` : '/';
   ReactRouter.browserHistory.push(url);
 }
 

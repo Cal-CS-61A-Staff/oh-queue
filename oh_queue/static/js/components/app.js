@@ -50,7 +50,7 @@ class App extends React.Component {
         createElement={createElement}>
         <ReactRouter.Route path="/" component={Base}>
           <ReactRouter.IndexRoute component={Queue}/>
-          <ReactRouter.Route path="/:id" component={TicketView}/>
+          <ReactRouter.Route path="/:id/" component={TicketView}/>
         </ReactRouter.Route>
       </ReactRouter.Router>
     );
