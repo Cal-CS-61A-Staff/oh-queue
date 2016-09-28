@@ -1,12 +1,13 @@
 let TicketView = ({state, params}) => {
   let ticket = getTicket(state, +params.id);
-
-  // TODO permissions
   // TODO load old ticket
+
   if (!ticket) {
-    // TODO a message here
-    ReactRouter.browserHistory.push('/');
-    return null;
+    return <NotFound/>;
+  }
+
+  if (!isStaff(state) && !ticketIsMine(state, ticket)) {
+    return <NotFound/>;
   }
 
   return (

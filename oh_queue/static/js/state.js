@@ -101,14 +101,14 @@ function getActiveTickets(state: State): Array<Ticket> {
   });
 }
 
+function ticketIsMine(state: State, ticket: Ticket): boolean {
+  return state.currentUser != null && state.currentUser.id === ticket.user.id;
+}
+
 /* Return the current user's active ticket. */
 function getMyTicket(state: State): ?Ticket {
-  if (state.currentUser == null) {
-    return null;
-  }
-  let userID = state.currentUser.id;
   return Array.from(state.tickets.values()).find(ticket =>
-    isActive(ticket) && ticket.user.id === userID
+    isActive(ticket) && ticketIsMine(state, ticket)
   );
 }
 

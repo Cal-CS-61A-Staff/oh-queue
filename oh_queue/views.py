@@ -58,6 +58,8 @@ def connect():
 def index(*args, **kwargs):
     return render_template('index.html')
 
+# TODO permissions on socket actions
+
 @socketio.on('create')
 def create(form):
     """Stores a new ticket to the persistent database, and emits it to all
