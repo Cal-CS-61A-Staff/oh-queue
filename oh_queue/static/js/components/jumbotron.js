@@ -11,7 +11,7 @@ let Jumbotron = ({state, myTicket}) => {
     var titleText = `Hello, ${state.currentUser.name}`;
     var subtitleText = `Signed in as ${state.currentUser.email}`;
     var contents = (
-      <ReactRouter.Link to={`/${myTicket.id}`} className="btn btn-block btn-jumbo btn-outline">
+      <ReactRouter.Link to={`/${myTicket.id}/`} className="btn btn-block btn-jumbo btn-outline">
         My Request
       </ReactRouter.Link>
     );
