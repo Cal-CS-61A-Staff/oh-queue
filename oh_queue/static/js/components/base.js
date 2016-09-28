@@ -10,6 +10,7 @@ let Base = ({state, children}) => {
   return (
     <div>
       <Navbar currentUser={state.currentUser} myTicket={myTicket}/>
+      <OfflineIndicator offline={state.offline && state.loaded}/>
       {children}
     </div>
   );

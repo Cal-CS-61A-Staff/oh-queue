@@ -4,6 +4,12 @@ class App extends React.Component {
     this.state =  initialState;
   }
 
+  setOffline(offline) {
+    let state = this.state;
+    state.offline = offline;
+    this.setState(state);
+  }
+
   updateState(data) {
     let state = this.state;
     state.loaded = true;

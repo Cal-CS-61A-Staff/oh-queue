@@ -28,6 +28,8 @@ type State = {
   currentUser: ?User,
   /* True on page load, before the initial websocket connection. */
   loaded: boolean,
+  /* True if the websocket has disconnected. */
+  offline: boolean,
   /* All known tickets, including ones that have been resolved or deleted.
    * We may have to load past tickets asynchronously though.
    * This is an ES6 Map from ticket ID to the ticket data.
@@ -38,6 +40,7 @@ type State = {
 let initialState: State = {
   currentUser: null,
   loaded: false,
+  offline: true,
   tickets: new Map(),
 }
 

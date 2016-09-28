@@ -24,5 +24,7 @@ function goToTicket(nextTicketID) {
 let app = ReactDOM.render(<App/>, document.getElementById('content'));
 
 let socket = connectSocket();
+socket.on('connect', () => app.setOffline(false));
+socket.on('disconnect', () => app.setOffline(true));
 socket.on('state', (data) => app.updateState(data));
 socket.on('event', (data) => app.updateTicket(data.ticket));
