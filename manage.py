@@ -9,8 +9,8 @@ manager = Manager(app)
 @manager.command
 def seed():
     print('Seeding...')
-    for i in range(5):
-        name, email = "Bear, Oski{}".format(i), "test{}@cs61a.org".format(i)
+    for i in range(20):
+        name, email = "Oski Bear {}".format(i), "test{}@cs61a.org".format(i)
         student = User.query.filter_by(email=email).one_or_none()
         if not student:
             student = User(name=name, email=email)
