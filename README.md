@@ -13,9 +13,10 @@ Provides a web-based interface for requesting help during office hours. Allows s
     virtualenv -p python3 env
     source env/bin/activate
 
-2. Use pip to install all the dependencies from `requirements.txt`:
+2. Use pip to install all the dependencies:
 
     pip install -r requirements.txt
+    npm install
 
 3. Reset the database to create tables.
 
@@ -36,7 +37,3 @@ First point a git remote to the Dokku server:
 To deploy:
 
     git push dokku master
-
-## Workflow
-
-There is some out-of-date documentation within `oh_queue/README.md`.
