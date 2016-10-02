@@ -9,6 +9,7 @@ let Queue = ({state}) => {
       {!isStaff(state) && <Jumbotron state={state} myTicket={myTicket}/>}
       <div className="container">
         <Messages messages={state.messages}/>
+        <FilterControls filter={state.filter}/>
         <div className="queue">
           {isStaff(state) &&
             <div className="row">
