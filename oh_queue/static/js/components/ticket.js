@@ -1,18 +1,18 @@
-let Ticket = ({state, ticket, myTicket}) => {
+let Ticket = ({state, ticket, myTicket, index}) => {
   return (
     <TicketLink state={state} ticket={ticket} myTicket={myTicket}>
-      <div className="col-xs-3 col-sm-2 truncate">{ticket.user.name}</div>
+      <div className="hidden-xs col-sm-1 truncate">{ index + 1 }</div>
       <div className="hidden-xs col-sm-2 truncate">{ticket.created}</div>
       <div className="col-xs-3 col-sm-2 truncate">{ticket.location}</div>
       <div className="col-xs-3 col-sm-2 truncate">{ticket.assignment}</div>
-      <div className="hidden-xs col-sm-2 truncate">{ticket.question}</div>
-      <div className="col-xs-3 col-sm-2 truncate">{ticketStatus(state, ticket)}</div>
+      <div className="col-xs-2 col-sm-2 truncate">{ticket.question}</div>
+      <div className="col-xs-4 col-sm-3 truncate">{ticketStatus(state, ticket)}</div>
     </TicketLink>
   );
 }
 
 let TicketLink = ({state, ticket, myTicket, children}) => {
-  if (myTicket && myTicket.id === ticket.id) {
+  if (isTicketHelper(state, ticket) || (myTicket && myTicket.id === ticket.id)) {
     return (
       <div className="row highlight">
         <ReactRouter.Link to={`/${ticket.id}/`} className="ticket-link">

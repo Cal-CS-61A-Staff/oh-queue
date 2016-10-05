@@ -31,7 +31,7 @@ class TicketView extends React.Component {
         <div className="row ticket">
           <div className="col-xs-12">
             <h2 className="text-center">
-              { ticket.user.name }
+              { ticket.status === 'pending' ? 'Help to View Name' : ticket.user.name }
               <small className="clearfix">{ ticket.created } in { ticket.location }</small>
             </h2>
             <p className="lead text-center">{ ticketStatus(state, ticket) }</p>

@@ -87,8 +87,7 @@ hr {
 
 .highlight {
   color: #31708f;
-  background-color: #d9edf7;
-  border: 1px solid #bce8f1;
+  background-color: rgba(217, 237, 247, 0.5);
   border-radius: 4px;
   font-weight: bold;
 }

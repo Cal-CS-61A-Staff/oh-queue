@@ -65,8 +65,7 @@ function isActive(ticket: Ticket): boolean {
 
 function ticketStatus(state: State, ticket: Ticket): string {
   if (ticket.status === 'assigned' && ticket.helper) {
-    let isYou = state.currentUser && state.currentUser.id === ticket.helper.id;
-    return 'Being helped by ' + (isYou ? 'you' : ticket.helper.name);
+    return 'Being helped by ' + (isTicketHelper(state, ticket) ? 'you' : ticket.helper.name);
   } else if (ticket.status === 'resolved' && ticket.helper) {
     return 'Resolved by ' + ticket.helper.name;
   } else if (ticket.status === 'deleted') {
@@ -121,6 +120,10 @@ function getActiveTickets(state: State): Array<Ticket> {
 
 function ticketIsMine(state: State, ticket: Ticket): boolean {
   return state.currentUser != null && state.currentUser.id === ticket.user.id;
+}
+
+function isTicketHelper(state: State, ticket: Ticket): boolean {
+  return state.currentUser && ticket.helper && state.currentUser.id === ticket.helper.id;
 }
 
 /* Return the current user's active ticket. */
