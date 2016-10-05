@@ -1,12 +1,12 @@
-let Ticket = ({state, ticket, myTicket}) => {
+let Ticket = ({state, ticket, myTicket, index}) => {
   return (
     <TicketLink state={state} ticket={ticket} myTicket={myTicket}>
-      <div className="col-xs-3 col-sm-2 truncate">{ticket.user.name}</div>
+      <div className="hidden-xs col-sm-2 truncate">{ index + 1 }</div>
       <div className="hidden-xs col-sm-2 truncate">{ticket.created}</div>
       <div className="col-xs-3 col-sm-2 truncate">{ticket.location}</div>
       <div className="col-xs-3 col-sm-2 truncate">{ticket.assignment}</div>
-      <div className="hidden-xs col-sm-2 truncate">{ticket.question}</div>
-      <div className="col-xs-3 col-sm-2 truncate">{ticketStatus(state, ticket)}</div>
+      <div className="col-xs-2 col-sm-2 truncate">{ticket.question}</div>
+      <div className="col-xs-4 col-sm-2 truncate">{ticketStatus(state, ticket)}</div>
     </TicketLink>
   );
 }
