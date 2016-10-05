@@ -17,12 +17,12 @@ let Queue = ({state}) => {
             </div>
           }
           <div className="row">
-            <div className="hidden-xs col-sm-2">#</div>
+            <div className="hidden-xs col-sm-1">#</div>
             <div className="hidden-xs col-sm-2 ">Queue Time</div>
             <div className="col-xs-3 col-sm-2">Location</div>
             <div className="col-xs-3 col-sm-2">Assignment</div>
             <div className="col-xs-2 col-sm-2">Question</div>
-            <div className="col-xs-4 col-sm-2">Status</div>
+            <div className="col-xs-4 col-sm-3">Status</div>
           </div>
           {items}
         </div>
