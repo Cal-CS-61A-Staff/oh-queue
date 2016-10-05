@@ -9,6 +9,13 @@ let Queue = ({state}) => {
       <div className="container">
         <Messages messages={state.messages}/>
         <div className="queue">
+          {isStaff(state) &&
+            <div className="row">
+              <div className="col-xs-12 alert alert-info">
+                Click on a ticket to view the student's name
+              </div>
+            </div>
+          }
           <div className="row">
             <div className="hidden-xs col-sm-2">#</div>
             <div className="hidden-xs col-sm-2 ">Queue Time</div>

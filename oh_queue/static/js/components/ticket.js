@@ -12,7 +12,7 @@ let Ticket = ({state, ticket, myTicket, index}) => {
 }
 
 let TicketLink = ({state, ticket, myTicket, children}) => {
-  if (myTicket && myTicket.id === ticket.id) {
+  if (isTicketHelper(state, ticket) || (myTicket && myTicket.id === ticket.id)) {
     return (
       <div className="row highlight">
         <ReactRouter.Link to={`/${ticket.id}/`} className="ticket-link">
