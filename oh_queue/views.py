@@ -22,8 +22,7 @@ def ticket_json(ticket):
         'id': ticket.id,
         'status': ticket.status.name,
         'user': user_json(ticket.user),
-        # TODO use ISO 8601 and format on client
-        'created': format_datetime(ticket.created),
+        'created': ticket.created.isoformat(),
         'location': ticket.location,
         'assignment': ticket.assignment,
         'question': ticket.question,
@@ -204,12 +203,3 @@ def load_ticket(ticket_id):
     ticket = Ticket.query.get(ticket_id)
     if ticket:
         return ticket_json(ticket)
-
-# Filters
-
-local_timezone = pytz.timezone(app.config['LOCAL_TIMEZONE'])
-
-@app.template_filter('datetime')
-def format_datetime(timestamp):
-    time = pytz.utc.localize(timestamp).astimezone(local_timezone)
-    return time.strftime('%I:%M %p')
