@@ -22,7 +22,10 @@ class App extends React.Component {
 
     let socket = connectSocket();
     this.socket = socket;
-    socket.on('connect', () => app.setOffline(false));
+    socket.on('connect', () => {
+      app.setOffline(false);
+      app.refreshTickets();
+    });
     socket.on('disconnect', () => app.setOffline(true));
     socket.on('state', (data) => app.updateState(data));
     socket.on('event', (data) => app.updateTicket(data.ticket));
@@ -44,6 +47,16 @@ class App extends React.Component {
       setTicket(this.state, ticket);
     }
     this.refresh();
+  }
+
+  refreshTickets() {
+    let ticketIDs = Array.from(this.state.tickets.keys());
+    this.socket.emit('refresh', ticketIDs, (data) => {
+      for (var ticket of data.tickets) {
+        setTicket(this.state, ticket);
+      }
+      this.refresh();
+    });
   }
 
   updateTicket(ticket) {
