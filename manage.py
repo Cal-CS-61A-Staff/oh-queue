@@ -53,4 +53,7 @@ def server():
     socketio.run(app)
 
 if __name__ == '__main__':
+    if app.config.get('ENV') == 'prod':
+        print('manage.py should not be run in production. Aborting')
+        sys.exit(1)
     manager.run()
