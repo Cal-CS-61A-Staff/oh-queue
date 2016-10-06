@@ -16,7 +16,7 @@ type Ticket = {
   id: number,
   status: 'pending' | 'assigned' | 'resolved' | 'deleted',
   user: User,
-  created: string,
+  created: string,  // ISO 8601 datetime string
   location: string,
   assignment: string,
   question: string,
@@ -57,6 +57,10 @@ let initialState: State = {
   loadingTickets: new Set(),
   messages: [],
   nextMessageID: 1,
+}
+
+function ticketDisplayTime(ticket: Ticket): string {
+  return moment.utc(ticket.created).local().format('h:mm A')
 }
 
 function isActive(ticket: Ticket): boolean {
