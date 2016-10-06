@@ -1,1 +1,1 @@
-web: gunicorn -k eventlet -b 0.0.0.0:$PORT oh_queue:app
+web: gunicorn -k eventlet -w 1 -b 0.0.0.0:$PORT oh_queue:app
