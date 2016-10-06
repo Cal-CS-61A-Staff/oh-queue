@@ -94,6 +94,13 @@ def connect():
             user_json(current_user) if current_user.is_authenticated else None,
     })
 
+@socketio.on('refresh')
+def refresh(ticket_ids):
+    tickets = Ticket.query.filter(Ticket.id.in_(ticket_ids)).all()
+    return {
+        'tickets': [ticket_json(ticket) for ticket in tickets],
+    }
+
 @socketio.on('create')
 @logged_in
 def create(form):
