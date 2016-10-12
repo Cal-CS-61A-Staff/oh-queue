@@ -20,7 +20,7 @@ let TicketLink = ({state, ticket, myTicket, children}) => {
         </ReactRouter.Link>
       </div>
     );
-  } else if (isStaff(state)) {  // staff
+  } else if (isHelper(state)) {  // staff
     return (
       <div className="row">
         <ReactRouter.Link to={`/${ticket.id}/`} className="ticket-link">

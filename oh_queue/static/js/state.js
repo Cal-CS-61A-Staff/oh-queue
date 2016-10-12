@@ -9,7 +9,9 @@ type User = {
   id: number,
   email: string,
   name: string,
+  role: string,
   isStaff: boolean,
+  isHelper: boolean,
 };
 
 type Ticket = {
@@ -77,6 +79,10 @@ function ticketStatus(state: State, ticket: Ticket): string {
   } else {
     return 'Queued';
   }
+}
+
+function isHelper(state: State): boolean {
+  return state.currentUser != null && state.currentUser.isHelper;
 }
 
 function isStaff(state: State): boolean {

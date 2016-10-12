@@ -42,7 +42,7 @@ class TicketButtons extends React.Component {
 
   render() {
     let {state, ticket} = this.props;
-    let staff = isStaff(state);
+    let helper = isHelper(state);
 
     function makeButton(text, style, action) {
       return (
@@ -59,10 +59,10 @@ class TicketButtons extends React.Component {
     if (ticket.status === 'pending') {
       bottomButtons.push(makeButton('Delete', 'danger', this.delete));
     }
-    if (staff && ticket.status === 'pending') {
+    if (helper && ticket.status === 'pending') {
       topButtons.push(makeButton('Help', 'primary', this.assign));
     }
-    if (staff && ticket.status === 'assigned') {
+    if (helper && ticket.status === 'assigned') {
       if (ticket.helper.id === state.currentUser.id) {
         topButtons.push(makeButton('Resolve and Next', 'primary', this.resolveAndNext));
         topButtons.push(makeButton('Resolve', 'default', this.resolve));
@@ -72,7 +72,7 @@ class TicketButtons extends React.Component {
         topButtons.push(makeButton('Next Ticket', 'default', this.next));
       }
     }
-    if (staff && (ticket.status === 'resolved' || ticket.status === 'deleted')) {
+    if (helper && (ticket.status === 'resolved' || ticket.status === 'deleted')) {
       topButtons.push(makeButton('Next Ticket', 'default', this.next));
     }
 

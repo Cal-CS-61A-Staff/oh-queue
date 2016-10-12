@@ -1,7 +1,7 @@
 let Base = ({state, children}) => {
   let myTicket = getMyTicket(state);
 
-  if (isStaff(state) || myTicket) {
+  if (isHelper(state) || myTicket) {
     requestNotificationPermission();
   }
 
