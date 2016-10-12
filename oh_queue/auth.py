@@ -99,11 +99,11 @@ def authorized():
             if role_str == 'instructor':
                 role = Role.instructor
             elif role_str == 'staff':
-                role = Role.staff
+                role = Role.ta
             elif role_str == 'grader':
                 role = Role.grader
             elif role_str == 'lab assistant':
-                role = Role.helper
+                role = Role.lab_assistant
             break
     user = user_from_email(name, email, role)
     return authorize_user(user)

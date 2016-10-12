@@ -23,7 +23,7 @@ class EnumType(db.TypeDecorator):
     def python_type(self):
         return self.enum_class
 
-Role = enum.Enum('Role', 'instructor staff grader helper student')
+Role = enum.Enum('Role', 'instructor ta grader lab_assistant student')
 
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
@@ -42,12 +42,12 @@ class User(db.Model, UserMixin):
 
     @property
     def is_staff(self):
-        return self.role is Role.instructor or self.role is Role.staff \
+        return self.role is Role.instructor or self.role is Role.ta \
             or self.role is Role.grader
 
     @property
     def is_helper(self):
-        return self.is_staff or self.role is Role.helper
+        return self.is_staff or self.role is Role.lab_assistant
 
 TicketStatus = enum.Enum('TicketStatus', 'pending assigned resolved deleted')
 
