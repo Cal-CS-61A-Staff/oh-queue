@@ -172,7 +172,6 @@ def delete(ticket_id):
 def resolve(ticket_id):
     ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.resolved
-    ticket.resolved = db.func.now()
     ticket.helper_id = current_user.id
     db.session.commit()
 
@@ -185,7 +184,6 @@ def resolve(ticket_id):
 def assign(ticket_id):
     ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.assigned
-    ticket.assigned_at = db.func.now()
     ticket.helper_id = current_user.id
     db.session.commit()
 
@@ -196,7 +194,6 @@ def assign(ticket_id):
 def unassign(ticket_id):
     ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.pending
-    ticket.assigned_at = None
     ticket.helper_id = None
     db.session.commit()
 

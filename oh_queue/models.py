@@ -49,8 +49,6 @@ class Ticket(db.Model):
     created = db.Column(db.DateTime, default=db.func.now(), index=True)
     updated = db.Column(db.DateTime, onupdate=db.func.now())
     status = db.Column(EnumType(TicketStatus), nullable=False, index=True)
-    assigned_at = db.Column(db.DateTime)
-    resolved_at = db.Column(db.DateTime)
 
     user_id = db.Column(db.ForeignKey('user.id'), nullable=False, index=True)
     assignment = db.Column(db.String(255), nullable=False)
@@ -83,14 +81,18 @@ class Ticket(db.Model):
 
     @property
     def assign_time(self):
-        if self.assigned_at:
-            return int((self.assigned_at - datetime.datetime(1970,1,1)).total_seconds())
+        if self.status == TicketStatus.assigned:
+            event = TicketEvent.query.filter_by(ticket_id=self.id, 
+                event_type=TicketEventType.assign).one_or_none()
+            return int((event.time - datetime.datetime(1970,1,1)).total_seconds()) if event else None
         return None
 
     @property
     def resolve_time(self):
-        if self.resolved_at:
-            return int((self.assigned_at - datetime.datetime(1970,1,1)).total_seconds())
+        if self.status == TicketStatus.resolved:
+            event = TicketEvent.query.filter_by(ticket_id=self.id, 
+                event_type=TicketEventType.resolve).one_or_none()
+            return int((event.time - datetime.datetime(1970,1,1)).total_seconds()) if event else None
         return None
 
 TicketEventType = enum.Enum(
