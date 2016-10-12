@@ -49,6 +49,8 @@ class Ticket(db.Model):
     created = db.Column(db.DateTime, default=db.func.now(), index=True)
     updated = db.Column(db.DateTime, onupdate=db.func.now())
     status = db.Column(EnumType(TicketStatus), nullable=False, index=True)
+    assigned_at = db.Column(db.DateTime)
+    resolved_at = db.Column(db.DateTime)
 
     user_id = db.Column(db.ForeignKey('user.id'), nullable=False, index=True)
     assignment = db.Column(db.String(255), nullable=False)
@@ -78,6 +80,18 @@ class Ticket(db.Model):
         return cls.query.filter(
            cls.status.in_(status)
         ).order_by(cls.created).all()
+
+    @property
+    def assign_time(self):
+        if self.assigned_at:
+            return int((self.assigned_at - datetime.datetime(1970,1,1)).total_seconds())
+        return None
+
+    @property
+    def resolve_time(self):
+        if self.resolved_at:
+            return int((self.assigned_at - datetime.datetime(1970,1,1)).total_seconds())
+        return None
 
 TicketEventType = enum.Enum(
     'TicketEventType',
