@@ -11,11 +11,13 @@ Provides a web-based interface for requesting help during office hours. Allows s
 1. Create an activate a virtualenv:
 
     virtualenv -p python3 env
+
     source env/bin/activate
 
 2. Use pip to install all the dependencies:
 
     pip install -r requirements.txt
+
     npm install
 
 3. Reset the database to create tables.
