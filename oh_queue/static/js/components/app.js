@@ -29,6 +29,7 @@ class App extends React.Component {
     socket.on('disconnect', () => app.setOffline(true));
     socket.on('state', (data) => app.updateState(data));
     socket.on('event', (data) => app.updateTicket(data.ticket));
+    this.timer = setInterval(this.tick, 1000, [this])
   }
 
   refresh() {
@@ -46,6 +47,7 @@ class App extends React.Component {
     for (var ticket of data.tickets) {
       setTicket(this.state, ticket);
     }
+    this.tick([this])
     this.refresh();
   }
 
@@ -96,6 +98,18 @@ class App extends React.Component {
         ReactRouter.browserHistory.push(response.redirect);
       }
     });
+  }
+
+  tick(app) {
+    for (let ticketObj of app[0].state.tickets) {
+      let ticket = ticketObj[1]
+      if (ticket.assigned_at) {
+        ticket.elapsed = formatTime(parseInt(Date.now() / 1000) - ticket.assigned_at);
+      } else {
+        ticket.elapsed = "N/A";
+      }
+    }
+    app[0].refresh()
   }
 
   render() {

@@ -1,12 +1,29 @@
 let Ticket = ({state, ticket, myTicket, index}) => {
+  var ticketRow;
+  if (isStaff(state)) {
+    ticketRow = <div>  
+                  <div className="hidden-xs col-sm-1 truncate">{ index + 1 }</div>
+                  <div className="hidden-xs col-sm-2 truncate">{ ticketDisplayTime(ticket) }</div>
+                  <div className="col-xs-3 col-sm-2 truncate">{ticket.location}</div>
+                  <div className="col-xs-3 col-sm-2 truncate">{ticket.assignment}</div>
+                  <div className="col-xs-2 col-sm-2 truncate">{ticket.question}</div>
+                  <div className="hidden-xs col-sm-1 truncate">{ticket.elapsed}</div>
+                  <div className="col-xs-4 col-sm-2 truncate">{ticketStatus(state, ticket)}</div>
+                </div>
+  } else {
+    ticketRow = <div>
+                  <div className="hidden-xs col-sm-1 truncate">{ index + 1 }</div>
+                  <div className="hidden-xs col-sm-2 truncate">{ ticketDisplayTime(ticket) }</div>
+                  <div className="col-xs-3 col-sm-2 truncate">{ticket.location}</div>
+                  <div className="col-xs-3 col-sm-2 truncate">{ticket.assignment}</div>
+                  <div className="col-xs-2 col-sm-2 truncate">{ticket.question}</div>
+                  <div className="col-xs-4 col-sm-3 truncate">{ticketStatus(state, ticket)}</div>
+                </div>
+  }
+
   return (
     <TicketLink state={state} ticket={ticket} myTicket={myTicket}>
-      <div className="hidden-xs col-sm-1 truncate">{ index + 1 }</div>
-      <div className="hidden-xs col-sm-2 truncate">{ ticketDisplayTime(ticket) }</div>
-      <div className="col-xs-3 col-sm-2 truncate">{ticket.location}</div>
-      <div className="col-xs-3 col-sm-2 truncate">{ticket.assignment}</div>
-      <div className="col-xs-2 col-sm-2 truncate">{ticket.question}</div>
-      <div className="col-xs-4 col-sm-3 truncate">{ticketStatus(state, ticket)}</div>
+      {ticketRow}
     </TicketLink>
   );
 }

@@ -153,3 +153,15 @@ function clearMessage(state: State, id: number): void {
     message.visible = false;
   }
 }
+
+function formatTime(time): string {
+  let seconds = pad(time % 60, 2)
+  let minutes = pad(parseInt(time / 60), 2)
+  return `${minutes}:${seconds}`
+}
+
+function pad(num, size) {
+    var s = num+"";
+    while (s.length < size) s = "0" + s;
+    return s;
+}
