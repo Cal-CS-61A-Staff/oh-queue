@@ -14,6 +14,7 @@ oauth = OAuth()
 @auth.record
 def record_params(setup_state):
     app = setup_state.app
+    server_url = app.config.get('OK_SERVER_URL')
     auth.ok_auth = oauth.remote_app(
         'ok-server',
         consumer_key=app.config.get('OK_KEY'),
@@ -22,11 +23,11 @@ def record_params(setup_state):
             'scope': 'email',
             'state': lambda: security.gen_salt(10)
         },
-        base_url='https://ok.cs61a.org/api/v3/',
+        base_url=server_url + '/api/v3/',
         request_token_url=None,
         access_token_method='POST',
-        access_token_url='https://ok.cs61a.org/oauth/token',
-        authorize_url='https://ok.cs61a.org/oauth/authorize',)
+        access_token_url=server_url + '/oauth/token',
+        authorize_url=server_url + '/oauth/authorize',)
     auth.course_offering = app.config.get('COURSE_OFFERING')
     auth.debug = app.config.get('DEBUG')
 
