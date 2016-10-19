@@ -166,9 +166,11 @@ def delete(ticket_id):
     emit_event(ticket, TicketEventType.delete)
 
 @socketio.on('resolve')
-@is_staff
+@logged_in
 def resolve(ticket_id):
     ticket = Ticket.query.get(ticket_id)
+    if not (current_user.is_staff or ticket.user.id == current_user.id):
+        return socket_unauthorized()
     ticket.status = TicketStatus.resolved
     ticket.helper_id = current_user.id
     db.session.commit()
