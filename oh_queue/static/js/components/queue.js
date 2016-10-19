@@ -1,6 +1,7 @@
 let Queue = ({state}) => {
   let myTicket = getMyTicket(state);
-  let items = getActiveTickets(state).map((ticket, index) =>
+  let tickets = getActiveTickets(state);
+  let items = tickets.map((ticket, index) =>
     <Ticket key={ticket.id} state={state} ticket={ticket} myTicket={myTicket} index={index} />
   );
   return (
@@ -24,7 +25,14 @@ let Queue = ({state}) => {
             <div className="col-xs-2 col-sm-2">Question</div>
             <div className="col-xs-4 col-sm-3">Status</div>
           </div>
-          {items}
+          {tickets.length == 0 &&
+            <div className="row">
+              <div className="col-xs-12 col-xs-offset-4">
+                <strong><small>There are no help requests on the queue!</small></strong>
+              </div>
+            </div>
+          }
+          {tickets.length > 0 && items}
         </div>
       </div>
     </div>
