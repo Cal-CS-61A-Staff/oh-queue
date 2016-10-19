@@ -28,7 +28,7 @@ let Queue = ({state}) => {
           {tickets.length == 0 &&
             <div className="row">
               <div className="col-xs-12 col-xs-offset-4">
-                <strong><small>There are no active tickets in the queue.</small></strong>
+                <strong><small>There are no help requests on the queue!</small></strong>
               </div>
             </div>
           }
