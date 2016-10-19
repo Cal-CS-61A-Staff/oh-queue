@@ -57,11 +57,10 @@ class TicketButtons extends React.Component {
     let bottomButtons = [];
 
     if (ticket.status === 'pending') {
+      bottomButtons.push(makeButton('Delete', 'danger', this.delete));
       if (staff) {
         topButtons.push(makeButton('Help', 'primary', this.assign));
-        bottomButtons.push(makeButton('Delete', 'danger', this.delete));
       }
-      bottomButtons.push(makeButton('Resolve', 'default', this.resolve));
     }
     if (ticket.status === 'assigned') {
       bottomButtons.push(makeButton('Resolve', 'default', this.resolve));
