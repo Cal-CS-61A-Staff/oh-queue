@@ -1,8 +1,10 @@
 class SelectPicker extends React.Component {
   render() {
+    let {options, emptyOption} = this.props;
     return (
       <select ref="selectpicker" {...this.props}>
-        {this.props.options.map((text) => <option>{text}</option>)}
+        {emptyOption && <option value="">{emptyOption}</option>}
+        {options.map((text) => <option>{text}</option>)}
       </select>
     );
   }
