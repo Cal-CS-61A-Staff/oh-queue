@@ -83,6 +83,11 @@ class App extends React.Component {
     this.refresh();
   }
 
+  setFilter(filter) {
+    this.state.filter = filter;
+    this.refresh();
+  }
+
   addMessage(message, category) {
     addMessage(this.state, message, category);
     this.refresh();
