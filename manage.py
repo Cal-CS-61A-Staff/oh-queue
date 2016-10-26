@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import datetime
+import functools
 import random
+import sys
 
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
@@ -14,7 +16,17 @@ migrate = Migrate(app, db)
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
+def not_in_production(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        if app.config.get('ENV') == 'prod':
+            print('this commend should not be run in production. Aborting')
+            sys.exit(1)
+        return f(*args, **kwargs)
+    return wrapper
+
 @manager.command
+@not_in_production
 def seed():
     print('Seeding...')
     for i in range(20):
@@ -46,6 +58,7 @@ def seed():
 
 
 @manager.command
+@not_in_production
 def resetdb():
     print('Dropping tables...')
     db.drop_all(app=app)
@@ -54,11 +67,9 @@ def resetdb():
     seed()
 
 @manager.command
+@not_in_production
 def server():
     socketio.run(app)
 
 if __name__ == '__main__':
-    if app.config.get('ENV') == 'prod':
-        print('manage.py should not be run in production. Aborting')
-        sys.exit(1)
     manager.run()
