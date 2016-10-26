@@ -6,11 +6,11 @@ let Queue = ({state}) => {
   );
   return (
     <div>
-      {!isStaff(state) && <Jumbotron state={state} myTicket={myTicket}/>}
+      {!isHelper(state) && <Jumbotron state={state} myTicket={myTicket}/>}
       <div className="container">
         <Messages messages={state.messages}/>
         <div className="queue">
-          {isStaff(state) &&
+          {isHelper(state) &&
             <div className="row">
               <div className="col-xs-12 alert alert-info">
                 Click on a ticket to view the student's name

@@ -23,13 +23,15 @@ class EnumType(db.TypeDecorator):
     def python_type(self):
         return self.enum_class
 
+Role = enum.Enum('Role', 'instructor ta grader lab_assistant student')
+
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, default=db.func.now())
     email = db.Column(db.String(255), nullable=False, index=True)
     name = db.Column(db.String(255), nullable=False)
-    is_staff = db.Column(db.Boolean, default=False)
+    role = db.Column(EnumType(Role), default=Role.student, nullable=False, index=True)
 
     @property
     def short_name(self):
@@ -37,6 +39,15 @@ class User(db.Model, UserMixin):
         if '@' in first_name:
             return first_name.rsplit('@')[0]
         return first_name
+
+    @property
+    def is_staff(self):
+        return self.role is Role.instructor or self.role is Role.ta \
+            or self.role is Role.grader
+
+    @property
+    def is_helper(self):
+        return self.is_staff or self.role is Role.lab_assistant
 
 TicketStatus = enum.Enum('TicketStatus', 'pending assigned resolved deleted')
 

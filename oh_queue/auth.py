@@ -4,7 +4,7 @@ from flask_oauthlib.client import OAuth, OAuthException
 
 from werkzeug import security
 
-from oh_queue.models import db, User
+from oh_queue.models import db, User, Role
 
 auth = Blueprint('auth', __name__)
 auth.config = {}
@@ -20,7 +20,7 @@ def record_params(setup_state):
         consumer_key=app.config.get('OK_KEY'),
         consumer_secret=app.config.get('OK_SECRET'),
         request_token_params={
-            'scope': 'email',
+            'scope': 'all',
             'state': lambda: security.gen_salt(10)
         },
         base_url=server_url + '/api/v3/',
@@ -52,14 +52,14 @@ def authorize_user(user):
     # TODO validate after_login URL
     return redirect(after_login)
 
-def user_from_email(name, email, is_staff):
+def user_from_email(name, email, role):
     """Get a User with the given email, or create one."""
     user = User.query.filter_by(email=email).one_or_none()
     if not user:
-        user = User(name=name, email=email, is_staff=is_staff)
+        user = User(name=name, email=email, role=role)
     else:
         user.name = name
-        user.is_staff = is_staff
+        user.role = role
     db.session.add(user)
     db.session.commit()
     return user
@@ -92,12 +92,21 @@ def authorized():
     if ', ' in name:
         last, first = name.split(', ')
         name = first + ' ' + last
-    is_staff = False
+    role = Role.student
     offering = auth.course_offering
     for p in info['participations']:
-        if p['course']['offering'] == offering and p['role'] != 'student':
-            is_staff = True
-    user = user_from_email(name, email, is_staff)
+        if p['course']['offering'] == offering:
+            role_str = p['role']
+            if role_str == 'instructor':
+                role = Role.instructor
+            elif role_str == 'staff':
+                role = Role.ta
+            elif role_str == 'grader':
+                role = Role.grader
+            elif role_str == 'lab assistant':
+                role = Role.lab_assistant
+            break
+    user = user_from_email(name, email, role)
     return authorize_user(user)
 
 @auth.route('/logout/')
@@ -119,7 +128,8 @@ def testing_authorized():
         abort(404)
     form = request.form
     is_staff = form.get('is_staff') == 'on'
-    user = user_from_email(form['name'], form['email'], is_staff)
+    role = Role.staff if is_staff else Role.student
+    user = user_from_email(form['name'], form['email'], role)
     return authorize_user(user)
 
 def init_app(app):

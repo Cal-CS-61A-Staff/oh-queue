@@ -14,7 +14,9 @@ def user_json(user):
         'id': user.id,
         'email': user.email,
         'name': user.name,
+        'role': user.role.name,
         'isStaff': user.is_staff,
+        'isHelper': user.is_helper
     }
 
 def ticket_json(ticket):
@@ -74,10 +76,10 @@ def logged_in(f):
         return f(*args, **kwds)
     return wrapper
 
-def is_staff(f):
+def is_helper(f):
     @functools.wraps(f)
     def wrapper(*args, **kwds):
-        if not (current_user.is_authenticated and current_user.is_staff):
+        if not (current_user.is_authenticated and current_user.is_helper):
             return socket_unauthorized()
         return f(*args, **kwds)
     return wrapper
@@ -150,7 +152,7 @@ def get_next_ticket():
         return socket_redirect()
 
 @socketio.on('next')
-@is_staff
+@is_helper
 def next_ticket(ticket_id):
     return get_next_ticket()
 
@@ -158,7 +160,7 @@ def next_ticket(ticket_id):
 @logged_in
 def delete(ticket_id):
     ticket = Ticket.query.get(ticket_id)
-    if not (current_user.is_staff or ticket.user.id == current_user.id):
+    if not (current_user.is_helper or ticket.user.id == current_user.id):
         return socket_unauthorized()
     ticket.status = TicketStatus.deleted
     db.session.commit()
@@ -180,7 +182,7 @@ def resolve(ticket_id):
     return get_next_ticket()
 
 @socketio.on('assign')
-@is_staff
+@is_helper
 def assign(ticket_id):
     ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.assigned
@@ -190,7 +192,7 @@ def assign(ticket_id):
     emit_event(ticket, TicketEventType.assign)
 
 @socketio.on('unassign')
-@is_staff
+@is_helper
 def unassign(ticket_id):
     ticket = Ticket.query.get(ticket_id)
     ticket.status = TicketStatus.pending
@@ -200,7 +202,7 @@ def unassign(ticket_id):
     emit_event(ticket, TicketEventType.unassign)
 
 @socketio.on('load_ticket')
-@is_staff
+@is_helper
 def load_ticket(ticket_id):
     ticket = Ticket.query.get(ticket_id)
     if ticket:
