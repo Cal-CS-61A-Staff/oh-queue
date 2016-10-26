@@ -3,17 +3,13 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 ENV = os.getenv('OH_QUEUE_ENV', 'dev')
 
-if ENV in ('dev', 'staging'):
-    DEBUG = True
-elif ENV == 'prod':
-    DEBUG = False
+DEBUG = ENV in ('dev', 'staging')
 
+SECRET_KEY = os.getenv('SECRET_KEY')
+SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL').replace('mysql://', 'mysql+pymysql://')
 if ENV == 'dev':
-    SECRET_KEY = 'dev'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
-else:
-    SECRET_KEY = os.getenv('SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL').replace('mysql://', 'mysql+pymysql://')
+    SECRET_KEY = SECRET_KEY or 'dev'
+    SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI or 'sqlite:///' + os.path.join(basedir, 'app.db')
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 DATABASE_CONNECT_OPTIONS = {}
