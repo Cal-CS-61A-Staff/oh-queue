@@ -58,18 +58,20 @@ class TicketButtons extends React.Component {
 
     if (ticket.status === 'pending') {
       bottomButtons.push(makeButton('Delete', 'danger', this.delete));
+      if (helper) {
+        topButtons.push(makeButton('Help', 'primary', this.assign));
+      }
     }
-    if (helper && ticket.status === 'pending') {
-      topButtons.push(makeButton('Help', 'primary', this.assign));
-    }
-    if (helper && ticket.status === 'assigned') {
-      if (ticket.helper.id === state.currentUser.id) {
-        topButtons.push(makeButton('Resolve and Next', 'primary', this.resolveAndNext));
-        topButtons.push(makeButton('Resolve', 'default', this.resolve));
-        bottomButtons.push(makeButton('Requeue', 'default', this.unassign));
-      } else {
-        topButtons.push(makeButton('Reassign', 'warning', this.reassign));
-        topButtons.push(makeButton('Next Ticket', 'default', this.next));
+    if (ticket.status === 'assigned') {
+      bottomButtons.push(makeButton('Resolve', 'default', this.resolve));
+      if (helper) {
+        if (ticket.helper.id === state.currentUser.id) {
+          topButtons.push(makeButton('Resolve and Next', 'primary', this.resolveAndNext));
+          bottomButtons.push(makeButton('Requeue', 'default', this.unassign));
+        } else {
+          topButtons.push(makeButton('Reassign', 'warning', this.reassign));
+          topButtons.push(makeButton('Next Ticket', 'default', this.next));
+        }
       }
     }
     if (helper && (ticket.status === 'resolved' || ticket.status === 'deleted')) {

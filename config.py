@@ -23,5 +23,5 @@ LOCAL_TIMEZONE = 'US/Pacific'
 OK_KEY = 'oh-queue'
 OK_SECRET = 'M05dGkt1xe1a1OJvG06YRITzAqQQvEa'
 
-OK_SERVER_URL = 'https://ok.cs61a.org'
+OK_SERVER_URL = 'https://okpy.org'
 COURSE_OFFERING = 'cal/cs61a/fa16'
