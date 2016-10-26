@@ -2,13 +2,17 @@
 import datetime
 import random
 
+from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 import names
 
 from oh_queue import app, socketio
 from oh_queue.models import db, Ticket, User, TicketStatus
 
+migrate = Migrate(app, db)
+
 manager = Manager(app)
+manager.add_command('db', MigrateCommand)
 
 @manager.command
 def seed():
