@@ -60,6 +60,11 @@ class App extends React.Component {
   }
 
   updateTicket(ticket) {
+    if (isStaff(this.state) && ticket.status === "pending"
+          && !getHelpingTicket(this.state)) {
+        notifyUser("New Request for " + ticket.assignment,
+                   ticket.location);
+    }
     setTicket(this.state, ticket);
     this.refresh();
   }

@@ -88,6 +88,13 @@ function getTicket(state: State, id: number): ?Ticket {
 }
 
 function setTicket(state: State, ticket: Ticket): void {
+  if (ticketIsMine(state, ticket)) {
+    let oldTicket = getMyTicket(state);
+    if (oldTicket && oldTicket.status === "pending" && ticket.status === "assigned") {
+      notifyUser("Your name is being called",
+                 ticket.helper.name + " is looking for you in "+ ticket.location);
+    }
+  }
   state.tickets.set(ticket.id, ticket);
 }
 
@@ -134,6 +141,14 @@ function isTicketHelper(state: State, ticket: Ticket): boolean {
 function getMyTicket(state: State): ?Ticket {
   return Array.from(state.tickets.values()).find(ticket =>
     isActive(ticket) && ticketIsMine(state, ticket)
+  );
+}
+
+
+/* Return the first ticket the current user is helping. */
+function getHelpingTicket(state: State): ?Ticket {
+  return Array.from(state.tickets.values()).find(ticket =>
+    isActive(ticket) && isTicketHelper(state, ticket)
   );
 }
 
