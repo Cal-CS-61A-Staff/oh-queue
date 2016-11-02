@@ -1,13 +1,18 @@
 function requestNotificationPermission() {
-  if ('Notification' in window && Notification.permission !== 'denied') {
-    Notification.requestPermission();
-  }
+  Push.Permission.request(null, function() {
+    console.log("Permission denied for notifications");
+  })
 }
 
-function notifyUser(text, options) {
-  if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification(text, options);
-  }
+function notifyUser(title, body) {
+  Push.create(title, {
+    'body': body,
+    'icon': window.location.origin + "/static/img/logo-tiny.png",
+     onClick: function () {
+        window.focus();
+        this.close();
+    }
+  });
 }
 
 function connectSocket() {
