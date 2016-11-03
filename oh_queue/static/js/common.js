@@ -1,18 +1,27 @@
 function requestNotificationPermission() {
-  Push.Permission.request(null, function() {
-    console.log("Permission denied for notifications");
-  })
+  try {
+    Push.Permission.request(null, function() {
+      console.log("Permission denied for notifications");
+    })
+  } catch (e) {
+    // Ignore Push.js errors about unsupported devices
+  }
 }
 
 function notifyUser(title, body) {
-  Push.create(title, {
-    'body': body,
-    'icon': window.location.origin + "/static/img/logo-tiny.png",
-     onClick: function () {
-        window.focus();
-        this.close();
-    }
-  });
+  try {
+    Push.create(title, {
+      'body': body,
+      'icon': window.location.origin + "/static/img/logo-tiny.png",
+       onClick: function () {
+          window.focus();
+          this.close();
+      }
+    });
+  } catch (e) {
+    // Ignore Push.js errors about unsupported devices
+  }
+
 }
 
 function connectSocket() {
