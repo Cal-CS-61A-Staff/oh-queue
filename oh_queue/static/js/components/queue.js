@@ -18,7 +18,9 @@ let Queue = ({state}) => {
               </div>
             </div>
           }
-          {tickets.length > 0 && items}
+          <div className="row">
+            {tickets.length > 0 && items}
+          </div>
         </div>
       </div>
     </div>
