@@ -15,6 +15,24 @@ hr {
   border-top: 1px solid #eee;
 }
 
+hr.real {
+  -moz-border-bottom-colors: none;
+  -moz-border-image: none;
+  -moz-border-left-colors: none;
+  -moz-border-right-colors: none;
+  -moz-border-top-colors: none;
+  border-color: #EEEEEE -moz-use-text-color #FFFFFF;
+  border-style: solid none;
+  border-width: 1px 0;
+  margin: 18px 0;
+}
+
+.highlight {
+   color: #31708f;
+   background-color: rgba(217, 237, 247, 0.5);
+   border-radius: 4px;
+   font-weight: bold;
+}
 
 .navbar-default,
 .navbar-default .navbar-collapse, .navbar-default .navbar-form {

@@ -26,6 +26,7 @@ class Filter extends React.Component {
         <div className="col-xs-12 col-md-4 filter-field">
           <SelectPicker options={LOCATIONS} emptyOption="Any Location" className="selectpicker form-control" id="location" data-width="100%" data-style="btn-lg btn-default" name="location" title="Location" onChange={() => this.updateFilter()}/>
         </div>
+        <hr></hr>
       </div>
     );
   }

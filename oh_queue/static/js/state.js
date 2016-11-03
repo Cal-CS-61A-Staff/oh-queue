@@ -77,9 +77,17 @@ function ticketDisplayTime(ticket: Ticket): string {
   return moment.utc(ticket.created).local().format('h:mm A')
 }
 
+function isPending(ticket: Ticket): boolean {
+  return ticket.status === 'pending';
+}
+function isActive(ticket: Ticket): boolean {
+  return ticket.status === 'assigned';
+}
+
 function isActive(ticket: Ticket): boolean {
   return ticket.status === 'pending' || ticket.status === 'assigned';
 }
+
 
 function ticketStatus(state: State, ticket: Ticket): string {
   if (ticket.status === 'assigned' && ticket.helper) {
@@ -92,6 +100,21 @@ function ticketStatus(state: State, ticket: Ticket): string {
     return 'Queued';
   }
 }
+
+
+function ticketPosition(state: State, ticket: Ticket): string {
+  if (!ticket || ticket.status === "assigned") {
+    return '';
+  }
+  let pendingTickets =  Array.from(getActiveTickets(state)).filter(ticket =>
+    ticket.status === 'pending'
+  );
+  let position =  pendingTickets.findIndex(pendingTicket =>
+    pendingTicket.id === ticket.id
+  );
+  return "#" + (position+1) + ": "
+}
+
 
 function isStaff(state: State): boolean {
   return state.currentUser != null && state.currentUser.isStaff;
