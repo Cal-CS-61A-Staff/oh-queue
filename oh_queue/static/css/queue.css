@@ -55,9 +55,6 @@ hr {
   margin-top: 15px;
 }
 
-.queue {
-  margin-top: 15px;
-}
 .queue .panel-footer {
   background-color: #fafafa;
   border-top: none;
@@ -184,6 +181,3 @@ hr {
   }
 }
 
-.messages {
-  margin: 15px 0 0 0;
-}
