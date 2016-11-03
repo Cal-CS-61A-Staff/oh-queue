@@ -111,16 +111,14 @@ hr {
 
 /* Mostly stolen from offline.js */
 .offline {
-  border-radius: 4px;
-  font-family: "Helvetica Neue", sans-serif;
-  padding: 1em;
-  width: 38em;
+  text-align: center;
+  min-height: 50px;
   max-width: 100%;
   overflow: hidden;
   position: fixed;
   z-index: 2000;
   margin: auto;
-  top: 60px;
+  top: 0;
   left: 0;
   right: 0;
 }
@@ -157,8 +155,14 @@ hr {
   background: #d6e9c6;
   color: #468847;
   opacity: 0;
-  transition: opacity 0.5s;
+  transition: visibility 0.5s, opacity 0.5s;
   transition-delay: 2s;
+  visibility: hidden;
+}
+
+.offline-content {
+  line-height: 20px;
+  padding: 15px;
 }
 
 @-webkit-keyframes offline-rotation {
