@@ -37,9 +37,7 @@ let TicketLink = ({state, ticket, myTicket, children}) => {
     return (
       <div className="col-xs-12 col-md-4">
         <div className="panel panel-default">
-          <a href="#" className="disabled-link">
-            {children}
-          </a>
+          {children}
         </div>
       </div>
     );
@@ -47,9 +45,7 @@ let TicketLink = ({state, ticket, myTicket, children}) => {
     return (
       <div className="col-xs-12 col-md-4">
         <div className="panel panel-default">
-          <a href="/login" className="ticket-link">
-            {children}
-          </a>
+          {children}
         </div>
       </div>
     );
