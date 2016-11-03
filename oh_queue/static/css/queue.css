@@ -2,10 +2,12 @@
 
 body {
   padding-top: 50px;
+  margin-bottom: 1em;
 }
 
 h2 {
   border-bottom: none;
+  margin: 0;
 }
 
 hr {
@@ -49,12 +51,16 @@ hr {
   margin-top: 20px;
 }
 
+.filter-field {
+  margin-top: 15px;
+}
 
 .queue {
-  margin-top: 10px;
+  margin-top: 15px;
 }
-.queue .row {
-  padding: 15px 0;
+.queue .panel-footer {
+  background-color: #fafafa;
+  border-top: none;
 }
 
 
