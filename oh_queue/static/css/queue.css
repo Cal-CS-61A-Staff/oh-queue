@@ -58,14 +58,10 @@ hr {
 .queue .panel-footer {
   background-color: #fafafa;
   border-top: none;
-}
-
-
-.truncate {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
 
 .btn-outline {
   color: #fff;
@@ -86,13 +82,6 @@ hr {
 .landing-btn {
   display: block;
   margin: 20%;
-}
-
-.highlight {
-  color: #31708f;
-  background-color: rgba(217, 237, 247, 0.5);
-  border-radius: 4px;
-  font-weight: bold;
 }
 
 .ticket-link:hover {
