@@ -78,6 +78,16 @@ class App extends React.Component {
     });
   }
 
+  toggleFilter() {
+    this.state.filter.enabled = !this.state.filter.enabled;
+    this.refresh();
+  }
+
+  setFilter(filter) {
+    this.state.filter = filter;
+    this.refresh();
+  }
+
   addMessage(message, category) {
     addMessage(this.state, message, category);
     this.refresh();

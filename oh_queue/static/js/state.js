@@ -23,6 +23,13 @@ type Ticket = {
   helper: ?User,
 };
 
+type Filter = {
+  /* Selected options. null means do not filter by an attribute. */
+  location: ?string,
+  assignment: ?string,
+  question: ?string,
+};
+
 type Message = {
   id: number,
   category: string,  // e.g. "danger", "warning"
@@ -44,6 +51,8 @@ type State = {
   tickets: Map<number, Ticket>,
   /* Ticket IDs for any tickets we are currently loading. */
   loadingTickets: Set<number>,
+  /* Current ticket filter. */
+  filter: Filter,
   /* Flashed messages. */
   messages: Array<Message>,
   nextMessageID: number,
@@ -55,6 +64,11 @@ let initialState: State = {
   offline: true,
   tickets: new Map(),
   loadingTickets: new Set(),
+  filter: {
+    location: null,
+    assignment: null,
+    question: null,
+  },
   messages: [],
   nextMessageID: 1,
 }
@@ -117,8 +131,18 @@ function receiveTicket(state: State, id: number, ticket: ?Ticket) {
  * time.
  */
 function getActiveTickets(state: State): Array<Ticket> {
-  let active = Array.from(state.tickets.values()).filter(isActive);
-  return active.sort((a, b) => {
+  let tickets = Array.from(state.tickets.values()).filter(isActive);
+  let filter = state.filter;
+  if (filter.location) {
+    tickets = tickets.filter((ticket) => ticket.location === filter.location);
+  }
+  if (filter.assignment) {
+    tickets = tickets.filter((ticket) => ticket.assignment === filter.assignment);
+  }
+  if (filter.question) {
+    tickets = tickets.filter((ticket) => ticket.question === filter.question);
+  }
+  return tickets.sort((a, b) => {
     if (a.created < b.created) {
       return -1;
     } else if (a.created > b.created) {
@@ -168,3 +192,46 @@ function clearMessage(state: State, id: number): void {
     message.visible = false;
   }
 }
+
+/* Constants */
+const ASSIGNMENTS = [
+  'Hog',
+  'Maps',
+  'Ants',
+  'Scheme',
+  'Homework 1',
+  'Homework 2',
+  'Homework 3',
+  'Homework 4',
+  'Homework 5',
+  'Homework 6',
+  'Homework 7',
+  'Homework 8',
+  'Homework 9',
+  'Homework 10',
+  'Lab 1',
+  'Lab 2',
+  'Lab 3',
+  'Lab 4',
+  'Lab 5',
+  'Lab 6',
+  'Lab 7',
+  'Lab 8',
+  'Lab 9',
+  'Lab 10',
+  'Lab 11',
+  'Lab 12',
+  'Lab 13',
+  'Midterm 1',
+  'Midterm 2',
+  'Final',
+  'Other',
+];
+
+const LOCATIONS = [
+  '109 Morgan',
+  '237 Cory',
+  '241 Cory',
+  '247 Cory',
+  'Other',
+];
