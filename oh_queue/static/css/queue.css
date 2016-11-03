@@ -104,11 +104,6 @@ hr {
   cursor: pointer;
 }
 
-.disabled-link {
-  color: #333;
-  pointer-events: none;
-}
-
 /* Mostly stolen from offline.js */
 .offline {
   text-align: center;
