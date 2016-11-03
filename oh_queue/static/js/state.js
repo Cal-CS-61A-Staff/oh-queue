@@ -130,7 +130,7 @@ function getActiveTickets(state: State): Array<Ticket> {
 }
 
 function ticketIsMine(state: State, ticket: Ticket): boolean {
-  return state.currentUser != null && state.currentUser.id === ticket.user.id;
+  return state.currentUser != null && ticket.user && state.currentUser.id === ticket.user.id;
 }
 
 function isTicketHelper(state: State, ticket: Ticket): boolean {
