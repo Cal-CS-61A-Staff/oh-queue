@@ -24,8 +24,6 @@ type Ticket = {
 };
 
 type Filter = {
-  /* Whether the filter is currently applied. */
-  enabled: boolean,
   /* Selected options. null means do not filter by an attribute. */
   location: ?string,
   assignment: ?string,
@@ -67,7 +65,6 @@ let initialState: State = {
   tickets: new Map(),
   loadingTickets: new Set(),
   filter: {
-    enabled: false,
     location: null,
     assignment: null,
     question: null,
@@ -136,16 +133,14 @@ function receiveTicket(state: State, id: number, ticket: ?Ticket) {
 function getActiveTickets(state: State): Array<Ticket> {
   let tickets = Array.from(state.tickets.values()).filter(isActive);
   let filter = state.filter;
-  if (filter.enabled) {
-    if (filter.location) {
-      tickets = tickets.filter((ticket) => ticket.location === filter.location);
-    }
-    if (filter.assignment) {
-      tickets = tickets.filter((ticket) => ticket.assignment === filter.assignment);
-    }
-    if (filter.question) {
-      tickets = tickets.filter((ticket) => ticket.question === filter.question);
-    }
+  if (filter.location) {
+    tickets = tickets.filter((ticket) => ticket.location === filter.location);
+  }
+  if (filter.assignment) {
+    tickets = tickets.filter((ticket) => ticket.assignment === filter.assignment);
+  }
+  if (filter.question) {
+    tickets = tickets.filter((ticket) => ticket.question === filter.question);
   }
   return tickets.sort((a, b) => {
     if (a.created < b.created) {
