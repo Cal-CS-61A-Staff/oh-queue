@@ -11,7 +11,12 @@ class TicketButtons extends React.Component {
   }
 
   assign() {
-    app.makeRequest('assign', this.props.ticket.id);
+    let ticket = this.props.ticket;
+    app.makeRequest('assign', ticket.id);
+    if (ticket.location === "Online" && ticket.online_url) {
+      var win = window.open(ticket.online_url, '_blank');
+      win.focus();
+    }
   }
 
   delete() {
@@ -53,6 +58,16 @@ class TicketButtons extends React.Component {
       );
     }
 
+    function makeLink(text, style, href) {
+      return (
+        <a href={href}
+          className={`btn btn-${style} btn-lg btn-block`}>
+          {text}
+        </a>
+      );
+    }
+
+    let preButtons = [];
     let topButtons = [];
     let bottomButtons = [];
 
@@ -65,6 +80,9 @@ class TicketButtons extends React.Component {
     if (ticket.status === 'assigned') {
       bottomButtons.push(makeButton('Resolve', 'default', this.resolve));
       if (staff) {
+        if (ticket.location == "Online") {
+          preButtons.push(makeLink(ticket.online_url, 'primary', ticket.online_url))
+        }
         if (ticket.helper.id === state.currentUser.id) {
           topButtons.push(makeButton('Resolve and Next', 'primary', this.resolveAndNext));
           bottomButtons.push(makeButton('Requeue', 'default', this.unassign));
@@ -80,12 +98,20 @@ class TicketButtons extends React.Component {
 
     let hr = topButtons.length && bottomButtons.length ? <hr/> : null;
 
-    if (!(topButtons.length || bottomButtons.length)) {
+    if (!(topButtons.length || bottomButtons.length || preButtons.length)) {
       return null;
     }
 
     return (
       <div className="row">
+        {preButtons.length !== 0 &&
+          <div className="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+            <div className="well">
+              {preButtons}
+            </div>
+          </div>
+        }
+
         <div className="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
           <div className="well">
             {topButtons}

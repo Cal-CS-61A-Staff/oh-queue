@@ -54,8 +54,9 @@ class Ticket(db.Model):
     assignment = db.Column(db.String(255), nullable=False)
     question = db.Column(db.String(255), nullable=False)
     location = db.Column(db.String(255), nullable=False)
-
     helper_id = db.Column(db.ForeignKey('user.id'), index=True)
+
+    online_url = db.Column(db.String(255))
 
     user = db.relationship(User, foreign_keys=[user_id])
     helper = db.relationship(User, foreign_keys=[helper_id])

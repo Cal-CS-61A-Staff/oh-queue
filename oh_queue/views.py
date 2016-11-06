@@ -24,6 +24,7 @@ def ticket_json(ticket):
         'user': user_json(ticket.user),
         'created': ticket.created.isoformat(),
         'location': ticket.location,
+        'online_url': ticket.online_url,
         'assignment': ticket.assignment,
         'question': ticket.question,
         'helper': ticket.helper and user_json(ticket.helper),
@@ -120,12 +121,18 @@ def create(form):
             'You must fill out all the fields',
             category='warning',
         )
+    if (form.get('location') == "Online" and not form.get('url')):
+        return socket_error(
+            'You must fill out the URL for Online',
+            category='warning'
+        )
     ticket = Ticket(
         status=TicketStatus.pending,
         user=current_user,
         assignment=form.get('assignment'),
         question=form.get('question'),
         location=form.get('location'),
+        online_url=form.get('url')
     )
 
     db.session.add(ticket)

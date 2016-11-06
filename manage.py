@@ -34,8 +34,10 @@ def seed():
             created=datetime.datetime.utcnow() - delta,
             assignment=random.choice(['Hog', 'Scheme']),
             question=random.randrange(1, 6),
-            location=random.choice(['109 Morgan', '247 Cory']),
+            location=random.choice(['109 Morgan', '247 Cory', 'Online']),
         )
+        if ticket.location == "Online":
+            ticket.online_url = "https://collab.cs61a.org/?test"
         db.session.add(ticket)
         db.session.commit()
 

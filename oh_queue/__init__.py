@@ -21,6 +21,7 @@ if not app.debug:
 app.jinja_env.globals.update({
   'TicketStatus': TicketStatus,
   'assets_env': assets.assets_env,
+  'debug': app.debug,
 })
 
 db.init_app(app)

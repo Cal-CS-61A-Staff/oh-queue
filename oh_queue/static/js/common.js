@@ -21,13 +21,18 @@ function notifyUser(title, body) {
   } catch (e) {
     // Ignore Push.js errors about unsupported devices
   }
-
 }
 
 function connectSocket() {
   return io.connect('//' + document.domain + ':' + location.port, {
     transports: ['websocket', 'polling'],
   });
+}
+
+function getParamFromURL(url, param) {
+    var re = new RegExp(".*[?&]" + param + "=([^&]+)(&|$)");
+    var match = url.match(re);
+    return decodeURIComponent(match ? match[1] : "");
 }
 
 // The one and only app. Other components may reference this variable.
