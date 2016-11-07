@@ -16,6 +16,7 @@ babel = webassets.filter.get_filter('babel', presets='es2015,react')
 
 assets_env.register('style.css',
     'css/style.css',
+    'css/swal-theme.css',
     output='public/style.css',
 )
 
