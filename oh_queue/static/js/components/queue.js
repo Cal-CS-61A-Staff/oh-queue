@@ -10,7 +10,7 @@ let Queue = ({state}) => {
       <div className="container">
         <Messages messages={state.messages}/>
         {isStaff(state) && <FilterControls filter={state.filter}/>}
-        {isStaff(state) && <hr class="real"/>}
+        {isStaff(state) && <hr />}
         <div className="queue">
           {tickets.length == 0 &&
             <div className="row">
