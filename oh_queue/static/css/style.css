@@ -1,8 +1,8 @@
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 1.5em;
-  padding-top: 40px;
-  margin-bottom:5em;
+  padding-top: 50px;
+  margin-bottom: 1em;
 }
 
 h1, h2, h3 {
@@ -18,17 +18,94 @@ h1:before, h2:before, h3:before, h4:before {
 }
 
 h2 {
-  border-bottom: 1px solid #0072c1;
+    margin: 0;
 }
 
 hr {
-  background-color: #0072c1;
-  border: 0;
+  border-top: 1px solid #eee;
   height: 1px;
 }
 
 a:hover {
   text-decoration:none;
+}
+
+/* Queue styles */
+
+.highlight {
+   color: #31708f;
+   background-color: rgba(217, 237, 247, 0.5);
+   border-radius: 4px;
+   font-weight: bold;
+}
+
+.navbar-default,
+.navbar-default .navbar-collapse, .navbar-default .navbar-form {
+  border: none;
+}
+.navbar-default .navbar-nav > li > a {
+  font-size: 0.8em;
+  font-weight: bold;
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+}
+
+
+.jumbotron.blue {
+  background: #0072c1;
+  background: linear-gradient(to bottom, #0072c1 0%,#acbfff 100%);
+}
+.jumbotron .btn-jumbo {
+  font-size: 24px;
+  padding: 20px;
+  border-radius: 6px;
+}
+
+.page-header {
+  border: none;
+  color: #fff;
+}
+
+.input-group {
+  width: 100%;
+}
+
+.request-form {
+  margin-top: 20px;
+}
+
+.filter-field {
+  margin-top: 16px;
+}
+
+.queue .panel-footer {
+  background-color: #fafafa;
+  border-top: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-outline {
+  color: #fff;
+  background-image: none;
+  background-color: transparent;
+  border-color: #fff;
+}
+.btn-outline:hover, .btn-outline:active {
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.ticket {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.ticket-link:hover {
+  background: #eee;
+  transition: background 0.2s;
+  cursor: pointer;
 }
 
 /* Navbar colors */
@@ -90,6 +167,87 @@ a:hover {
   .navbar-default .navbar-nav .open .dropdown-menu > .active > a, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
     color: #ffffff;
     background-color: #0085e1;
+  }
+}
+
+/* Mostly stolen from offline.js */
+
+.offline {
+  text-align: center;
+  min-height: 50px;
+  max-width: 100%;
+  overflow: hidden;
+  position: fixed;
+  z-index: 2000;
+  margin: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.offline-down:after {
+  -webkit-animation: offline-rotation 0.7s linear infinite;
+  animation: offline-rotation 0.7s linear infinite;
+  -webkit-backface-visibility: hidden;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  content: " ";
+  display: block;
+  position: absolute;
+  right: 1em;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  height: 1em;
+  width: 1em;
+  border: 2px solid rgba(0, 0, 0, 0);
+  border-top-color: #7c6d1f;
+  border-left-color: #7c6d1f;
+  opacity: 0.7;
+}
+
+.offline-down {
+  background: #f8ecad;
+  color: #7c6d1f;
+  opacity: 100;
+  transition: opacity 0.5s;
+}
+
+.offline-up {
+  background: #d6e9c6;
+  color: #468847;
+  opacity: 0;
+  transition: visibility 0.5s, opacity 0.5s;
+  transition-delay: 2s;
+  visibility: hidden;
+}
+
+.offline-content {
+  line-height: 20px;
+  padding: 15px;
+}
+
+@-webkit-keyframes offline-rotation {
+  0% {
+    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(359deg);
+    -webkit-transform: rotate(359deg);
+  }
+}
+
+@-keyframes offline-rotation {
+  0% {
+    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(359deg);
+    -webkit-transform: rotate(359deg);
   }
 }
 
