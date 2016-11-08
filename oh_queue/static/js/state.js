@@ -112,7 +112,7 @@ function ticketPosition(state: State, ticket: Ticket): string {
   let position =  pendingTickets.findIndex(pendingTicket =>
     pendingTicket.id === ticket.id
   );
-  return "#" + (position+1) + ": "
+  return "#" + (position+1)
 }
 
 
