@@ -32,13 +32,6 @@ a:hover {
 
 /* Queue styles */
 
-.highlight {
-   color: #31708f;
-   background-color: rgba(217, 237, 247, 0.5);
-   border-radius: 4px;
-   font-weight: bold;
-}
-
 .navbar-default,
 .navbar-default .navbar-collapse, .navbar-default .navbar-form {
   border: none;
@@ -70,20 +63,19 @@ a:hover {
   width: 100%;
 }
 
+.input-group .width-40 {
+  width: 40%;
+}
+.input-group .width-60 {
+  width: 60%;
+}
+
 .request-form {
   margin-top: 20px;
 }
 
 .filter-field {
   margin-top: 16px;
-}
-
-.queue .panel-footer {
-  background-color: #fafafa;
-  border-top: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .btn-outline {
@@ -102,17 +94,46 @@ a:hover {
   margin-bottom: 40px;
 }
 
+.queue {
+  border: 1px solid #eee;
+  border-radius: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 980px;
+}
+
+.ticket-row {
+  border-top: 1px solid #eee;
+}
+
+.ticket-row:first-child {
+  border: none;
+}
+
 .ticket-link:hover {
   background: #eee;
   transition: background 0.2s;
   cursor: pointer;
 }
 
-.input-group .width-40 {
-  width: 40%;
+.ticket-highlight {
+   background-color: #f3f3f3;
 }
-.input-group .width-60 {
-  width: 60%;
+
+.ticket-index {
+  margin: 12px;
+  width: 20px;
+  font-size: 11px;
+  color: #999;
+}
+
+.ticket-status-md {
+  padding-right: 12px;
+}
+
+.ticket-status-xs {
+  margin-top: 6px;
 }
 
 /* Navbar colors */
@@ -257,4 +278,3 @@ a:hover {
     -webkit-transform: rotate(359deg);
   }
 }
-

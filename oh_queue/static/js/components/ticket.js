@@ -1,62 +1,44 @@
-let Ticket = ({state, ticket, myTicket, index}) => {
+let Ticket = ({state, ticket}) => {
+  var status;
+  if (ticket.status === 'pending') {
+    status = ticketDisplayTime(ticket) + ' in ' + ticket.location;
+  } else {
+    status = ticketStatus(state, ticket);
+  }
   return (
-    <TicketLink state={state} ticket={ticket} myTicket={myTicket}>
-      <div className="panel-body">
-        <h2>{ticket.assignment} Q{ticket.question}<br /><small>{ticket.location}</small></h2>
-      </div>
-      <div className="panel-footer">
-        <small>{ticketPosition(state, ticket)} {ticketStatus(state, ticket)} at {ticketDisplayTime(ticket)}</small>
-      </div>
+    <TicketLink state={state} ticket={ticket}>
+      <div className="pull-left ticket-index">{ticketPosition(state, ticket)}</div>
+      <h4 className="pull-left">
+        {ticket.assignment} Q{ticket.question}
+        <br className="visible-xs" />
+        <small className="visible-xs ticket-status-xs">{status}</small>
+      </h4>
+      <h4 className="pull-right hidden-xs ticket-status-md"><small>{status}</small></h4>
     </TicketLink>
   );
 }
 
-let TicketLink = ({state, ticket, myTicket, children}) => {
-  if (myTicket && myTicket.id === ticket.id) {
+let TicketLink = ({state, ticket, children}) => {
+  let highlight = ticketIsMine(state, ticket) || isTicketHelper(state, ticket);
+  let link = ticketIsMine(state, ticket) || isStaff(state);
+  let ticketClass = classNames({
+    'ticket-row': true,
+    'clearfix': true,
+    'ticket-link': link,
+    'ticket-highlight': highlight,
+  });
+  if (link) {
     return (
-      <div className="col-xs-12 col-md-4">
-        <div className="panel panel-primary highlight">
-          <ReactRouter.Link to={`/${ticket.id}/`} className="ticket-link">
-            {children}
-          </ReactRouter.Link>
-        </div>
-      </div>
-    );
-  } else if (isTicketHelper(state, ticket)) {
-    return (
-      <div className="col-xs-12">
-        <div className="panel panel-primary highlight">
-          <ReactRouter.Link to={`/${ticket.id}/`} className="ticket-link">
-            {children}
-          </ReactRouter.Link>
-        </div>
-      </div>
-    );
-  } else if (isStaff(state)) {  // staff
-    return (
-      <div className="col-xs-12">
-        <div className="panel panel-default">
-          <ReactRouter.Link to={`/${ticket.id}/`} className="ticket-link">
-            {children}
-          </ReactRouter.Link>
-        </div>
-      </div>
-    );
-    destination = `/${ticket.id}/`;
-  } else if (state.currentUser) {  // student and logged in
-    return (
-      <div className="col-xs-12 col-md-4">
-        <div className="panel panel-default">
+      <div className={ticketClass}>
+        <ReactRouter.Link to={`/${ticket.id}/`} className="clearfix">
           {children}
-        </div>
+        </ReactRouter.Link>
       </div>
     );
-  } else {  // logged out
+  } else {
     return (
-      <div className="col-xs-12 col-md-4">
-        <div className="panel panel-default">
-          {children}
-        </div>
+      <div className={ticketClass}>
+        {children}
       </div>
     );
   }
