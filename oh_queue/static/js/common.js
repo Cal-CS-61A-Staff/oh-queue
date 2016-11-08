@@ -29,12 +29,6 @@ function connectSocket() {
   });
 }
 
-function getParamFromURL(url, param) {
-    var re = new RegExp(".*[?&]" + param + "=([^&]+)(&|$)");
-    var match = url.match(re);
-    return decodeURIComponent(match ? match[1] : "");
-}
-
 // The one and only app. Other components may reference this variable.
 // See components/app.js for more documentation
 let app = ReactDOM.render(<App/>, document.getElementById('content'));

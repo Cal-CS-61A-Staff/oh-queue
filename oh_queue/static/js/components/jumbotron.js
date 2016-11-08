@@ -1,4 +1,4 @@
-let Jumbotron = ({state}) => {
+let Jumbotron = ({state, onlineUrl}) => {
   if (!state.currentUser) {
     var titleText = 'Hi! Please sign in';
     var subtitleText = 'Sign in with your course OK account to request help';
@@ -10,7 +10,7 @@ let Jumbotron = ({state}) => {
   } else {
     var titleText = `Hello, ${state.currentUser.name}`;
     var subtitleText = 'Fill out the form to request help';
-    var contents = <RequestForm/>;
+    var contents = <RequestForm onlineUrl={onlineUrl}/>;
   }
 
   return (
