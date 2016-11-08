@@ -53,6 +53,8 @@ type State = {
   loadingTickets: Set<number>,
   /* Current ticket filter. */
   filter: Filter,
+  /* Selected queue tab. */
+  queueTabIndex: number,
   /* Flashed messages. */
   messages: Array<Message>,
   nextMessageID: number,
@@ -69,6 +71,7 @@ let initialState: State = {
     assignment: null,
     question: null,
   },
+  queueTabIndex: 0,
   messages: [],
   nextMessageID: 1,
 }
@@ -101,20 +104,14 @@ function ticketStatus(state: State, ticket: Ticket): string {
   }
 }
 
-
-function ticketPosition(state: State, ticket: Ticket): string {
-  if (!ticket || ticket.status === "assigned") {
-    return '';
-  }
-  let pendingTickets =  Array.from(getActiveTickets(state)).filter(ticket =>
-    ticket.status === 'pending'
-  );
-  let position =  pendingTickets.findIndex(pendingTicket =>
+function ticketPosition(state: State, ticket: Ticket): ?string {
+  let index = getTickets(state, 'pending').findIndex(pendingTicket =>
     pendingTicket.id === ticket.id
   );
-  return "#" + (position+1)
+  if (index != -1) {
+    return '#' + (index + 1);
+  }
 }
-
 
 function isStaff(state: State): boolean {
   return state.currentUser != null && state.currentUser.isStaff;
@@ -150,12 +147,23 @@ function receiveTicket(state: State, id: number, ticket: ?Ticket) {
   state.loadingTickets.delete(id);
 }
 
-/* Return an array of tickets that are pending or assigned, sorted by queue
- * time.
+/* Return an array of pending tickets, sorted by queue time.
  */
-function getActiveTickets(state: State): Array<Ticket> {
-  let tickets = Array.from(state.tickets.values()).filter(isActive);
-  let filter = state.filter;
+function getTickets(state: State, status: string): Array<Ticket> {
+  return Array.from(state.tickets.values()).filter(
+    (ticket) => ticket.status === status
+  ).sort((a, b) => {
+    if (a.created < b.created) {
+      return -1;
+    } else if (a.created > b.created) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+}
+
+function applyFilter(filter: Filter, tickets: Array<Ticket>): Array<Ticket> {
   if (filter.location) {
     tickets = tickets.filter((ticket) => ticket.location === filter.location);
   }
@@ -165,15 +173,7 @@ function getActiveTickets(state: State): Array<Ticket> {
   if (filter.question) {
     tickets = tickets.filter((ticket) => ticket.question === filter.question);
   }
-  return tickets.sort((a, b) => {
-    if (a.created < b.created) {
-      return -1;
-    } else if (a.created > b.created) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
+  return tickets;
 }
 
 function ticketIsMine(state: State, ticket: Ticket): boolean {
