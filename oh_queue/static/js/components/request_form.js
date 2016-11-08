@@ -18,7 +18,7 @@ let RequestForm = () => {
       </div>
       <div className="form-group form-group-lg">
         <div className="input-group">
-          <SelectPicker options={LOCATIONS} className="selectpicker form-control width-60" id="location" data-width="100%" data-style="btn-lg btn-default" name="location" title="Location" required />
+          <SelectPicker options={LOCATIONS} className="selectpicker form-control width-60" id="location" data-width="60%" data-style="btn-lg btn-default" name="location" title="Location" required />
           <span className="input-group-btn width-40 pull-left">
             <button className="btn btn-lg btn-default" onClick={submit}>Request<span className="hidden-xs"> Help</span></button>
           </span>

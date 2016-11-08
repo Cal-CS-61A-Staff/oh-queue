@@ -108,6 +108,13 @@ a:hover {
   cursor: pointer;
 }
 
+.input-group .width-40 {
+  width: 40%;
+}
+.input-group .width-60 {
+  width: 60%;
+}
+
 /* Navbar colors */
 
 .navbar-default {
