@@ -95,6 +95,7 @@ a:hover {
 }
 
 .queue {
+  margin-top: 20px;
   border: 1px solid #eee;
   border-radius: 3px;
   overflow: hidden;

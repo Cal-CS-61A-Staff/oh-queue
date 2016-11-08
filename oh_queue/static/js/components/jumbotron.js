@@ -1,4 +1,4 @@
-let Jumbotron = ({state, myTicket}) => {
+let Jumbotron = ({state}) => {
   if (!state.currentUser) {
     var titleText = 'Hi! Please sign in';
     var subtitleText = 'Sign in with your course OK account to request help';
@@ -6,14 +6,6 @@ let Jumbotron = ({state, myTicket}) => {
       <a className="btn btn-block btn-jumbo btn-outline" href="/login/">
         Sign in with Ok
       </a>
-    );
-  } else if (myTicket) {
-    var titleText = `Hello, ${state.currentUser.name}`;
-    var subtitleText = `Signed in as ${state.currentUser.email}`;
-    var contents = (
-      <ReactRouter.Link to={`/${myTicket.id}/`} className="btn btn-block btn-jumbo btn-outline">
-        My Request
-      </ReactRouter.Link>
     );
   } else {
     var titleText = `Hello, ${state.currentUser.name}`;
