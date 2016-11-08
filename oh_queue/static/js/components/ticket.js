@@ -2,10 +2,10 @@ let Ticket = ({state, ticket, myTicket, index}) => {
   return (
     <TicketLink state={state} ticket={ticket} myTicket={myTicket}>
       <div className="panel-body">
-        <h2>{ticketPosition(state, ticket)} {ticket.assignment} Q{ticket.question} <small>{ticket.location}</small></h2>
+        <h2>{ticket.assignment} Q{ticket.question}<br /><small>{ticket.location}</small></h2>
       </div>
       <div className="panel-footer">
-        <small>{ticketStatus(state, ticket)} at {ticketDisplayTime(ticket)}</small>
+        <small>{ticketPosition(state, ticket)} {ticketStatus(state, ticket)} at {ticketDisplayTime(ticket)}</small>
       </div>
     </TicketLink>
   );
