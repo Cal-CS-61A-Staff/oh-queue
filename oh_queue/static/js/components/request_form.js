@@ -1,7 +1,7 @@
 class RequestForm extends React.Component {
   constructor(props) {
     super(props);
-    let onlineUrl = getParamFromURL(window.location.search, 'oh_url')
+    let onlineUrl = this.props.onlineUrl;
     this.state = {
       isOnline: onlineUrl ? true : false,
       onlineUrl: onlineUrl,

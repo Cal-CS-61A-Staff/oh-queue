@@ -1,4 +1,4 @@
-let Queue = ({state}) => {
+let Queue = ({state, location}) => {
   let myTicket = getMyTicket(state);
   let showJumbotron = !isStaff(state) && !myTicket;
   let pendingTickets = getTickets(state, 'pending');
@@ -9,7 +9,7 @@ let Queue = ({state}) => {
   }
   return (
     <div>
-      {showJumbotron && <Jumbotron state={state}/>}
+      {showJumbotron && <Jumbotron state={state} onlineUrl={location.query.oh_url}/>}
       <div className={"container" + (showJumbotron ? "": ' stub-jumbotron')}>
         <Messages messages={state.messages}/>
         {isStaff(state) && <FilterControls filter={state.filter}/>}
