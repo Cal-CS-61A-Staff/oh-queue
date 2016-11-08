@@ -4,9 +4,10 @@ let Queue = ({state}) => {
   let items = tickets.map((ticket) =>
     <Ticket key={ticket.id} state={state} ticket={ticket}/>
   );
+  let showJumbotron = !isStaff(state) && !myTicket;
   return (
     <div>
-      {!isStaff(state) && <Jumbotron state={state} myTicket={myTicket}/>}
+      {showJumbotron && <Jumbotron state={state}/>}
       <div className="container">
         <Messages messages={state.messages}/>
         {isStaff(state) && <FilterControls filter={state.filter}/>}
