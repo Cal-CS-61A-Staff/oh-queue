@@ -162,6 +162,17 @@ a:hover {
   margin-top: 6px;
 }
 
+.no-results {
+  padding: 100px 60px;
+  text-align: center;
+  background-color: #fafafa;
+}
+
+.no-results h4 {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
 /* Navbar colors */
 
 .navbar-default {

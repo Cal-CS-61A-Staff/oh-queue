@@ -37,16 +37,26 @@ let TicketList = ({state, tickets}) => {
   let items = applyFilter(state.filter, tickets).map((ticket) =>
     <Ticket key={ticket.id} state={state} ticket={ticket}/>
   );
+  var body;
+  if (tickets.length === 0) {
+    body = (
+      <div className="no-results">
+        <h4>No help requests</h4>
+      </div>
+    );
+  } else if (items.length === 0) {
+    body = (
+      <div className="no-results">
+        <h4>No help requests matched your search</h4>
+      </div>
+    );
+  } else {
+    body = items;
+  }
+
   return (
     <div className="queue">
-      {items.length == 0 &&
-        <div className="row">
-          <div className="col-xs-12 text-center">
-            <p className="lead">There are no help requests on the queue.</p>
-          </div>
-        </div>
-      }
-      {items}
+      {body}
     </div>
   );
 };
