@@ -30,6 +30,10 @@ a:hover {
   text-decoration:none;
 }
 
+.container {
+  max-width: 960px;
+}
+
 /* Queue styles */
 
 .navbar-default,
@@ -94,14 +98,35 @@ a:hover {
   margin-bottom: 40px;
 }
 
+/* Queue tabs */
+
+@media (max-width: 768px) {
+  .nav-justified > li {
+    display: table-cell;
+    width: 1%;
+  }
+  .nav-justified > li > a  {
+    border-bottom: 1px solid #ddd !important;
+    border-radius: 4px 4px 0 0 !important;
+    margin-bottom: 0 !important;
+  }
+  .nav-tabs.nav-justified > .active > a,
+  .nav-tabs.nav-justified > .active > a:hover,
+  .nav-tabs.nav-justified > .active > a:focus {
+    border-bottom-color: #fff !important;
+  }
+}
+
+/* Queue (list of tickets) */
+
 .queue {
-  margin-top: 20px;
-  border: 1px solid #eee;
-  border-radius: 3px;
+  border: 1px solid #ddd;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-top: none;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 980px;
 }
 
 .ticket-row {
