@@ -126,7 +126,7 @@ function setTicket(state: State, ticket: Ticket): void {
   if (ticketIsMine(state, ticket)) {
     let oldTicket = getMyTicket(state);
     if (oldTicket && oldTicket.status === "pending" && ticket.status === "assigned") {
-      let locationString = (ticket.location === "Online") ? ticket.online_url ? ticket.location;
+      let locationString = (ticket.location === "Online") ? ticket.online_url : ticket.location;
       notifyUser("Your name is being called",
                  ticket.helper.name + " is looking for you in "+ locationString);
     }
