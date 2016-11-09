@@ -39,3 +39,24 @@ First point a git remote to the Dokku server:
 To deploy:
 
     git push dokku master
+
+
+### First Time Deployment
+
+	dokku apps:create app-name
+	git remote add online dokku@app.cs61a.org:app-name
+	dokku mysql:create db-name
+	dokku mysql:link db-name app-name
+	# Set DNS record
+	dokku domains:add app-name name.cs61a.org
+
+	dokku config:set online-oh SECRET_KEY=<SECRET> OH_QUEUE_ENV=prod
+	dokku run app-name /bin/bash
+		$ python
+		>>> from oh_queue import app
+		>>> from oh_queue.models import db
+		>>> db.create_all(app=app)
+		>>> exit()
+		$ exit
+	dokku letsencrypt app-name
+	# Change OK OAuth to support the domain
