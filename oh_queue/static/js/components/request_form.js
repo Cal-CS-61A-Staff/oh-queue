@@ -32,8 +32,7 @@ class RequestForm extends React.Component {
           }).then(function() {
             var win = window.open('https://collab.cs61a.org/help/start/', '_blank');
             win.focus();
-
-            swal("Now paste in your URL into the field", 'It should look like https://collab.cs61a.org/oh/abc');
+            swal("Now paste the URL into the field", 'It should look like https://collab.cs61a.org/help/abcd');
           }, function(dismiss) {
             // dismiss can be 'cancel', 'overlay',
             // 'close', and 'timer'
