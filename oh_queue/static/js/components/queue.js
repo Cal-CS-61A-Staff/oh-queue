@@ -10,7 +10,7 @@ let Queue = ({state}) => {
   return (
     <div>
       {showJumbotron && <Jumbotron state={state}/>}
-      <div className="container">
+      <div className={"container" + (showJumbotron ? "": ' stub-jumbotron')}>
         <Messages messages={state.messages}/>
         {isStaff(state) && <FilterControls filter={state.filter}/>}
         {isStaff(state) && <hr />}

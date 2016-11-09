@@ -57,6 +57,9 @@ a:hover {
   padding: 20px;
   border-radius: 6px;
 }
+.stub-jumbotron {
+  padding-top: 24px;
+}
 
 .page-header {
   border: none;
@@ -101,6 +104,9 @@ a:hover {
 /* Queue tabs */
 
 @media (max-width: 768px) {
+  .stub-jumbotron {
+    padding-top: 0px;
+  }
   .nav-justified > li {
     display: table-cell;
     width: 1%;
