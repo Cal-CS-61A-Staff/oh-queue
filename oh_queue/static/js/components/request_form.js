@@ -20,7 +20,24 @@ class RequestForm extends React.Component {
       formData[input.name] = input.value;
       if (input.name === "url") {
         if (!input.value || !input.value.includes('http')) {
-          swal('Invalid Online URL', 'Please enter a URL that looks like https://collab.cs61a.org/oh/abc', 'error')
+          swal({
+            title: 'Need a Collab URL',
+            text: "Paste in a collab URL by going to https://collab.cs61a.org/help/start/",
+            type: 'warning',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Get a Collab URL',
+            confirmButtonClass: 'btn btn-success',
+            buttonsStyling: false
+          }).then(function() {
+            var win = window.open('https://collab.cs61a.org/help/start/', '_blank');
+            win.focus();
+
+            swal("Now paste in your URL into the field", 'It should look like https://collab.cs61a.org/oh/abc');
+          }, function(dismiss) {
+            // dismiss can be 'cancel', 'overlay',
+            // 'close', and 'timer'
+          })
           hasError = true;
         }
       }

@@ -14,8 +14,23 @@ class TicketButtons extends React.Component {
     let ticket = this.props.ticket;
     app.makeRequest('assign', ticket.id);
     if (ticket.location === "Online" && ticket.online_url) {
-      var win = window.open(ticket.online_url, '_blank');
-      win.focus();
+
+          swal({
+            title: 'Online Help Session',
+            text: "Go to " + ticket.online_url + " to help your student",
+            type: 'info',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Go to session',
+            confirmButtonClass: 'btn btn-success',
+            buttonsStyling: false
+          }).then(function() {
+            var win = window.open(ticket.online_url, '_blank');
+            win.focus();
+          }, function(dismiss) {
+            // dismiss can be 'cancel', 'overlay',
+            // 'close', and 'timer'
+          })
     }
   }
 
