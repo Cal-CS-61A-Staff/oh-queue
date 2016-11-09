@@ -121,7 +121,7 @@ class TicketButtons extends React.Component {
     if (ticket.status === 'deleted' && !staff) {
       return null;
     }
-    if (!(topButtons.length || bottomButtons.length || preButtons.length)) {
+    if (!(topButtons.length || bottomButtons.length)) {
       return null;
     }
 
