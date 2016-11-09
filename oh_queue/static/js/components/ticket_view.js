@@ -34,6 +34,8 @@ class TicketView extends React.Component {
               { (ticket.status === 'pending' && isStaff(state)) ? 'Help to View Name' : ticket.user.name }
               <small className="clearfix">{ ticketDisplayTime(ticket) } in { ticket.location }</small>
             </h2>
+              { (ticket.location === 'Online' && (!isStaff(state) || ticket.status == 'pending') )
+                  && <h4 className="text-center"> <small className="clearfix">{ ticket.online_url }</small></h4> }
             <p className="lead text-center">{ ticketStatus(state, ticket) }</p>
             <h3 className="text-center">
               <span className="label label-default">{ ticket.assignment } Q{ ticket.question }</span>

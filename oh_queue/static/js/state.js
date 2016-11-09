@@ -260,4 +260,5 @@ const LOCATIONS = [
   '241 Cory',
   '247 Cory',
   'Other',
+  'Online'
 ];

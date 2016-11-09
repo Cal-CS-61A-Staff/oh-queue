@@ -92,12 +92,17 @@ class TicketButtons extends React.Component {
         topButtons.push(makeButton('Help', 'primary', this.assign));
       }
     }
+    if (!staff && ticket.location == "Online") {
+      preButtons.push(makeLink("Online Session", 'primary', ticket.online_url))
+    }
+
     if (ticket.status === 'assigned') {
       bottomButtons.push(makeButton('Resolve', 'default', this.resolve));
       if (staff) {
         if (ticket.location == "Online") {
-          preButtons.push(makeLink(ticket.online_url, 'primary', ticket.online_url))
+          preButtons.push(makeLink("Online Session", 'primary', ticket.online_url))
         }
+
         if (ticket.helper.id === state.currentUser.id) {
           topButtons.push(makeButton('Resolve and Next', 'primary', this.resolveAndNext));
           bottomButtons.push(makeButton('Requeue', 'default', this.unassign));
@@ -113,6 +118,9 @@ class TicketButtons extends React.Component {
 
     let hr = topButtons.length && bottomButtons.length ? <hr/> : null;
 
+    if (ticket.status === 'deleted' && !staff) {
+      return null;
+    }
     if (!(topButtons.length || bottomButtons.length || preButtons.length)) {
       return null;
     }
