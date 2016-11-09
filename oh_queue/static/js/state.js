@@ -18,6 +18,7 @@ type Ticket = {
   user: User,
   created: string,  // ISO 8601 datetime string
   location: string,
+  online_url: string,
   assignment: string,
   question: string,
   helper: ?User,
@@ -125,8 +126,9 @@ function setTicket(state: State, ticket: Ticket): void {
   if (ticketIsMine(state, ticket)) {
     let oldTicket = getMyTicket(state);
     if (oldTicket && oldTicket.status === "pending" && ticket.status === "assigned") {
+      let locationString = (ticket.location === "Online") ? ticket.online_url ? ticket.location;
       notifyUser("Your name is being called",
-                 ticket.helper.name + " is looking for you in "+ ticket.location);
+                 ticket.helper.name + " is looking for you in "+ locationString);
     }
   }
   state.tickets.set(ticket.id, ticket);
