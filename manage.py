@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import datetime
 import random
+import sys
 
 from flask_script import Manager
 import names
@@ -44,6 +45,9 @@ def seed():
 
 @manager.command
 def resetdb():
+    if app.config.get('ENV') == 'prod':
+        print('manage.py should not be run in production. Aborting')
+        sys.exit(1)
     print('Dropping tables...')
     db.drop_all(app=app)
     print('Creating tables...')
@@ -55,7 +59,4 @@ def server():
     socketio.run(app)
 
 if __name__ == '__main__':
-    if app.config.get('ENV') == 'prod':
-        print('manage.py should not be run in production. Aborting')
-        sys.exit(1)
     manager.run()
