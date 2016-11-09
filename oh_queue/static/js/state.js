@@ -255,11 +255,5 @@ const ASSIGNMENTS = [
 ];
 
 const LOCATIONS = [
-  '109 Morgan',
-  '237 Cory',
-  '241 Cory',
-  '247 Cory',
-  'Online',
-  'Other',
   'Online'
 ];

@@ -2,10 +2,10 @@ class RequestForm extends React.Component {
   constructor(props) {
     super(props);
     let onlineUrl = this.props.onlineUrl;
+    let isOnlineOnly = LOCATIONS.length === 1 && LOCATIONS[0] === "Online"
     this.state = {
-      isOnline: onlineUrl ? true : false,
-      onlineUrl: onlineUrl,
-      location: onlineUrl ? 'Online' : ''
+      isOnline: (onlineUrl || isOnlineOnly) ? true : false,
+      onlineUrl: onlineUrl
     };
 
     this.handleLocationChange = this.handleLocationChange.bind(this)
@@ -74,7 +74,12 @@ class RequestForm extends React.Component {
           }
         <div className="form-group form-group-lg">
           <div className="input-group">
-            <SelectPicker options={LOCATIONS} onChange={this.handleLocationChange}  className="selectpicker form-control width-60" data-width="60%" id="location" data-style="btn-lg btn-default" name="location" title="Location" required />
+            {LOCATIONS.length !== 1 &&
+                <SelectPicker options={LOCATIONS} onChange={this.handleLocationChange}  className="selectpicker form-control width-60" data-width="60%" id="location" data-style="btn-lg btn-default" name="location" title="Location" required />
+            }
+            {LOCATIONS.length == 1 &&
+                <SelectPicker options={LOCATIONS} onChange={this.handleLocationChange}  className="selectpicker form-control width-60" data-width="60%" id="location" data-style="btn-lg btn-default" name="location" required />
+            }
             <span className="input-group-btn width-40 pull-left" data-width="40%">
               <button className="btn btn-lg btn-default" onClick={this.submit}>Request<span className="hidden-xs"> Help</span></button>
             </span>
