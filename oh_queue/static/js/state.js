@@ -74,7 +74,7 @@ let initialState: State = {
   queueTabIndex: 0,
   messages: [{
     id: 1,
-    text: "Waiting for scheme help? Try using online.cs61a.org for virtual office hours",
+    text: "Waiting for scheme help? Go to https://online.cs61a.org for virtual office hours with a GSI",
     category: "info",
     visible: true,
   }],
