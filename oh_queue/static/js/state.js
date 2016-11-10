@@ -72,8 +72,13 @@ let initialState: State = {
     question: null,
   },
   queueTabIndex: 0,
-  messages: [],
-  nextMessageID: 1,
+  messages: [{
+    id: 1,
+    text: "Waiting for scheme help? Try using online.cs61a.org for virtual office hours",
+    category: "info",
+    visible: true,
+  }],
+  nextMessageID: 2,
 }
 
 function ticketDisplayTime(ticket: Ticket): string {
