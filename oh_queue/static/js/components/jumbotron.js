@@ -14,7 +14,7 @@ let Jumbotron = ({state, onlineUrl}) => {
   }
 
   return (
-    <div className="jumbotron blue">
+    <div className="jumbotron dark">
       <div className="container">
         <section className="page-header">
           <div className="row">

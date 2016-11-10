@@ -47,6 +47,15 @@ a:hover {
   text-transform: uppercase;
 }
 
+.navbar-dark  {
+    background-color: #3f4c6b !important;
+    border-color: #3f4c6b !important;
+}
+
+.jumbotron.dark {
+  background: #0072c1;
+  background: linear-gradient(to bottom, #3f4c6b 0%,#606c88 100%);
+}
 
 .jumbotron.blue {
   background: #0072c1;

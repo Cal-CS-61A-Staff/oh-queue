@@ -1,7 +1,7 @@
 /* React Components */
 let Navbar = ({currentUser, myTicket}) => {
   return (
-    <nav className="navbar navbar-default navbar-fixed-top">
+    <nav className="navbar navbar-dark navbar-default navbar-fixed-top">
       <div className="container">
         <div className="navbar-header">
           <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
@@ -9,7 +9,7 @@ let Navbar = ({currentUser, myTicket}) => {
             <span className="icon-bar"></span>
             <span className="icon-bar"></span>
           </button>
-          <ReactRouter.Link className="navbar-brand" to="/"><strong>CS 61A</strong> Queue</ReactRouter.Link>
+          <ReactRouter.Link className="navbar-brand" to="/"><strong>CS 61A</strong> Online Queue</ReactRouter.Link>
         </div>
         <div className="collapse navbar-collapse" id="navbar-collapse-section">
           <ul className="nav navbar-nav navbar-right">
