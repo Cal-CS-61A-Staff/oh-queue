@@ -21,9 +21,8 @@ class RequestForm extends React.Component {
       if (input.name === "url") {
         if (!input.value || !input.value.includes('http')) {
           swal({
-            title: 'Need a Collab URL',
-            text: "Paste in a collab URL by going to https://collab.cs61a.org/help/start/",
-            type: 'warning',
+            title: 'Start a new session',
+            text: "Click on the button below to start a shared session. Paste a collab URL by going to https://collab.cs61a.org/help/start/",
             showCancelButton: false,
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'Get a Collab URL',
