@@ -80,6 +80,10 @@ function ticketDisplayTime(ticket: Ticket): string {
   return moment.utc(ticket.created).local().format('h:mm A')
 }
 
+function ticketTimeAgo(ticket: Ticket): string {
+  return moment.utc(ticket.created).fromNow()
+}
+
 function isPending(ticket: Ticket): boolean {
   return ticket.status === 'pending';
 }
