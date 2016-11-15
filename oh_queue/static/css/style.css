@@ -139,8 +139,12 @@ a:hover {
   border-top: 1px solid #eee;
 }
 
-.ticket-row:first-child {
-  border: none;
+@media (max-width: 500px) {
+  .ticket-row h4 {
+    width: 85%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .ticket-link:hover {
@@ -179,13 +183,22 @@ a:hover {
   white-space: normal;
 }
 
+.group-actions {
+  background-color: #f8f8f8;
+  padding: 10px;
+}
 
-@media (max-width: 500px) {
-  .ticket-row h4 {
-    width: 85%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+.group-actions .btn {
+  margin-left: 10px;
+  height: 34px;
+}
+
+.group-actions p {
+  margin: 0;
+  height: 34px;
+  line-height: 34px;
+  font-weight: 400;
+  color: #777;
 }
 
 /* Navbar colors */

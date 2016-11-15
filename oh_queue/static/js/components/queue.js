@@ -48,12 +48,14 @@ let TicketList = ({state, status}) => {
       </div>
     );
   } else {
-    body = items;
+    body = [
+      <GroupActions tickets={tickets} status={status} state={state} />,
+      items,
+    ];
   }
 
   return (
     <div className="queue">
-      <GroupActions tickets={tickets} status={status} state={state} />
       {body}
     </div>
   );
