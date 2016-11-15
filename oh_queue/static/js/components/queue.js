@@ -17,14 +17,10 @@ let Queue = ({state}) => {
         <div className="row">
           <Tabs selectedIndex={state.queueTabIndex} onSelect={selectTab}>
             <Tab label={`Waiting (${pendingTickets.length})`}>
-              <TicketList
-                tickets={pendingTickets}
-                state={state} />
+              <TicketList status={'pending'} state={state} />
             </Tab>
             <Tab label={`Assigned (${assignedTickets.length})`}>
-              <TicketList
-                tickets={assignedTickets}
-                state={state} />
+              <TicketList status={'assigned'} state={state} />
             </Tab>
           </Tabs>
         </div>
@@ -33,7 +29,8 @@ let Queue = ({state}) => {
   );
 }
 
-let TicketList = ({state, tickets}) => {
+let TicketList = ({state, status}) => {
+  let tickets = getTickets(state, status);
   let items = applyFilter(state.filter, tickets).map((ticket) =>
     <Ticket key={ticket.id} state={state} ticket={ticket}/>
   );
@@ -56,6 +53,7 @@ let TicketList = ({state, tickets}) => {
 
   return (
     <div className="queue">
+      <GroupActions tickets={tickets} status={status} state={state} />
       {body}
     </div>
   );
