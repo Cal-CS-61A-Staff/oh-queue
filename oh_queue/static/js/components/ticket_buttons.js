@@ -11,33 +11,33 @@ class TicketButtons extends React.Component {
   }
 
   assign() {
-    app.makeRequest('assign', this.props.ticket.id);
+    app.makeRequest('assign', [this.props.ticket.id]);
   }
 
   delete() {
     if (!confirm("Delete this ticket?")) return;
-    app.makeRequest('delete', this.props.ticket.id);
+    app.makeRequest('delete', [this.props.ticket.id]);
   }
 
   resolveAndNext() {
-    app.makeRequest('resolve', this.props.ticket.id, true)
+    app.makeRequest('resolve', [this.props.ticket.id], true)
   }
 
   resolve() {
-    app.makeRequest('resolve', this.props.ticket.id);
+    app.makeRequest('resolve', [this.props.ticket.id]);
   }
 
   unassign() {
-    app.makeRequest('unassign', this.props.ticket.id);
+    app.makeRequest('unassign', [this.props.ticket.id]);
   }
 
   reassign() {
     if (!confirm("Reassign this ticket?")) return;
-    app.makeRequest('assign', this.props.ticket.id);
+    app.makeRequest('assign', [this.props.ticket.id]);
   }
 
   next() {
-    app.makeRequest('next', this.props.ticket.id, true);
+    app.makeRequest('next', [this.props.ticket.id], true);
   }
 
   render() {
