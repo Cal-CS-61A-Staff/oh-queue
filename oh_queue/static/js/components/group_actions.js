@@ -1,4 +1,5 @@
 let GroupActions = ({state, status, tickets}) => {
+  if (!isStaff(state)) return null;
   let ticket_ids = tickets.map(ticket => ticket.id);
   var buttons;
   if (status === 'pending') {
