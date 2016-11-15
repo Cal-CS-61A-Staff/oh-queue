@@ -31,7 +31,8 @@ let Queue = ({state}) => {
 
 let TicketList = ({state, status}) => {
   let tickets = getTickets(state, status);
-  let items = applyFilter(state.filter, tickets).map((ticket) =>
+  let filteredTickets = applyFilter(state.filter, tickets);
+  let items = filteredTickets.map((ticket) =>
     <Ticket key={ticket.id} state={state} ticket={ticket}/>
   );
   var body;
@@ -49,7 +50,7 @@ let TicketList = ({state, status}) => {
     );
   } else {
     body = [
-      <GroupActions tickets={tickets} status={status} state={state} />,
+      <GroupActions tickets={filteredTickets} status={status} state={state} />,
       items,
     ];
   }
