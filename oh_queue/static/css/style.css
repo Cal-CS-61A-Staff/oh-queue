@@ -30,11 +30,12 @@ a:hover {
   text-decoration:none;
 }
 
-.container {
-  max-width: 960px;
-}
-
 /* Queue styles */
+
+.container,
+.jumbotron .container {
+  max-width: 970px;
+}
 
 .navbar-default,
 .navbar-default .navbar-collapse, .navbar-default .navbar-form {
