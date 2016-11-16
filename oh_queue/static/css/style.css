@@ -69,19 +69,22 @@ a:hover {
 .input-group {
   width: 100%;
 }
-
-.input-group .width-40 {
-  width: 40%;
-}
-.input-group .width-60 {
+.request-form .form-left {
   width: 60%;
+  height: 100%;
+}
+.request-form .form-right {
+  width: 40%;
+  border-left: none;
 }
 
 .request-form {
   margin-top: 20px;
 }
 
-
+.jumbotron .btn {
+  width: 100%;
+}
 .btn-outline {
   color: #fff;
   background-image: none;

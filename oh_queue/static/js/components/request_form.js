@@ -12,16 +12,16 @@ let RequestForm = () => {
     <form id="request-form">
       <div className="form-group form-group-lg">
         <div className="input-group">
-          <SelectPicker options={ASSIGNMENTS} className="selectpicker form-control width-60" data-live-search="true" data-size="8" data-width="60%" data-style="btn-lg btn-default" id="assignment" name="assignment" title="Assignment" required />
-          <input className="form-control width-40" type="number" name="question" id="question" title="Question" placeholder="Question" min="0" step="1" required />
+          <SelectPicker options={ASSIGNMENTS} className="selectpicker form-control form-left" data-live-search="true" data-size="8" data-width="60%" data-style="btn-lg btn-default" id="assignment" name="assignment" title="Assignment" required />
+          <input className="form-control form-right" type="number" name="question" id="question" title="Question" placeholder="Question" min="0" step="1" required />
         </div>
       </div>
       <div className="form-group form-group-lg">
         <div className="input-group">
-          <SelectPicker options={LOCATIONS} className="selectpicker form-control width-60" id="location" data-width="60%" data-style="btn-lg btn-default" name="location" title="Location" required />
-          <span className="input-group-btn width-40 pull-left">
-            <button className="btn btn-lg btn-default" onClick={submit}>Request<span className="hidden-xs"> Help</span></button>
-          </span>
+          <SelectPicker options={LOCATIONS} className="selectpicker form-control form-left" id="location" data-width="60%" data-style="btn-lg btn-default" name="location" title="Location" required />
+          <div className="input-group-btn form-right pull-left">
+            <button className="btn btn-lg btn-default" onClick={submit}>Request</button>
+          </div>
         </div>
       </div>
     </form>
