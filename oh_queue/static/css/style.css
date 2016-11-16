@@ -179,6 +179,15 @@ a:hover {
   white-space: normal;
 }
 
+
+@media (max-width: 500px) {
+  .ticket-row h4 {
+    width: 85%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 /* Navbar colors */
 
 .navbar-default {
