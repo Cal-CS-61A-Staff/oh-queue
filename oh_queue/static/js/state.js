@@ -77,7 +77,7 @@ let initialState: State = {
     {
       id: 1,
       category: 'warning',
-      text: 'We will not be providing help for the Scheme EC question.',
+      text: 'We will not be providing debugging help for the Scheme EC question.',
       visible: true,
     },
   ],
