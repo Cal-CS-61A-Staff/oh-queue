@@ -20,16 +20,14 @@ let Queue = ({state}) => {
         <Messages messages={state.messages}/>
         {isStaff(state) && <FilterControls filter={state.filter}/>}
         {isStaff(state) && <hr />}
-        <div className="row">
-          <Tabs selectedIndex={state.queueTabIndex} onSelect={selectTab}>
-            <Tab label={`Waiting (${pendingTickets.length})`}>
-              <TicketList status={'pending'} state={state} />
-            </Tab>
-            <Tab label={`Assigned (${assignedTickets.length})`} shouldHighlight={shouldHighlightAssigned}>
-              <TicketList status={'assigned'} state={state} />
-            </Tab>
-          </Tabs>
-        </div>
+        <Tabs selectedIndex={state.queueTabIndex} onSelect={selectTab}>
+          <Tab label={`Waiting (${pendingTickets.length})`}>
+            <TicketList status={'pending'} state={state} />
+          </Tab>
+          <Tab label={`Assigned (${assignedTickets.length})`} shouldHighlight={shouldHighlightAssigned}>
+            <TicketList status={'assigned'} state={state} />
+          </Tab>
+        </Tabs>
       </div>
     </div>
   );

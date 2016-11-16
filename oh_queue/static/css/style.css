@@ -140,29 +140,6 @@ a:hover {
   }
 }
 
-/* Queue tabs */
-
-@media (max-width: 768px) {
-  .stub-jumbotron {
-    padding-top: 0px;
-  }
-  .nav-justified > li {
-    display: table-cell;
-    width: 1%;
-  }
-  .nav-justified > li > a  {
-    border-bottom: 1px solid #ddd !important;
-    border-radius: 4px 4px 0 0 !important;
-    margin-bottom: 0 !important;
-  }
-  .nav-tabs.nav-justified > .active > a,
-  .nav-tabs.nav-justified > .active > a:hover,
-  .nav-tabs.nav-justified > .active > a:focus {
-    border-bottom-color: #fff !important;
-  }
-}
-
-
 /* Queue (list of tickets) */
 
 .queue {
@@ -375,3 +352,44 @@ a:hover {
     -webkit-transform: rotate(359deg);
   }
 }
+
+/* Queue tabs */
+
+@media (max-width: 768px) {
+  .stub-jumbotron {
+    padding-top: 0px;
+  }
+  .nav-tabs.nav-justified > li {
+    display: table-cell;
+    width: 1%;
+  }
+  .nav-tabs.nav-justified > li > a  {
+    border-bottom: 1px solid #ddd;
+    border-radius: 4px 4px 0 0;
+    margin-bottom: 0;
+  }
+  .nav-tabs.nav-justified > li:first-child > a {
+    border-left-color: #fff;
+    border-top-left-radius: 0;
+  }
+  .nav-tabs.nav-justified > li:last-child > a {
+    border-right-color: #fff;
+    border-top-right-radius: 0;
+  }
+  .nav-tabs.nav-justified > .active > a,
+  .nav-tabs.nav-justified > .active > a:hover,
+  .nav-tabs.nav-justified > .active > a:focus {
+    border-bottom-color: #fff;
+  }
+  .tabs-container .tabs {
+    padding: 0;
+  }
+  .queue {
+    border-left-color: #fff;
+    border-bottom-left-radius: 0;
+    border-right-color: #fff;
+    border-bottom-right-radius: 0;
+  }
+}
+
+

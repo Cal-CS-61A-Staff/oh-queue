@@ -26,12 +26,14 @@ let Tabs = ({selectedIndex, onSelect, children}) => {
     );
   };
   return (
-    <div className="col-xs-12">
-      <ul className="nav nav-tabs nav-justified">
-        {children.map(renderLabel)}
-      </ul>
-      <div className="tab-content">
-        {children[selectedIndex]}
+    <div className="row tabs-container">
+      <div className="col-xs-12 tabs">
+        <ul className="nav nav-tabs nav-justified">
+          {children.map(renderLabel)}
+        </ul>
+        <div className="tab-content">
+          {children[selectedIndex]}
+        </div>
       </div>
     </div>
   );
