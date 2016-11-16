@@ -26,7 +26,7 @@ let Tabs = ({selectedIndex, onSelect, children}) => {
     );
   };
   return (
-    <div>
+    <div className="col-xs-12">
       <ul className="nav nav-tabs nav-justified">
         {children.map(renderLabel)}
       </ul>
