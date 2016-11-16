@@ -12,15 +12,12 @@
  */
 let Tabs = ({selectedIndex, onSelect, children}) => {
   let renderLabel = (child, index) => {
-
-
-    let activeClass = (selectedIndex === index ? 'active' : '');
-    if (child.props.shouldHighlight) {
-      activeClass += ' pulsating'
-    }
-
+    let tabClass = classNames({
+      'active': selectedIndex === index,
+      'pulsating': child.props.shouldHighlight,
+    });
     return (
-      <li key={index} className={activeClass}>
+      <li key={index} className={tabClass}>
         <a href="#" onClick={(e) => { e.preventDefault(); onSelect(index); }}>
           {child.props.label}
         </a>

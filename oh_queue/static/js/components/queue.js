@@ -9,11 +9,14 @@ let Queue = ({state}) => {
     state.queueTabIndex = index;
     app.refresh();
   }
-
+  let containerClass = classNames({
+    'container': true,
+    'stub-jumbotron': !showJumbotron,
+  });
   return (
     <div>
       {showJumbotron && <Jumbotron state={state}/>}
-      <div className={"container" + (showJumbotron ? "": ' stub-jumbotron')}>
+      <div className={containerClass}>
         <Messages messages={state.messages}/>
         {isStaff(state) && <FilterControls filter={state.filter}/>}
         {isStaff(state) && <hr />}
