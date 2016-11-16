@@ -368,11 +368,17 @@ a:hover {
     border-radius: 4px 4px 0 0;
     margin-bottom: 0;
   }
-  .nav-tabs.nav-justified > li:first-child > a {
+  .nav-tabs.nav-justified > li:first-child > a
+  .nav-tabs.nav-justified > .active:first-child > a,
+  .nav-tabs.nav-justified > .active:first-child > a:hover,
+  .nav-tabs.nav-justified > .active:first-child > a:focus {
     border-left-color: #fff;
     border-top-left-radius: 0;
   }
-  .nav-tabs.nav-justified > li:last-child > a {
+  .nav-tabs.nav-justified > li:last-child > a,
+  .nav-tabs.nav-justified > .active:last-child > a,
+  .nav-tabs.nav-justified > .active:last-child > a:hover,
+  .nav-tabs.nav-justified > .active:last-child > a:focus {
     border-right-color: #fff;
     border-top-right-radius: 0;
   }
