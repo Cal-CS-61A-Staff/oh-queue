@@ -14,6 +14,7 @@ def user_json(user):
         'id': user.id,
         'email': user.email,
         'name': user.name,
+        'shortName': user.short_name,
         'isStaff': user.is_staff,
     }
 

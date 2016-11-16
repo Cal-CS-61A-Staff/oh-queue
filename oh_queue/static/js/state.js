@@ -9,6 +9,7 @@ type User = {
   id: number,
   email: string,
   name: string,
+  shortName: string,
   isStaff: boolean,
 };
 
