@@ -72,8 +72,15 @@ let initialState: State = {
     question: null,
   },
   queueTabIndex: 0,
-  messages: [],
-  nextMessageID: 1,
+  messages: [
+    {
+      id: 1,
+      category: 'warning',
+      text: 'Due to demand, we will not be providing help for the Scheme EC question.',
+      visible: true,
+    },
+  ],
+  nextMessageID: 2,
 }
 
 function ticketDisplayTime(ticket: Ticket): string {
