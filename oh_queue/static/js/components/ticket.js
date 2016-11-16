@@ -4,7 +4,7 @@ let Ticket = ({state, ticket}) => {
     status = ticketDisplayTime(ticket) + ' in ' + ticket.location;
   } else {
     if (isStaff(state)) {
-      status = ticketStatus(state, ticket) + ' (Created ' + ticketTimeAgo(ticket)+ ')';
+      status = (isTicketHelper(state, ticket) ? 'you' : ticket.helper.name) + ' (' + ticketTimeAgo(ticket)+ ')';
     } else {
       status = ticketStatus(state, ticket);
     }

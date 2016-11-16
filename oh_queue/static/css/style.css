@@ -139,14 +139,6 @@ a:hover {
   border-top: 1px solid #eee;
 }
 
-@media (max-width: 500px) {
-  .ticket-row h4 {
-    width: 85%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
 .ticket-link:hover {
   background: #eee;
   transition: background 0.2s;
