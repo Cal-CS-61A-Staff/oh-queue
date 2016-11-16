@@ -12,7 +12,7 @@ class TicketButtons extends React.Component {
 
   assign() {
     let ticket = this.props.ticket;
-    app.makeRequest('assign', ticket.id);
+    app.makeRequest('assign', [this.props.ticket.id]);
     if (ticket.location === "Online" && ticket.online_url) {
 
           swal({
@@ -36,28 +36,28 @@ class TicketButtons extends React.Component {
 
   delete() {
     if (!confirm("Delete this ticket?")) return;
-    app.makeRequest('delete', this.props.ticket.id);
+    app.makeRequest('delete', [this.props.ticket.id]);
   }
 
   resolveAndNext() {
-    app.makeRequest('resolve', this.props.ticket.id, true)
+    app.makeRequest('resolve', [this.props.ticket.id], true)
   }
 
   resolve() {
-    app.makeRequest('resolve', this.props.ticket.id);
+    app.makeRequest('resolve', [this.props.ticket.id]);
   }
 
   unassign() {
-    app.makeRequest('unassign', this.props.ticket.id);
+    app.makeRequest('unassign', [this.props.ticket.id]);
   }
 
   reassign() {
     if (!confirm("Reassign this ticket?")) return;
-    app.makeRequest('assign', this.props.ticket.id);
+    app.makeRequest('assign', [this.props.ticket.id]);
   }
 
   next() {
-    app.makeRequest('next', this.props.ticket.id, true);
+    app.makeRequest('next', [this.props.ticket.id], true);
   }
 
   render() {
@@ -114,6 +114,9 @@ class TicketButtons extends React.Component {
     }
     if (staff && (ticket.status === 'resolved' || ticket.status === 'deleted')) {
       topButtons.push(makeButton('Next Ticket', 'default', this.next));
+    }
+    if (staff && ticket.status !== "pending") {
+      topButtons.push(makeLink('View Latest Backup', 'default', 'https://okpy.org/admin/course/4/'+encodeURIComponent(ticket.user.email)))
     }
 
     let hr = topButtons.length && bottomButtons.length ? <hr/> : null;

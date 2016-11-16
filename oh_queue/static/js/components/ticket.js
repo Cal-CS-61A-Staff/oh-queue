@@ -3,7 +3,11 @@ let Ticket = ({state, ticket}) => {
   if (ticket.status === 'pending') {
     status = ticketDisplayTime(ticket) + ' in ' + ticket.location;
   } else {
-    status = ticketStatus(state, ticket);
+    if (isStaff(state)) {
+      status = (isTicketHelper(state, ticket) ? 'you' : ticket.helper.name) + ' (' + ticketTimeAgo(ticket)+ ')';
+    } else {
+      status = ticketStatus(state, ticket);
+    }
   }
   return (
     <TicketLink state={state} ticket={ticket}>

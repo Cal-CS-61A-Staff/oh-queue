@@ -8,7 +8,7 @@ let Jumbotron = ({state, onlineUrl}) => {
       </a>
     );
   } else {
-    var titleText = `Hello, ${state.currentUser.name}`;
+    var titleText = `Hello, ${state.currentUser.shortName}`;
     var subtitleText = 'Fill out the form to request help';
     var contents = <RequestForm onlineUrl={onlineUrl}/>;
   }

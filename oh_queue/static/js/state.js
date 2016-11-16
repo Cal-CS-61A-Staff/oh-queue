@@ -9,6 +9,7 @@ type User = {
   id: number,
   email: string,
   name: string,
+  shortName: string,
   isStaff: boolean,
 };
 
@@ -73,12 +74,23 @@ let initialState: State = {
     question: null,
   },
   queueTabIndex: 0,
-  messages: [],
-  nextMessageID: 1,
+  messages: [
+    {
+      id: 1,
+      category: 'warning',
+      text: 'We will not be providing debugging help for the Scheme EC question.',
+      visible: true,
+    },
+  ],
+  nextMessageID: 2,
 }
 
 function ticketDisplayTime(ticket: Ticket): string {
   return moment.utc(ticket.created).local().format('h:mm A')
+}
+
+function ticketTimeAgo(ticket: Ticket): string {
+  return moment.utc(ticket.created).fromNow()
 }
 
 function isPending(ticket: Ticket): boolean {

@@ -30,11 +30,12 @@ a:hover {
   text-decoration:none;
 }
 
-.container {
-  max-width: 960px;
-}
-
 /* Queue styles */
+
+.container,
+.jumbotron .container {
+  max-width: 970px;
+}
 
 .navbar-default,
 .navbar-default .navbar-collapse, .navbar-default .navbar-form {
@@ -78,22 +79,22 @@ a:hover {
 .input-group {
   width: 100%;
 }
-
-.input-group .width-40 {
-  width: 40%;
-}
-.input-group .width-60 {
+.request-form .form-left {
   width: 60%;
+  height: 100%;
+}
+.request-form .form-right {
+  width: 40%;
+  border-left: none;
 }
 
 .request-form {
   margin-top: 20px;
 }
 
-.filter-field {
-  margin-top: 16px;
+.jumbotron .btn {
+  width: 100%;
 }
-
 .btn-outline {
   color: #fff;
   background-image: none;
@@ -110,25 +111,42 @@ a:hover {
   margin-bottom: 40px;
 }
 
-/* Queue tabs */
 
-@media (max-width: 768px) {
-  .stub-jumbotron {
-    padding-top: 0px;
+.nav-tabs > .pulsating > a{
+  -webkit-animation: pulse 1.6s ease-in-out infinite alternate;
+  animation: pulse 1.6s ease-in-out infinite alternate;
+  border-bottom-color: transparent;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: #001F3F;
   }
-  .nav-justified > li {
-    display: table-cell;
-    width: 1%;
+  100% {
+    background-color: aliceblue;
   }
-  .nav-justified > li > a  {
-    border-bottom: 1px solid #ddd !important;
-    border-radius: 4px 4px 0 0 !important;
-    margin-bottom: 0 !important;
+}
+
+@-webkit-keyframes pulse {
+  0% {
+    background: transparent;
   }
-  .nav-tabs.nav-justified > .active > a,
-  .nav-tabs.nav-justified > .active > a:hover,
-  .nav-tabs.nav-justified > .active > a:focus {
-    border-bottom-color: #fff !important;
+  50% {
+    background: aliceblue;
+  }
+  100% {
+    background: transparent;
+  }
+}
+@keyframes pulse {
+  0% {
+    background: transparent;
+  }
+  50% {
+    background: aliceblue;
+  }
+  100% {
+    background: transparent;
   }
 }
 
@@ -146,10 +164,6 @@ a:hover {
 
 .ticket-row {
   border-top: 1px solid #eee;
-}
-
-.ticket-row:first-child {
-  border: none;
 }
 
 .ticket-link:hover {
@@ -186,6 +200,24 @@ a:hover {
 .no-results h4 {
   word-wrap: break-word;
   white-space: normal;
+}
+
+.group-actions {
+  background-color: #f8f8f8;
+  padding: 10px;
+}
+
+.group-actions .btn {
+  margin-left: 10px;
+  height: 34px;
+}
+
+.group-actions p {
+  margin: 0;
+  height: 34px;
+  line-height: 34px;
+  font-weight: 400;
+  color: #777;
 }
 
 /* Navbar colors */
@@ -330,3 +362,53 @@ a:hover {
     -webkit-transform: rotate(359deg);
   }
 }
+
+/* Queue tabs */
+
+@media (max-width: 768px) {
+  .filter-field {
+    margin-bottom: 16px;
+  }
+  .filter-field:last-of-type {
+    margin-bottom: 0;
+  }
+  .nav-tabs.nav-justified > li {
+    display: table-cell;
+    width: 1%;
+  }
+  .nav-tabs.nav-justified > li > a  {
+    border-bottom: 1px solid #ddd;
+    border-radius: 4px 4px 0 0;
+    margin-bottom: 0;
+  }
+  .nav-tabs.nav-justified > li:first-child > a
+  .nav-tabs.nav-justified > .active:first-child > a,
+  .nav-tabs.nav-justified > .active:first-child > a:hover,
+  .nav-tabs.nav-justified > .active:first-child > a:focus {
+    border-left-color: #fff;
+    border-top-left-radius: 0;
+  }
+  .nav-tabs.nav-justified > li:last-child > a,
+  .nav-tabs.nav-justified > .active:last-child > a,
+  .nav-tabs.nav-justified > .active:last-child > a:hover,
+  .nav-tabs.nav-justified > .active:last-child > a:focus {
+    border-right-color: #fff;
+    border-top-right-radius: 0;
+  }
+  .nav-tabs.nav-justified > .active > a,
+  .nav-tabs.nav-justified > .active > a:hover,
+  .nav-tabs.nav-justified > .active > a:focus {
+    border-bottom-color: #fff;
+  }
+  .tabs-container .tabs {
+    padding: 0;
+  }
+  .queue {
+    border-left-color: #fff;
+    border-bottom-left-radius: 0;
+    border-right-color: #fff;
+    border-bottom-right-radius: 0;
+  }
+}
+
+

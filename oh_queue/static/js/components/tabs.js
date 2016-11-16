@@ -12,9 +12,13 @@
  */
 let Tabs = ({selectedIndex, onSelect, children}) => {
   let renderLabel = (child, index) => {
-    let activeClass = (selectedIndex === index ? 'active' : '');
+    let active = selectedIndex === index;
+    let tabClass = classNames({
+      'active': active,
+      'pulsating': child.props.shouldHighlight && !active,
+    });
     return (
-      <li key={index} className={activeClass}>
+      <li key={index} className={tabClass}>
         <a href="#" onClick={(e) => { e.preventDefault(); onSelect(index); }}>
           {child.props.label}
         </a>
@@ -22,12 +26,14 @@ let Tabs = ({selectedIndex, onSelect, children}) => {
     );
   };
   return (
-    <div>
-      <ul className="nav nav-tabs nav-justified">
-        {children.map(renderLabel)}
-      </ul>
-      <div className="tab-content">
-        {children[selectedIndex]}
+    <div className="row tabs-container">
+      <div className="col-xs-12 tabs">
+        <ul className="nav nav-tabs nav-justified">
+          {children.map(renderLabel)}
+        </ul>
+        <div className="tab-content">
+          {children[selectedIndex]}
+        </div>
       </div>
     </div>
   );
