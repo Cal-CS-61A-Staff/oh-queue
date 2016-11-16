@@ -12,9 +12,10 @@
  */
 let Tabs = ({selectedIndex, onSelect, children}) => {
   let renderLabel = (child, index) => {
+    let active = selectedIndex === index;
     let tabClass = classNames({
-      'active': selectedIndex === index,
-      'pulsating': child.props.shouldHighlight,
+      'active': active,
+      'pulsating': child.props.shouldHighlight && !active,
     });
     return (
       <li key={index} className={tabClass}>
