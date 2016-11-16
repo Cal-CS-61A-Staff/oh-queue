@@ -47,7 +47,6 @@ a:hover {
   text-transform: uppercase;
 }
 
-
 .jumbotron.blue {
   background: #0072c1;
   background: linear-gradient(to bottom, #0072c1 0%,#acbfff 100%);
@@ -81,9 +80,6 @@ a:hover {
   margin-top: 20px;
 }
 
-.filter-field {
-  margin-top: 16px;
-}
 
 .btn-outline {
   color: #fff;
@@ -356,8 +352,11 @@ a:hover {
 /* Queue tabs */
 
 @media (max-width: 768px) {
-  .stub-jumbotron {
-    padding-top: 0px;
+  .filter-field {
+    margin-bottom: 16px;
+  }
+  .filter-field:last-of-type {
+    margin-bottom: 0;
   }
   .nav-tabs.nav-justified > li {
     display: table-cell;
