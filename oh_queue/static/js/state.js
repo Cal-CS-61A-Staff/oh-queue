@@ -77,7 +77,7 @@ let initialState: State = {
     {
       id: 1,
       category: 'warning',
-      text: 'Due to demand, we will not be providing help for the Scheme EC question.',
+      text: 'We will not be providing help for the Scheme EC question.',
       visible: true,
     },
   ],
