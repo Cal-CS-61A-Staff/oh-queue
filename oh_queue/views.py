@@ -134,6 +134,9 @@ def create(form):
     emit_event(ticket, TicketEventType.create)
     return socket_redirect(ticket_id=ticket.id)
 
+def get_tickets(ticket_ids):
+    return Ticket.query.filter(Ticket.id.in_(ticket_ids)).all()
+
 def get_next_ticket():
     """Return the user's first assigned but unresolved ticket.
     If none exist, return to the first unassigned ticket.
@@ -151,53 +154,51 @@ def get_next_ticket():
 
 @socketio.on('next')
 @is_staff
-def next_ticket(ticket_id):
+def next_ticket(ticket_ids):
     return get_next_ticket()
 
 @socketio.on('delete')
 @logged_in
-def delete(ticket_id):
-    ticket = Ticket.query.get(ticket_id)
-    if not (current_user.is_staff or ticket.user.id == current_user.id):
-        return socket_unauthorized()
-    ticket.status = TicketStatus.deleted
+def delete(ticket_ids):
+    tickets = get_tickets(ticket_ids)
+    for ticket in tickets:
+        if not (current_user.is_staff or ticket.user.id == current_user.id):
+            return socket_unauthorized()
+        ticket.status = TicketStatus.deleted
+        emit_event(ticket, TicketEventType.delete)
     db.session.commit()
-
-    emit_event(ticket, TicketEventType.delete)
 
 @socketio.on('resolve')
 @logged_in
-def resolve(ticket_id):
-    ticket = Ticket.query.get(ticket_id)
-    if not (current_user.is_staff or ticket.user.id == current_user.id):
-        return socket_unauthorized()
-    ticket.status = TicketStatus.resolved
-    ticket.helper_id = current_user.id
+def resolve(ticket_ids):
+    tickets = get_tickets(ticket_ids)
+    for ticket in tickets:
+        if not (current_user.is_staff or ticket.user.id == current_user.id):
+            return socket_unauthorized()
+        ticket.status = TicketStatus.resolved
+        emit_event(ticket, TicketEventType.resolve)
     db.session.commit()
-
-    emit_event(ticket, TicketEventType.resolve)
-
     return get_next_ticket()
 
 @socketio.on('assign')
 @is_staff
-def assign(ticket_id):
-    ticket = Ticket.query.get(ticket_id)
-    ticket.status = TicketStatus.assigned
-    ticket.helper_id = current_user.id
+def assign(ticket_ids):
+    tickets = get_tickets(ticket_ids)
+    for ticket in tickets:
+        ticket.status = TicketStatus.assigned
+        ticket.helper_id = current_user.id
+        emit_event(ticket, TicketEventType.assign)
     db.session.commit()
-
-    emit_event(ticket, TicketEventType.assign)
 
 @socketio.on('unassign')
 @is_staff
-def unassign(ticket_id):
-    ticket = Ticket.query.get(ticket_id)
-    ticket.status = TicketStatus.pending
-    ticket.helper_id = None
+def unassign(ticket_ids):
+    tickets = get_tickets(ticket_ids)
+    for ticket in tickets:
+        ticket.status = TicketStatus.pending
+        ticket.helper_id = None
+        emit_event(ticket, TicketEventType.unassign)
     db.session.commit()
-
-    emit_event(ticket, TicketEventType.unassign)
 
 @socketio.on('load_ticket')
 @is_staff
