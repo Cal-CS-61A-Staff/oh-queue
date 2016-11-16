@@ -101,6 +101,45 @@ a:hover {
   margin-bottom: 40px;
 }
 
+
+.nav-tabs > .pulsating > a{
+  -webkit-animation: pulse 1.6s ease-in-out infinite alternate;
+  animation: pulse 1.6s ease-in-out infinite alternate;
+  border-bottom-color: transparent;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: #001F3F;
+  }
+  100% {
+    background-color: aliceblue;
+  }
+}
+
+@-webkit-keyframes pulse {
+  0% {
+    background: transparent;
+  }
+  50% {
+    background: aliceblue;
+  }
+  100% {
+    background: transparent;
+  }
+}
+@keyframes pulse {
+  0% {
+    background: transparent;
+  }
+  50% {
+    background: aliceblue;
+  }
+  100% {
+    background: transparent;
+  }
+}
+
 /* Queue tabs */
 
 @media (max-width: 768px) {
@@ -122,6 +161,7 @@ a:hover {
     border-bottom-color: #fff !important;
   }
 }
+
 
 /* Queue (list of tickets) */
 

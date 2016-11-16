@@ -1,16 +1,22 @@
 let Queue = ({state}) => {
+  let staff = isStaff(state);
   let myTicket = getMyTicket(state);
-  let showJumbotron = !isStaff(state) && !myTicket;
+  let showJumbotron = !staff && !myTicket;
   let pendingTickets = getTickets(state, 'pending');
   let assignedTickets = getTickets(state, 'assigned');
+  let shouldHighlightAssigned = staff && getHelpingTicket(state);
   let selectTab = (index) => {
     state.queueTabIndex = index;
     app.refresh();
   }
+  let containerClass = classNames({
+    'container': true,
+    'stub-jumbotron': !showJumbotron,
+  });
   return (
     <div>
       {showJumbotron && <Jumbotron state={state}/>}
-      <div className={"container" + (showJumbotron ? "": ' stub-jumbotron')}>
+      <div className={containerClass}>
         <Messages messages={state.messages}/>
         {isStaff(state) && <FilterControls filter={state.filter}/>}
         {isStaff(state) && <hr />}
@@ -19,7 +25,7 @@ let Queue = ({state}) => {
             <Tab label={`Waiting (${pendingTickets.length})`}>
               <TicketList status={'pending'} state={state} />
             </Tab>
-            <Tab label={`Assigned (${assignedTickets.length})`}>
+            <Tab label={`Assigned (${assignedTickets.length})`} shouldHighlight={shouldHighlightAssigned}>
               <TicketList status={'assigned'} state={state} />
             </Tab>
           </Tabs>
