@@ -371,7 +371,7 @@ a:hover {
     border-radius: 4px 4px 0 0;
     margin-bottom: 0;
   }
-  .nav-tabs.nav-justified > li:first-child > a
+  .nav-tabs.nav-justified > li:first-child > a,
   .nav-tabs.nav-justified > .active:first-child > a,
   .nav-tabs.nav-justified > .active:first-child > a:hover,
   .nav-tabs.nav-justified > .active:first-child > a:focus {
