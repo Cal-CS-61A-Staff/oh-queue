@@ -355,7 +355,7 @@ a:hover {
 
 /* Queue tabs */
 
-@media (max-width: 768px) {
+@media (max-width: 750px) {
   .filter-field {
     margin-bottom: 16px;
   }
