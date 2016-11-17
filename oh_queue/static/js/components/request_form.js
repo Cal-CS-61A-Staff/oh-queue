@@ -54,13 +54,13 @@ class RequestForm extends React.Component {
     }
   render () {
         return (
-      <form id="request-form">
-        <div className="form-group form-group-lg">
-          <div className="input-group">
-            <SelectPicker options={ASSIGNMENTS} className="selectpicker form-control width-60" data-live-search="true" data-size="8" data-width="60%" data-style="btn-lg btn-default" id="assignment" name="assignment" title="Assignment" required />
-            <input className="form-control width-40" type="number" name="question" id="question" title="Question" placeholder="Question" min="0" step="1" required />
-          </div>
+    <form id="request-form">
+      <div className="form-group form-group-lg">
+        <div className="input-group">
+          <SelectPicker options={ASSIGNMENTS} className="selectpicker form-control form-left" data-live-search="true" data-size="8" data-width="60%" data-style="btn-lg btn-default" id="assignment" name="assignment" title="Assignment" required />
+          <input className="form-control form-right" type="number" name="question" id="question" title="Question" placeholder="Question" min="0" step="1" required />
         </div>
+      </div>
          {this.state.isOnline &&
             <div className="form-group form-group-lg">
               <div className="input-group">
@@ -70,20 +70,23 @@ class RequestForm extends React.Component {
               </div>
             </div>
           }
-        <div className="form-group form-group-lg">
-          <div className="input-group">
+
+      <div className="form-group form-group-lg">
+        <div className="input-group">
             {LOCATIONS.length !== 1 &&
-                <SelectPicker options={LOCATIONS} onChange={this.handleLocationChange}  className="selectpicker form-control width-60" data-width="60%" id="location" data-style="btn-lg btn-default" name="location" title="Location" required />
+                <SelectPicker options={LOCATIONS} onChange={this.handleLocationChange}  className="selectpicker form-control form-left" data-width="60%" id="location" data-style="btn-lg btn-default" name="location" title="Location" required />
             }
             {LOCATIONS.length == 1 &&
-                <SelectPicker options={LOCATIONS} onChange={this.handleLocationChange}  className="selectpicker form-control width-60" data-width="60%" id="location" data-style="btn-lg btn-default" name="location" required />
+                <SelectPicker options={LOCATIONS} onChange={this.handleLocationChange}  className="selectpicker form-control form-left" data-width="60%" id="location" data-style="btn-lg btn-default" name="location" required />
             }
-            <span className="input-group-btn width-40 pull-left" data-width="40%">
-              <button className="btn btn-lg btn-default" onClick={this.submit}>Request<span className="hidden-xs"> Help</span></button>
-            </span>
+
+          <div className="input-group-btn form-right pull-left">
+            <button className="btn btn-lg btn-default" onClick={this.submit}>Request</button>
           </div>
         </div>
-      </form>
+      </div>
+    </form>
+
 
       );
   }
