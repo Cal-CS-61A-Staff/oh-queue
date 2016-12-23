@@ -50,7 +50,7 @@ To deploy:
 	# Set DNS record
 	dokku domains:add app-name name.cs61a.org
 
-	dokku config:set online-oh SECRET_KEY=<SECRET> OH_QUEUE_ENV=prod
+	dokku config:set online-oh SECRET_KEY=<SECRET> OH_QUEUE_ENV=prod COURSE_NAME="CS 61"
 	dokku run app-name /bin/bash
 		$ python
 		>>> from oh_queue import app

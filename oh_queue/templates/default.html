@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta name="description" content="CS 61A Queue">
-    <meta name="keywords" content ="CS61A, Computer Science, CS, 61A, Office Hours, Project, Homework, Party, Parties, Queue" />
-    <meta name="author" content="CS 61A Course Staff">
+    <meta name="description" content="{{ course_name }} Queue">
+    <meta name="keywords" content ="{{ course_name }}, Computer Science, CS, Office Hours, Project, Homework, Party, Parties, Queue" />
+    <meta name="author" content="{{ course_name }} Course Staff">
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
@@ -16,7 +16,7 @@
 
     <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
 
-    <title>CS 61A Queue</title>
+    <title>{{ course_name }} Queue</title>
   </head>
   <body>
     {% block header %}{% endblock %}
