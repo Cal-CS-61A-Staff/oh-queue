@@ -36,10 +36,13 @@ First point a git remote to the Dokku server:
 
     git remote add dokku dokku@app.cs61a.org:officehours-web
 
-To deploy:
+To deploy from master:
 
     git push dokku master
 
+Deploy from another branch:
+
+	git push dokku my_branch:master
 
 ### First Time Deployment
 
