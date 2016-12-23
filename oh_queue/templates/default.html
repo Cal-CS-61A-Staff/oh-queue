@@ -17,6 +17,10 @@
     <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
 
     <title>{{ course_name }} Queue</title>
+
+    <script>
+      var courseName = "{{ course_name }}";
+    </script>
   </head>
   <body>
     {% block header %}{% endblock %}
