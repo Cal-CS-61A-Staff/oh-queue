@@ -53,7 +53,7 @@ Deploy from another branch:
 	# Set DNS record
 	dokku domains:add app-name name.cs61a.org
 
-	dokku config:set online-oh SECRET_KEY=<SECRET> OH_QUEUE_ENV=prod COURSE_NAME="CS 61"
+	dokku config:set app-name SECRET_KEY=<SECRET> OH_QUEUE_ENV=prod COURSE_NAME="CS 61A" COURSE_OFFERING="cal/cs61a/fa16"
 	dokku run app-name /bin/bash
 		$ python
 		>>> from oh_queue import app
@@ -63,3 +63,4 @@ Deploy from another branch:
 		$ exit
 	dokku letsencrypt app-name
 	# Change OK OAuth to support the domain
+
