@@ -223,10 +223,10 @@ function clearMessage(state: State, id: number): void {
 
 /* Constants */
 const ASSIGNMENTS = [
-  'Hog',
-  'Maps',
-  'Ants',
-  'Scheme',
+  'Project 1',
+  'Project 2',
+  'Project 3',
+  'Project 4',
   'Homework 1',
   'Homework 2',
   'Homework 3',

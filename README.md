@@ -36,6 +36,31 @@ First point a git remote to the Dokku server:
 
     git remote add dokku dokku@app.cs61a.org:officehours-web
 
-To deploy:
+To deploy from master:
 
     git push dokku master
+
+Deploy from another branch:
+
+	git push dokku my_branch:master
+
+### First Time Deployment
+
+	dokku apps:create app-name
+	git remote add online dokku@app.cs61a.org:app-name
+	dokku mysql:create db-name
+	dokku mysql:link db-name app-name
+	# Set DNS record
+	dokku domains:add app-name name.cs61a.org
+
+	dokku config:set app-name SECRET_KEY=<SECRET> OH_QUEUE_ENV=prod COURSE_NAME="CS 61A" COURSE_OFFERING="cal/cs61a/fa16"
+	dokku run app-name /bin/bash
+		$ python
+		>>> from oh_queue import app
+		>>> from oh_queue.models import db
+		>>> db.create_all(app=app)
+		>>> exit()
+		$ exit
+	dokku letsencrypt app-name
+	# Change OK OAuth to support the domain
+

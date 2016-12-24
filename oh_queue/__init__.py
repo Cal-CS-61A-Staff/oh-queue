@@ -1,3 +1,4 @@
+import os
 import logging
 logging.basicConfig(level=logging.INFO)
 
@@ -21,6 +22,7 @@ if not app.debug:
 app.jinja_env.globals.update({
   'TicketStatus': TicketStatus,
   'assets_env': assets.assets_env,
+  'course_name': app.config['COURSE_NAME']
 })
 
 db.init_app(app)
