@@ -24,4 +24,4 @@ OK_KEY = 'oh-queue'
 OK_SECRET = 'M05dGkt1xe1a1OJvG06YRITzAqQQvEa'
 
 OK_SERVER_URL = 'https://okpy.org'
-COURSE_OFFERING = 'cal/cs61a/fa16'
+COURSE_OFFERING = os.get_env('COURSE_OFFERING', 'cal/cs61a/fa16')
