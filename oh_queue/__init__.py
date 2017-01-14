@@ -22,6 +22,7 @@ app.jinja_env.globals.update({
   'TicketStatus': TicketStatus,
   'assets_env': assets.assets_env,
   'debug': app.debug,
+  'course_name': app.config['COURSE_NAME']
 })
 
 db.init_app(app)
