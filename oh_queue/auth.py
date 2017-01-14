@@ -103,7 +103,7 @@ def authorized():
 @auth.route('/logout/')
 def logout():
     logout_user()
-    session.clear()
+    session.pop('access_token', None)
     return redirect(url_for('index'))
 
 @auth.route('/testing-login/')
