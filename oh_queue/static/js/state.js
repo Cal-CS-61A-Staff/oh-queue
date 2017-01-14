@@ -264,5 +264,6 @@ const LOCATIONS = [
   '237 Cory',
   '241 Cory',
   '247 Cory',
+  '285 Cory',
   'Other',
 ];
