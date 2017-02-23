@@ -29,7 +29,7 @@ class TicketView extends React.Component {
       <div className="container">
         <Messages messages={state.messages}/>
         <div className="row ticket">
-          <div className="col-xs-12">
+          <div className="col-xs-12 col-sm-7 col-md-5">
             <h2 className="text-center">
               { (ticket.status === 'pending' && isStaff(state)) ? 'Help to View Name' : ticket.user.name }
               <small className="clearfix">{ ticketDisplayTime(ticket) } in { ticket.location }</small>
@@ -38,9 +38,12 @@ class TicketView extends React.Component {
             <h3 className="text-center">
               <span className="label label-default">{ ticket.assignment } Q{ ticket.question }</span>
             </h3>
+            <br />
+            <TicketButtons state={state} ticket={ticket}/>
           </div>
+          <DescriptionBox state={state} ticket={ticket}/>
+
         </div>
-        <TicketButtons state={state} ticket={ticket}/>
       </div>
     );
   }

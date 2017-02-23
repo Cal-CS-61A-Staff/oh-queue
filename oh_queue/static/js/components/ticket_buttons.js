@@ -97,14 +97,12 @@ class TicketButtons extends React.Component {
     }
 
     return (
-      <div className="row">
-        <div className="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+      <div className="col-xs-12">
           <div className="well">
             {topButtons}
             {hr}
             {bottomButtons}
           </div>
-        </div>
       </div>
     );
   }

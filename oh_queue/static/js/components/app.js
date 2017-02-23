@@ -28,7 +28,7 @@ class App extends React.Component {
     });
     socket.on('disconnect', () => app.setOffline(true));
     socket.on('state', (data) => app.updateState(data));
-    socket.on('event', (data) => app.updateTicket(data.ticket));
+    socket.on('event', (data) => app.updateTicket(data.ticket, data));
   }
 
   refresh() {
@@ -59,9 +59,13 @@ class App extends React.Component {
     });
   }
 
-  updateTicket(ticket) {
-    if (isStaff(this.state) && ticket.status === "pending"
-          && !getHelpingTicket(this.state)) {
+  shouldNotify(ticket, data) {
+    return (isStaff(this.state) && ticket.status === "pending" &&
+            !getHelpingTicket(this.state) && data.type != 'describe');
+  }
+
+  updateTicket(ticket, data) {
+    if (this.shouldNotify(ticket, data)) {
         notifyUser("New Request for " + ticket.assignment,
                    ticket.location);
     }
