@@ -47,7 +47,7 @@ def unauthorized():
     return redirect(url_for('auth.login'))
 
 def authorize_user(user):
-    login_user(user)
+    login_user(user, remember=True)
     after_login = session.pop('after_login', None) or url_for('index')
     # TODO validate after_login URL
     return redirect(after_login)
@@ -103,7 +103,7 @@ def authorized():
 @auth.route('/logout/')
 def logout():
     logout_user()
-    session.clear()
+    session.pop('access_token', None)
     return redirect(url_for('index'))
 
 @auth.route('/testing-login/')
