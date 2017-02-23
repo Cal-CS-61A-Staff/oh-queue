@@ -21,7 +21,7 @@ type Ticket = {
   location: string,
   assignment: string,
   question: string,
-  student_description: ?string,
+  description: ?string,
   helper: ?User,
 };
 

@@ -33,6 +33,7 @@ def seed():
             status=TicketStatus.pending,
             created=datetime.datetime.utcnow() - delta,
             assignment=random.choice(['Hog', 'Scheme']),
+            description=random.choice(['', 'SyntaxError on Line 5']),
             question=random.randrange(1, 6),
             location=random.choice(['109 Morgan', '247 Cory']),
         )

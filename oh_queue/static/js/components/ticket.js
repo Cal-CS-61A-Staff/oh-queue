@@ -5,16 +5,16 @@ let Ticket = ({state, ticket}) => {
   } else {
     if (isStaff(state)) {
       status = (isTicketHelper(state, ticket) ? 'you' : ticket.helper.name) + ' (' + ticketTimeAgo(ticket)+ ')';
-      status = ticket.student_description + " " + status;
+      status = ticket.description + " " + status;
     } else {
       status = ticketStatus(state, ticket);
 
     }
   }
 
-  var description = "";
+  var description;
   if (isStaff(state) || ticketIsMine(state, ticket)) {
-    description = ticket.student_description;
+    description = ticket.description;
   }
 
   return (

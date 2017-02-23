@@ -26,7 +26,7 @@ def ticket_json(ticket):
         'created': ticket.created.isoformat(),
         'location': ticket.location,
         'assignment': ticket.assignment,
-        'student_description': ticket.student_description,
+        'description': ticket.description,
         'question': ticket.question,
         'helper': ticket.helper and user_json(ticket.helper),
     }
@@ -213,7 +213,7 @@ def load_ticket(ticket_id):
 def describe(description):
     ticket_id, description = description['id'], description['description']
     ticket = Ticket.query.filter(Ticket.id == ticket_id).first()
-    ticket.student_description = description
+    ticket.description = description
     emit_event(ticket, TicketEventType.describe)
 
     db.session.commit()
