@@ -173,6 +173,22 @@ a:hover {
   color: #999;
 }
 
+.truncate {
+  /* http://stackoverflow.com/a/1199957/411514 */
+  white-space: nowrap;
+  overflow: hidden;              /* "overflow" value must be different from  visible"*/
+  -o-text-overflow: ellipsis;    /* Opera < 11*/
+  text-overflow:    ellipsis;    /* IE, Safari (WebKit), Opera >= 11, FF > 6 */
+}
+
+.ticket-desc-md {
+  padding-left: 12px;
+}
+
+.ticket-desc-xs {
+  margin-top: 4px;
+}
+
 .ticket-status-md {
   padding-right: 12px;
 }
@@ -270,6 +286,18 @@ a:hover {
     color: #ffffff;
     background-color: #0085e1;
   }
+}
+
+.description-header {
+  margin: 0px;
+  margin-bottom: 15px;
+}
+
+.description-box {
+  resize: none;
+  border: #888;
+  border-width: 2px;
+  width: 100%;
 }
 
 /* Mostly stolen from offline.js */
