@@ -1,19 +1,21 @@
 class DescriptionBox extends React.Component {
   constructor(props) {
     super(props);
-    this.submit = this.submit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.submit = this.submit.bind(this);
   }
 
   handleChange(event) {
     let {state, ticket} = this.props;
     this.newDescription = event.target.value;
+    this.setState(state); // force a re-render to get the button to update
   }
 
   submit() {
     let ticket = this.props.ticket;
     app.makeRequest('describe', {'id': ticket.id, 'description': this.newDescription} );
-    this.lastSavedDesc = this.newDescription;
+    this.newDescription = null;
+    this.setState(this.props.state); // force a render
   }
 
   render() {
@@ -39,7 +41,7 @@ class DescriptionBox extends React.Component {
             <p> It would be helpful if you could describe your issue so that a TA can help you.</p>
             <textarea className="description-box" defaultValue={ticket.description} onChange={this.handleChange}
                       rows="5" placeholder="I have a SyntaxError in my ___ function. I've tried using ____ and ____."  />
-            <button onClick={this.submit} className={`btn btn-default btn-lg btn-block`}> Save Description </button>
+           {this.newDescription ? <button onClick={this.submit} className={`btn btn-default btn-lg btn-block`}> Save Description </button> : null}
           </div>
           <hr />
       </div>
