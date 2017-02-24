@@ -12,6 +12,7 @@ down_revision = ${repr(down_revision)}
 
 from alembic import op
 import sqlalchemy as sa
+import oh_queue.models
 from oh_queue.models import *
 ${imports if imports else ""}
 
