@@ -69,7 +69,12 @@ Check the file contents before running the migrations to make sure the changes m
 ## Deploying the migration.
 Make sure the deploy the app. After it's running, run
 ```
+
+dokku maintenance:on officehours-web # maintenance message
+dokku mysql:stop officehours-web # stop mysql so the migration can get a lock
 dokku run officehours-web ./manage.py db upgrade
+dokku maintenance:off officehours-web-staging
+dokku config:set officehours DUMMY=1 # to restart
 ```
 to upgrade.
 
@@ -103,4 +108,6 @@ INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
 $
 ```
 
-If that doesn't resolve it - make sure there a not unrun migrations in the branch.
+If that doesn't resolve it - make sure there are not unrun migrations in the branch.
+
+If the upgrade is hanging - it might be unable to get a lock to the database.
