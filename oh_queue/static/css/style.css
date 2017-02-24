@@ -295,8 +295,8 @@ a:hover {
 
 .description-box {
   resize: none;
-  border: #888;
-  border-width: 2px;
+  border: 2px dashed rgba(119, 119, 119, 0.5); /* #777 */
+  padding: 10px;
   width: 100%;
 }
 
