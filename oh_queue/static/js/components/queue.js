@@ -18,6 +18,10 @@ let Queue = ({state}) => {
       {showJumbotron && <Jumbotron state={state}/>}
       <div className={containerClass}>
         <Messages messages={state.messages}/>
+        <div className="row">
+          <p className="pull-left"> {state.presence ? state.presence.staff : 0} staff online </p>
+          <p className="pull-right"> {state.presence ? state.presence.student : 0} students online </p>
+        </div>
         {isStaff(state) && <FilterControls filter={state.filter}/>}
         {isStaff(state) && <hr />}
         <Tabs selectedIndex={state.queueTabIndex} onSelect={selectTab}>

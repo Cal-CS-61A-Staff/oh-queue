@@ -1,5 +1,6 @@
 import datetime
 import functools
+import collections
 import pytz
 
 from flask import render_template, url_for
@@ -43,6 +44,11 @@ def emit_event(ticket, event_type):
         'ticket': ticket_json(ticket),
     })
 
+def emit_presence(data):
+    socketio.emit('presence', {k: len(v) for k,v in data.items()})
+
+user_presence = collections.defaultdict(set) # An in memory map of presence.
+
 @app.route('/')
 @app.route('/<int:ticket_id>/')
 def index(*args, **kwargs):
@@ -85,6 +91,13 @@ def is_staff(f):
 
 @socketio.on('connect')
 def connect():
+    if not current_user.is_authenticated:
+        pass
+    elif current_user.is_staff:
+        user_presence['staff'].add(current_user.email)
+    else:
+        user_presence['students'].add(current_user.email)
+
     tickets = Ticket.query.filter(
         Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
     ).all()
@@ -93,6 +106,17 @@ def connect():
         'currentUser':
             user_json(current_user) if current_user.is_authenticated else None,
     })
+    emit_presence(user_presence)
+
+@socketio.on('disconnect')
+def disconnect():
+    if not current_user.is_authenticated:
+        pass
+    elif current_user.is_staff:
+        user_presence['staff'].remove(current_user.email)
+    else:
+        user_presence['students'].remove(current_user.email)
+    emit_presence(user_presence)
 
 @socketio.on('refresh')
 def refresh(ticket_ids):
