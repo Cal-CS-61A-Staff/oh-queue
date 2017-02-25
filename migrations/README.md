@@ -74,7 +74,7 @@ dokku maintenance:on officehours-web # maintenance message
 dokku mysql:stop officehours-web # stop mysql so the migration can get a lock
 dokku run officehours-web ./manage.py db upgrade
 dokku maintenance:off officehours-web-staging
-dokku config:set officehours DUMMY=1 # to restart
+dokku deploy officehours-web  # to restart
 ```
 to upgrade.
 
