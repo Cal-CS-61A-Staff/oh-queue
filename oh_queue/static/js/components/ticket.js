@@ -5,10 +5,8 @@ let Ticket = ({state, ticket}) => {
   } else {
     if (isStaff(state)) {
       status = (isTicketHelper(state, ticket) ? 'you' : ticket.helper.name) + ' (' + ticketTimeAgo(ticket)+ ')';
-      status = ticket.description + " " + status;
     } else {
       status = ticketStatus(state, ticket);
-
     }
   }
 
