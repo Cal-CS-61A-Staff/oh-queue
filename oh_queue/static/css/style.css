@@ -17,10 +17,6 @@ h1:before, h2:before, h3:before, h4:before {
   visibility: hidden;
 }
 
-h2 {
-    margin: 0;
-}
-
 hr {
   border-top: 1px solid #eee;
   height: 1px;
@@ -97,10 +93,29 @@ a:hover {
 }
 
 .ticket {
-  margin-top: 40px;
-  margin-bottom: 40px;
+  margin-top: 20px;
 }
 
+.ticket-view-name {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.ticket-view-text {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.4;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.ticket-view-desc {
+  white-space: pre-wrap;
+}
+
+hr {
+  margin: 10px;
+}
 
 .nav-tabs > .pulsating > a{
   -webkit-animation: pulse 1.6s ease-in-out infinite alternate;
@@ -428,5 +443,3 @@ a:hover {
     border-bottom-right-radius: 0;
   }
 }
-
-

@@ -24,15 +24,14 @@ class DescriptionBox extends React.Component {
 
 
     if (staff) {
-        return (
-        <div className="col-xs-12 col-md-7 col-sm-5">
-            <h3 className="description-header"> Description </h3>
-                <div>
-                  {ticket.description ?  (<p> Student Description: <pre> {ticket.description} </pre></p>) : <p> No description </p>  }
-                </div>
+      return (
+        <div className="row">
+          <div className="col-xs-12 col-md-6 col-md-offset-3">
             <hr />
+            <p className="ticket-view-desc">{ticket.description ? ticket.description : <i>No description</i>}</p>
+          </div>
         </div>
-        );
+      );
     } else {
         return (
       <div className="col-xs-12 col-md-7 col-sm-5">
