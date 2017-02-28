@@ -37,7 +37,12 @@ class TicketView extends React.Component {
             <p className="ticket-view-text text-center">{ ticketStatus(state, ticket) }</p>
           </div>
         </div>
-        <DescriptionBox state={state} ticket={ticket}/>
+        <div className="row">
+          <div className="col-xs-12 col-md-6 col-md-offset-3">
+            <hr />
+            <DescriptionBox state={state} ticket={ticket}/>
+          </div>
+        </div>
         <TicketButtons state={state} ticket={ticket}/>
       </div>
     );

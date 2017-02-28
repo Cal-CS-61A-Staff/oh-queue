@@ -303,16 +303,16 @@ hr {
   }
 }
 
-.description-header {
-  margin: 0px;
-  margin-bottom: 15px;
-}
-
 .description-box {
   resize: none;
   border: 2px dashed rgba(119, 119, 119, 0.5); /* #777 */
   padding: 10px;
   width: 100%;
+}
+
+.description-button {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 /* Mostly stolen from offline.js */
