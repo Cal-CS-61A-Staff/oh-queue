@@ -29,7 +29,7 @@ class TicketView extends React.Component {
       <div className="container">
         <Messages messages={state.messages}/>
         <div className="row ticket">
-          <div className="col-xs-12 col-sm-7 col-md-5">
+          <div className="col-xs-12">
             <h2 className="text-center">
               { (ticket.status === 'pending' && isStaff(state)) ? 'Help to View Name' : ticket.user.name }
               <small className="clearfix">{ ticketDisplayTime(ticket) } in { ticket.location }</small>
