@@ -60,8 +60,7 @@ class App extends React.Component {
   }
 
   shouldNotify(ticket, type) {
-    return (isStaff(this.state) && ticket.status === "pending" &&
-            !getHelpingTicket(this.state) && type != 'describe');
+    return (isStaff(this.state) && type == 'create');
   }
 
   updateTicket(data) {
