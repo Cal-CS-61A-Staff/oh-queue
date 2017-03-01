@@ -9,6 +9,12 @@ let Ticket = ({state, ticket}) => {
       status = ticketStatus(state, ticket);
     }
   }
+
+  var description;
+  if (isStaff(state) || ticketIsMine(state, ticket)) {
+    description = ticket.description;
+  }
+
   return (
     <TicketLink state={state} ticket={ticket}>
       <div className="pull-left ticket-index">{ticketPosition(state, ticket)}</div>
@@ -16,8 +22,12 @@ let Ticket = ({state, ticket}) => {
         {ticket.assignment} Q{ticket.question}
         <br className="visible-xs" />
         <small className="visible-xs ticket-status-xs">{status}</small>
+        <small className="visible-xs ticket-desc-xs">{description}</small>
       </h4>
+      <h4 className="pull-left hidden-xs ticket-desc-md "><small>{description}</small></h4>
+
       <h4 className="pull-right hidden-xs ticket-status-md"><small>{status}</small></h4>
+
     </TicketLink>
   );
 }

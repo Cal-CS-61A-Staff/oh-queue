@@ -9,6 +9,10 @@ db = SQLAlchemy()
 class EnumType(db.TypeDecorator):
     impl = db.String(255)
 
+    def __repr__(self):
+        """ Make alembic detect the right type """
+        return 'db.String(length=255)'
+
     def __init__(self, enum_class):
         super(EnumType, self).__init__(self)
         self.enum_class = enum_class
@@ -55,6 +59,8 @@ class Ticket(db.Model):
     question = db.Column(db.String(255), nullable=False)
     location = db.Column(db.String(255), nullable=False)
 
+    description = db.Column(db.Text)
+
     helper_id = db.Column(db.ForeignKey('user.id'), index=True)
 
     user = db.relationship(User, foreign_keys=[user_id])
@@ -81,7 +87,7 @@ class Ticket(db.Model):
 
 TicketEventType = enum.Enum(
     'TicketEventType',
-    'create assign unassign resolve delete',
+    'create assign unassign resolve delete describe',
 )
 
 class TicketEvent(db.Model):

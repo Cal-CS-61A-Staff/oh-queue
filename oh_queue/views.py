@@ -26,6 +26,7 @@ def ticket_json(ticket):
         'created': ticket.created.isoformat(),
         'location': ticket.location,
         'assignment': ticket.assignment,
+        'description': ticket.description,
         'question': ticket.question,
         'helper': ticket.helper and user_json(ticket.helper),
     }
@@ -207,3 +208,14 @@ def load_ticket(ticket_id):
     ticket = Ticket.query.get(ticket_id)
     if ticket:
         return ticket_json(ticket)
+
+@socketio.on('describe')
+def describe(description):
+    ticket_id, description = description['id'], description['description']
+    ticket = Ticket.query.filter(Ticket.id == ticket_id).first()
+    ticket.description = description
+    emit_event(ticket, TicketEventType.describe)
+
+    db.session.commit()
+
+
