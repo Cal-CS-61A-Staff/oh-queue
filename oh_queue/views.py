@@ -19,11 +19,19 @@ def user_json(user):
         'isStaff': user.is_staff,
     }
 
+def student_json(user):
+    """ Only send student information to staff. """
+    can_see_details = (current_user.is_authenticated
+                        and (current_user.is_staff or user.id == current_user.id))
+    if not can_see_details:
+        return {}
+    return user_json(user)
+
 def ticket_json(ticket):
     return {
         'id': ticket.id,
         'status': ticket.status.name,
-        'user': user_json(ticket.user),
+        'user': student_json(ticket.user),
         'created': ticket.created.isoformat(),
         'location': ticket.location,
         'assignment': ticket.assignment,
