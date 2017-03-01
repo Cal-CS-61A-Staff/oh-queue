@@ -30,11 +30,11 @@ class TicketView extends React.Component {
         <Messages messages={state.messages}/>
         <div className="row ticket">
           <div className="col-xs-12">
-            <h3 className="ticket-view-name text-center">
+            <h2 className="ticket-view-name text-center">
               { (ticket.status === 'pending' && isStaff(state)) ? 'Help to View Name' : ticket.user.name }
-            </h3>
-            <p className="ticket-view-text text-center">{ ticket.assignment } Q{ ticket.question } &middot; { ticketDisplayTime(ticket) } in { ticket.location }</p>
-            <p className="ticket-view-text text-center">{ ticketStatus(state, ticket) }</p>
+              <small className="clearfix">{ ticket.assignment } Q{ ticket.question } &middot; { ticket.location } </small>
+            </h2>
+             <p className="ticket-view-text text-center"> { ticketStatus(state, ticket) } </p>
           </div>
         </div>
         <div className="row">
