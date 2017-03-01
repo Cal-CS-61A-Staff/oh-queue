@@ -21,16 +21,10 @@ def user_json(user):
 
 def student_json(user):
     """ Only send student information to staff. """
-    can_see_details = (current_user.is_authenticated() and
+    can_see_details = (current_user.is_authenticated and
                        (current_user.is_staff or user.id == current_user.id))
     if not can_see_details:
-        return {
-            'id': -1,
-            'email': "student@example.com",
-            'name': "A Student",
-            'shortName': "Student",
-            'isStaff': False,
-        }
+        return {}
     return user_json(user)
 
 def ticket_json(ticket):
