@@ -4,7 +4,7 @@ let PresenceIndicator = ({presence}) => {
   let color = numStaffOnline ? 'success' : 'warning'
 
   var studentMessage = numStudentsOnline + " students"
-  var staffMessage =  numStaffOnline + " helpers"
+  var staffMessage =  numStaffOnline + " assistants"
 
 
   if (numStudentsOnline === 1) {
