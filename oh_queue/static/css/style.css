@@ -17,10 +17,6 @@ h1:before, h2:before, h3:before, h4:before {
   visibility: hidden;
 }
 
-h2 {
-    margin: 0;
-}
-
 hr {
   border-top: 1px solid #eee;
   height: 1px;
@@ -97,10 +93,29 @@ a:hover {
 }
 
 .ticket {
-  margin-top: 40px;
-  margin-bottom: 40px;
+  margin-top: 20px;
 }
 
+.ticket-view-name {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.ticket-view-text {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.4;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.ticket-view-desc {
+  white-space: pre-wrap;
+}
+
+hr {
+  margin: 10px;
+}
 
 .nav-tabs > .pulsating > a{
   -webkit-animation: pulse 1.6s ease-in-out infinite alternate;
@@ -171,6 +186,22 @@ a:hover {
   width: 20px;
   font-size: 11px;
   color: #999;
+}
+
+.truncate {
+  /* http://stackoverflow.com/a/1199957/411514 */
+  white-space: nowrap;
+  overflow: hidden;              /* "overflow" value must be different from  visible"*/
+  -o-text-overflow: ellipsis;    /* Opera < 11*/
+  text-overflow:    ellipsis;    /* IE, Safari (WebKit), Opera >= 11, FF > 6 */
+}
+
+.ticket-desc-md {
+  padding-left: 12px;
+}
+
+.ticket-desc-xs {
+  margin-top: 4px;
 }
 
 .ticket-status-md {
@@ -270,6 +301,18 @@ a:hover {
     color: #ffffff;
     background-color: #0085e1;
   }
+}
+
+.description-box {
+  resize: none;
+  border: 2px dashed rgba(119, 119, 119, 0.5); /* #777 */
+  padding: 10px;
+  width: 100%;
+}
+
+.description-button {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 /* Mostly stolen from offline.js */

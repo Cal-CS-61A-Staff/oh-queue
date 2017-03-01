@@ -65,13 +65,16 @@ class App extends React.Component {
     });
   }
 
-  updateTicket(ticket) {
-    if (isStaff(this.state) && ticket.status === "pending"
-          && !getHelpingTicket(this.state)) {
-        notifyUser("New Request for " + ticket.assignment,
-                   ticket.location);
+  shouldNotify(ticket, type) {
+    return (isStaff(this.state) && type === 'create');
+  }
+
+  updateTicket(data) {
+    if (this.shouldNotify(data.ticket, data.type)) {
+        notifyUser("New Request for " + data.ticket.assignment,
+                   data.ticket.location);
     }
-    setTicket(this.state, ticket);
+    setTicket(this.state, data.ticket);
     this.refresh();
   }
 
@@ -137,3 +140,4 @@ class App extends React.Component {
     );
   }
 }
+
