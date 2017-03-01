@@ -122,9 +122,11 @@ def disconnect():
     if not current_user.is_authenticated:
         pass
     elif current_user.is_staff:
-        user_presence['staff'].remove(current_user.email)
+        if current_user.email in user_presence['staff']:
+            user_presence['staff'].remove(current_user.email)
     else:
-        user_presence['students'].remove(current_user.email)
+        if current_user.email in user_presence['students']:
+            user_presence['students'].remove(current_user.email)
     emit_presence(user_presence)
 
 @socketio.on('refresh')
