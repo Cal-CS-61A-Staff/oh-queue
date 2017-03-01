@@ -1,5 +1,5 @@
 let PresenceIndicator = ({presence}) => {
-  let numStudentsOnline = presence && presence.student ? presence.student : 0
+  let numStudentsOnline = presence && presence.students ? presence.students : 0
   let numStaffOnline = presence && presence.staff ? presence.staff : 0
   let color = numStaffOnline ? 'success' : 'warning'
 
