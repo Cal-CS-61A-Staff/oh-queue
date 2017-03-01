@@ -60,7 +60,7 @@ class App extends React.Component {
   }
 
   shouldNotify(ticket, type) {
-    return (isStaff(this.state) && type == 'create');
+    return (isStaff(this.state) && type === 'create');
   }
 
   updateTicket(data) {
