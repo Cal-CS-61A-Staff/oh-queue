@@ -21,8 +21,8 @@ def user_json(user):
 
 def student_json(user):
     """ Only send student information to staff. """
-    can_see_details = (current_user.is_authenticated and
-                       (current_user.is_staff or user.id == current_user.id))
+    can_see_details = (current_user.is_authenticated
+                        and (current_user.is_staff or user.id == current_user.id))
     if not can_see_details:
         return {}
     return user_json(user)
