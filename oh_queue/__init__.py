@@ -35,7 +35,7 @@ import oh_queue.views
 @app.after_request
 def after_request(response):
     if request.path.startswith('/static') and not app.config.get('DEBUG'):
-        cache_control = 'max-age=86400'
+        cache_control = 'max-age=31556926'
     else:
         cache_control = 'no-store'
     response.headers.add('Cache-Control', cache_control)

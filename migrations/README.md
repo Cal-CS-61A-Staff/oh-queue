@@ -73,9 +73,8 @@ Make sure the deploy the app. After it's running, run
 dokku maintenance:on officehours-web # maintenance message
 dokku mysql:stop officehours-web # stop mysql so the migration can get a lock
 dokku mysql:start officehours-web # start it back up
-# optionally stamp it with the right revision
+# optionally stamp it with the previous revision (if it doesn't have a history of migrations)
 # dokku run officehours-web ./manage.py db stamp 5e2ef12760a4
-
 dokku run officehours-web ./manage.py db upgrade
 dokku maintenance:off officehours-web
 dokku deploy officehours-web  # to restart
