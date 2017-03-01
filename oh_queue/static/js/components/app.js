@@ -29,6 +29,7 @@ class App extends React.Component {
     socket.on('disconnect', () => app.setOffline(true));
     socket.on('state', (data) => app.updateState(data));
     socket.on('event', (data) => app.updateTicket(data));
+    socket.on('presence', (data) => app.updatePresence(data));
   }
 
   refresh() {
@@ -49,6 +50,11 @@ class App extends React.Component {
     this.refresh();
   }
 
+  updatePresence(data) {
+    this.state.presence = data;
+    this.refresh();
+  }
+
   refreshTickets() {
     let ticketIDs = Array.from(this.state.tickets.keys());
     this.socket.emit('refresh', ticketIDs, (data) => {
@@ -60,7 +66,7 @@ class App extends React.Component {
   }
 
   shouldNotify(ticket, type) {
-    return (isStaff(this.state) && type == 'create');
+    return (isStaff(this.state) && type === 'create');
   }
 
   updateTicket(data) {
