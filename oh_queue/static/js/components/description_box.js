@@ -30,6 +30,7 @@ class DescriptionBox extends React.Component {
     } else {
       return (
         <div>
+          <h4> Please describe your issue below: </h4>
           <textarea className="description-box" defaultValue={ticket.description} onChange={this.handleChange}
           rows="5" placeholder="It would be helpful if you could describe your issue. For example, &quot;I have a SyntaxError in my ___ function. I've tried using ____ and ____.&quot;"  />
           {this.newDescription ? <button onClick={this.submit} className="description-button btn btn-default btn-lg btn-block"> Save Description </button> : null}
