@@ -18,6 +18,7 @@ let Queue = ({state}) => {
       {showJumbotron && <Jumbotron state={state}/>}
       <div className={containerClass}>
         <Messages messages={state.messages}/>
+        <PresenceIndicator presence={state.presence} />
         {isStaff(state) && <FilterControls filter={state.filter}/>}
         {isStaff(state) && <hr />}
         <Tabs selectedIndex={state.queueTabIndex} onSelect={selectTab}>

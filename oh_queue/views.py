@@ -54,7 +54,6 @@ def emit_event(ticket, event_type):
     })
 
 def emit_presence(data):
-    return # Temporarily disable presence
     socketio.emit('presence', {k: len(v) for k,v in data.items()})
 
 user_presence = collections.defaultdict(set) # An in memory map of presence.
