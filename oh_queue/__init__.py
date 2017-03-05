@@ -16,7 +16,7 @@ app.config.from_object('config')
 
 if not app.debug:
     sentry = Sentry(app,
-                    dsn='https://d5dd390197e84e3ebb4779ab381610a0:ccac76da30704fa7a352a9ec3bd1708f@sentry.cs61a.org/14')
+                    dsn='https://58883f34f9e5457cbe973fe9cffb0ba7:92a99d56e13b447a98f7e449efbcee16@sentry.cs61a.org/4')
 
 app.jinja_env.globals.update({
   'TicketStatus': TicketStatus,
