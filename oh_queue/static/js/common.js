@@ -27,6 +27,7 @@ function notifyUser(title, body) {
 function connectSocket() {
   return io.connect('//' + document.domain + ':' + location.port, {
     transports: ['websocket', 'polling'],
+    'sync disconnect on unload' : true
   });
 }
 
