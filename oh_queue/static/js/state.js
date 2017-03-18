@@ -11,6 +11,7 @@ type User = {
   name: string,
   shortName: string,
   isStaff: boolean,
+  hash: string
 };
 
 type Ticket = {
