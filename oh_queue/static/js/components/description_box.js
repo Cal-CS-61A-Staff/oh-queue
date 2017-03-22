@@ -49,7 +49,7 @@ class DescriptionBox extends React.Component {
     let user = encodeURIComponent(this.props.state.currentUser.hash)
 
     if (description) {
-      query += ' ' + description;
+      query += encodeURIComponent(' ' + description);
     }
 
     axios.get(`https://oh-help.cs61a.org/api/v1/algolia/search?query=` + query + '&user=' + user)
