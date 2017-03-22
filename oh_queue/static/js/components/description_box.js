@@ -32,6 +32,8 @@ class DescriptionBox extends React.Component {
       user: this.state.currentUser.hash,
       post: postId,
       semester: semester,
+      assignment: ticket.assignment,
+      question: ticket.question,
       description: ticket.description,
       vote: vote
     }).then(res => {
@@ -55,16 +57,18 @@ class DescriptionBox extends React.Component {
         this.piazzaResults = []
         var post;
         for (var i in res.data['results']) {
-          post = res.data['results'][i];
-          this.piazzaResults.push(<div>
-            <a href={post.url}> {post.subject} </a>
-            <small>({post.semester})</small>
-            <div className="btn-toolbar btn-group pull-right piazza-vote" role="toolbar" aria-label="Rating">
-              <div className="btn btn-default btn-small" onClick={(e) => this.piazzaFeedback(e, post.qid, post.semester, 'up')} role="group" aria-label="Thumbs Up">👍</div>
-              <div className="btn btn-default btn-small" onClick={(e) => this.piazzaFeedback(e, post.qid, post.semester, 'down')} role="group" aria-label="Thumbs Down">👎</div>
-            </div>
-            <hr></hr>
-          </div>)
+          if (i <= 4) {
+            post = res.data['results'][i];
+            this.piazzaResults.push(<div>
+              <a href={post.url}> {post.subject} </a>
+              <small>({post.semester})</small>
+              <div className="btn-toolbar btn-group pull-right piazza-vote" role="toolbar" aria-label="Rating">
+                <div className="btn btn-default btn-small" onClick={(e) => this.piazzaFeedback(e, post.qid, post.semester, 'up')} role="group" aria-label="Thumbs Up">👍</div>
+                <div className="btn btn-default btn-small" onClick={(e) => this.piazzaFeedback(e, post.qid, post.semester, 'down')} role="group" aria-label="Thumbs Down">👎</div>
+              </div>
+              <hr></hr>
+            </div>)
+          }
         }
         this.setState(this.props.state); // force a render
       });
