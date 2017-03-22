@@ -35,6 +35,9 @@ class DescriptionBox extends React.Component {
       assignment: ticket.assignment,
       isStaff: isStaff(state),
       question: ticket.question,
+      ticketTime: ticket.created,
+      ticketStatus: ticket.status,
+      location: ticket.location,
       description: ticket.description,
       vote: vote
     }).then(res => {
