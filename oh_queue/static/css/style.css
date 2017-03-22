@@ -315,6 +315,13 @@ hr {
   margin-bottom: 10px;
 }
 
+/* Piazza Search Experiment */
+
+.piazza-vote {
+  margin-top: -5px;
+}
+
+
 /* Mostly stolen from offline.js */
 
 .offline {
