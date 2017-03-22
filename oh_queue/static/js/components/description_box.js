@@ -33,11 +33,12 @@ class DescriptionBox extends React.Component {
       post: postId,
       semester: semester,
       assignment: ticket.assignment,
+      isStaff: isStaff(state),
       question: ticket.question,
       description: ticket.description,
       vote: vote
     }).then(res => {
-      alert("Thanks for your feedback");
+      app.addMessage("Thanks for your feedback!", 'success');
     });
   }
 
