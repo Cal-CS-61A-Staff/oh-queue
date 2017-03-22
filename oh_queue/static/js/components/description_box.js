@@ -78,10 +78,12 @@ class DescriptionBox extends React.Component {
     let {state, ticket} = this.props;
     let staff = isStaff(state);
 
-
     if (staff) {
       return (
-        <p className="ticket-view-desc">{ticket.description ? ticket.description : <i>No description</i>}</p>
+        <div>
+          <p className="ticket-view-desc">{ticket.description ? ticket.description : <i>No description</i>}</p>
+          { this.piazzaResults }
+        </div>
       );
     } else {
       return (
