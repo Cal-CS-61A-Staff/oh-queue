@@ -28,7 +28,7 @@ Provides a web-based interface for requesting help during office hours. Allows s
 
     ./manage.py server
 
-5. Point your browser to http://localhost:5000.
+5. Point your browser to http://localhost:5000.  (This might take a while.)
 
 ## Deployment
 
