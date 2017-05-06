@@ -46,6 +46,8 @@ Deploy from another branch:
 
 ### First Time Deployment
 
+Tip:  add `alias dokku="ssh -t dokku@app.cs61a.org"` to your aliases file (e.g. `~/.bashrc`).
+
 	dokku apps:create app-name
 	git remote add online dokku@app.cs61a.org:app-name
 	dokku mysql:create db-name
