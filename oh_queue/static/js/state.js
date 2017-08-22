@@ -256,14 +256,12 @@ const ASSIGNMENTS = [
   'Lab 12',
   'Lab 13',
   'Lab 14',
-  'Lab 15',
-  'Midterm',
+  'Midterm 1',
+  'Midterm 2',
   'Final',
   'Other',
 ];
 
 const LOCATIONS = [
-  '400 Cory',
-  '521 Cory',
-  '531 Cory',
+  '109 Morgan'
 ];
