@@ -23,8 +23,8 @@ let PresenceIndicator = ({presence, state}) => {
   var availableAssistants = numStaffOnline - assignedTickets.length
   var stillNeedHelp = Math.max(0, pendingTickets.length - availableAssistants)
   var estWaitTime = Math.floor(avgHelpTime * stillNeedHelp)
-  var estWaitTimeMin = Math.max(0, Math.floor(estWaitTime - getRandomArbitrary(1, (availableAssistants + 5)/(availableAssistants + 1))))
-  var estWaitTimeMax = Math.ceil(estWaitTime + getRandomArbitrary(1, (availableAssistants + 5)/(availableAssistants + 1)))
+  var estWaitTimeMin = Math.max(0, Math.floor(estWaitTime - getRandomArbitrary(1, (availableAssistants + 10)/(availableAssistants + 1))))
+  var estWaitTimeMax = Math.ceil(estWaitTime + getRandomArbitrary(1, (availableAssistants + 10)/(availableAssistants + 1)))
 
   if (estWaitTime <= 5) {
       var col ="#009900"  
@@ -46,7 +46,7 @@ let PresenceIndicator = ({presence, state}) => {
 
   return (
     <div className="col-xs-12">
-    
+
     <div className={`alert alert-${color} alert-dismissable fade in`} role="alert">
       <button type="button" className="close" aria-label="Close" data-dismiss="alert">
           <span aria-hidden="true">&times;</span>
