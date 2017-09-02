@@ -18,14 +18,24 @@ let PresenceIndicator = ({presence, state}) => {
 
   let message = studentMessage + " and " + staffMessage + " currently online."
   
+  // average time to finish helping a single student
   var avgHelpTime = 10
 
+  // how many assistants are unoccupied
   var availableAssistants = numStaffOnline - assignedTickets.length
+
+  // how many students will have to wait until an assistant is free
   var stillNeedHelp = Math.max(0, pendingTickets.length - availableAssistants)
+
+  // expecting 10 minutes per person who still needs help
   var estWaitTime = Math.floor(avgHelpTime * stillNeedHelp)
+
+  // construct boundaries around this time
+  // interval generally becomes smaller (sample mean approaches true mean) as more assistants available
   var estWaitTimeMin = Math.max(0, Math.floor(estWaitTime - getRandomArbitrary(1, (availableAssistants + 10)/(availableAssistants + 1))))
   var estWaitTimeMax = Math.ceil(estWaitTime + getRandomArbitrary(1, (availableAssistants + 10)/(availableAssistants + 1)))
 
+  // colors for the time
   if (estWaitTime <= 5) {
       var col ="#009900"  
   } else if (estWaitTime < 10) {
@@ -38,6 +48,7 @@ let PresenceIndicator = ({presence, state}) => {
 
   var timeRange = estWaitTimeMin + " - " + estWaitTimeMax
 
+  // catch if there actually are no assistants available
   if (numStaffOnline == 0) {
     var timeRange = "Unknown"
     var col = "#646468"
