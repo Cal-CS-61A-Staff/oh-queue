@@ -55,7 +55,7 @@ let PresenceIndicator = ({presence, state}) => {
       <p> <br></br> To help reduce wait time: <br></br></p>
       <p> &#8594; Plan ahead what questions you want to ask (we will limit time spent to <strong> 10 </strong> minutes per person) </p>
       <p> &#8594; When applicable, be prepared to explain your reasoning, attempts, and current approach</p>
-      <p> &#8594; Check out other resources, including <a href="http://www.piazza.com">piazza</a> to make sure your question wasn&apos;t already answered</p>
+      <p> &#8594; Check out other resources, including <a href="http://www.piazza.com">piazza</a>, to make sure your question wasn&apos;t already answered</p>
       </div>
 
       <div className={`alert alert-${color} alert-dismissable fade in`} role="alert">
