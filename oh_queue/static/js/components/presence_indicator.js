@@ -1,5 +1,5 @@
 let PresenceIndicator = ({presence, state}) => {
-  let numStudentsOnline = presence && presence.students ? presence.students : 0 
+  let numStudentsOnline = presence && presence.students ? presence.students : 0
   let numStaffOnline = presence && presence.staff ? presence.staff : 0
   let color = numStaffOnline ? 'success' : 'warning'
   let pendingTickets = getTickets(state, 'pending');
@@ -18,36 +18,51 @@ let PresenceIndicator = ({presence, state}) => {
 
   let message = studentMessage + " and " + staffMessage + " currently online."
   
-  var avgHelpTime = 7 + getRandomArbitrary(0, 1/(numStaffOnline + 1))
+  var avgHelpTime = 10
 
   var availableAssistants = numStaffOnline - assignedTickets.length
   var stillNeedHelp = Math.max(0, pendingTickets.length - availableAssistants)
   var estWaitTime = Math.floor(avgHelpTime * stillNeedHelp)
+  var estWaitTimeMin = Math.max(0, Math.floor(estWaitTime - getRandomArbitrary(1, (availableAssistants + 5)/(availableAssistants + 1))))
+  var estWaitTimeMax = Math.ceil(estWaitTime + getRandomArbitrary(1, (availableAssistants + 5)/(availableAssistants + 1)))
 
-  if (estWaitTime <= 10) {
-      var col ="#00ff00"
-  } else if (estWaitTime < 20) {
-      var col ="#ffff00"
-  } else if (estWaitTime < 30) {
-      var col ="#ff6600"
+  if (estWaitTime <= 5) {
+      var col ="#009900"  
+  } else if (estWaitTime < 10) {
+      var col ="#739900"
+  } else if (estWaitTime < 25) {
+      var col ="#cc5200"
   } else {
       var col ="#ff0000"
   }
 
+  var timeRange = estWaitTimeMin + " - " + estWaitTimeMax
+
   if (numStaffOnline == 0) {
-    var estWaitTime = "N/A"
-    var col ="#ff0000"
+    var timeRange = "Unknown"
+    var col = "#646468"
   }
 
 
   return (
     <div className="col-xs-12">
+    
+    <div className={`alert alert-${color} alert-dismissable fade in`} role="alert">
+      <button type="button" className="close" aria-label="Close" data-dismiss="alert">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      <div> <font size="6">Estimated wait time: <font color={col}><strong>{timeRange}</strong></font> minutes </font></div>
+      <p> <br></br> To help reduce wait time: <br></br></p>
+      <p> &#8594; Plan ahead what questions you want to ask (we will limit time spent to <strong> 10 </strong> minutes per person) </p>
+      <p> &#8594; When applicable, be prepared to explain your reasoning, attempts, and current approach</p>
+      <p> &#8594; Check out other resources, including <a href="http://www.piazza.com">piazza</a> to make sure your question wasn&apos;t already answered</p>
+      </div>
+
       <div className={`alert alert-${color} alert-dismissable fade in`} role="alert">
       {message}
       <button type="button" className="close" aria-label="Close" data-dismiss="alert">
           <span aria-hidden="true">&times;</span>
         </button>
-      <div> Estimated wait time: <font color={col}><strong>{estWaitTime}</strong></font> minutes </div>
       </div>
     </div>
   );
