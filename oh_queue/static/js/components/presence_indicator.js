@@ -39,7 +39,7 @@ let PresenceIndicator = ({state}) => {
     // PARAM 2: max width measured from actual est wait time to upper bound.
     var maxWidthConstant = 20
     // interval generally becomes smaller (sample mean approaches true mean) as more assistants available
-    var intervalConstant = Math.ceil((availableAssistants + maxWidthConstant)/(availableAssistants + 1))
+    var intervalConstant = Math.ceil((numStaffOnline + maxWidthConstant)/(numStaffOnline + 1))
 
     var estWaitTimeMin = Math.max(0, estWaitTime - intervalConstant)
     var estWaitTimeMax = estWaitTime + intervalConstant
