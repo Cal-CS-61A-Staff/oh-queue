@@ -131,6 +131,7 @@ def disconnect():
 
 @socketio.on('refresh')
 def refresh(ticket_ids):
+    """ Cuts out tickets that have elapsed time beyond cuttoff in minutes"""
     tickets = Ticket.query.filter(Ticket.id.in_(ticket_ids)).all()
     return {
         'tickets': [ticket_json(ticket) for ticket in tickets],

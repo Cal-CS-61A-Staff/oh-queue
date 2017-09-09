@@ -42,7 +42,6 @@ def seed():
             student = User(name=real_name, email=email)
             db.session.add(student)
             db.session.commit()
-
         delta = datetime.timedelta(minutes=random.randrange(0, 30))
         ticket = Ticket(
             user=student,
