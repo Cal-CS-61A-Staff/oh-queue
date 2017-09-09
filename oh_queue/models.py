@@ -42,7 +42,7 @@ class User(db.Model, UserMixin):
             return first_name.rsplit('@')[0]
         return first_name
 
-TicketStatus = enum.Enum('TicketStatus', 'pending assigned resolved deleted')
+TicketStatus = enum.Enum('TicketStatus', 'pending assigned resolved deleted autoresolved autodeleted')
 
 class Ticket(db.Model):
     """Represents an ticket in the queue. A student submits a ticket and receives
@@ -87,7 +87,7 @@ class Ticket(db.Model):
 
 TicketEventType = enum.Enum(
     'TicketEventType',
-    'create assign unassign resolve delete describe',
+    'create assign unassign resolve delete describe autoresolve autodelete',
 )
 
 class TicketEvent(db.Model):

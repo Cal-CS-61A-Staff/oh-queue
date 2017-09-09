@@ -132,6 +132,20 @@ def disconnect():
 @socketio.on('refresh')
 def refresh(ticket_ids):
     """ Cuts out tickets that have elapsed time beyond cuttoff in minutes"""
+    pending_cutoff = 180
+    assigned_cutoff = 30
+    
+    pending_cutoff_time = datetime.datetime.now() - datetime.timedelta(minutes = pending_cutoff)
+    assigned_cutoff_time = datetime.datetime.now() - datetime.timedelta(minutes = assigned_cutoff)
+    
+    exp_pending_tickets = Ticket.query.filter(Ticket.created < pending_cutoff_time, Ticket.status == TicketStatus.pending).all()
+    exp_pending_ticket_ids = [tick.id for tick in exp_pending_tickets]
+    autodelete(exp_pending_ticket_ids)
+    
+    exp_assigned_tickets = Ticket.query.filter(Ticket.updated < assigned_cutoff_time, Ticket.status == TicketStatus.assigned).all()
+    exp_assigned_ticket_ids = [tick.id for tick in exp_assigned_tickets]
+    autoresolve(exp_pending_ticket_ids)
+    
     tickets = Ticket.query.filter(Ticket.id.in_(ticket_ids)).all()
     return {
         'tickets': [ticket_json(ticket) for ticket in tickets],
@@ -205,6 +219,14 @@ def delete(ticket_ids):
         emit_event(ticket, TicketEventType.delete)
     db.session.commit()
 
+@socketio.on('autodelete')
+def autodelete(ticket_ids):
+    tickets = get_tickets(ticket_ids)
+    for ticket in tickets:
+        ticket.status = TicketStatus.autodeleted
+        emit_event(ticket, TicketEventType.autodelete)
+    db.session.commit()
+
 @socketio.on('resolve')
 @logged_in
 def resolve(ticket_ids):
@@ -216,6 +238,15 @@ def resolve(ticket_ids):
         emit_event(ticket, TicketEventType.resolve)
     db.session.commit()
     return get_next_ticket()
+
+@socketio.on('resolve')
+def autoresolve(ticket_ids):
+    tickets = get_tickets(ticket_ids)
+    for ticket in tickets:
+        ticket.status = TicketStatus.autoresolved
+        emit_event(ticket, TicketEventType.autoresolve)
+    db.session.commit()
+    #return get_next_ticket()
 
 @socketio.on('assign')
 @is_staff
