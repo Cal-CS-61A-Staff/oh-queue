@@ -41,11 +41,24 @@ def ticket_json(ticket):
     }
 
 def emit_event(ticket, event_type):
-    ticket_event = TicketEvent(
+    if event_type == TicketEventType.autodelete:
+        ticket_event = TicketEvent(
         event_type=event_type,
         ticket=ticket,
-        user=current_user,
+        user_id=0 # assuming ids start @ 1, 0 signifies admin/autodelete
     )
+    elif event_type == TicketEventType.autoresolve:
+        ticket_event = TicketEvent(
+        event_type=event_type,
+        ticket=ticket,
+        user_id=ticket.helper_id
+    )
+    else:
+        ticket_event = TicketEvent(
+            event_type=event_type,
+            ticket=ticket,
+            user=current_user,
+        )
     db.session.add(ticket_event)
     db.session.commit()
     socketio.emit('event', {
@@ -134,17 +147,17 @@ def refresh(ticket_ids):
     """ Cuts out tickets that have elapsed time beyond cuttoff in minutes"""
     pending_cutoff = 180
     assigned_cutoff = 30
-    
-    pending_cutoff_time = datetime.datetime.now() - datetime.timedelta(minutes = pending_cutoff)
-    assigned_cutoff_time = datetime.datetime.now() - datetime.timedelta(minutes = assigned_cutoff)
-    
+
+    pending_cutoff_time = datetime.datetime.utcnow() - datetime.timedelta(minutes = pending_cutoff)
+    assigned_cutoff_time = datetime.datetime.utcnow() - datetime.timedelta(minutes = assigned_cutoff)
+
     exp_pending_tickets = Ticket.query.filter(Ticket.created < pending_cutoff_time, Ticket.status == TicketStatus.pending).all()
     exp_pending_ticket_ids = [tick.id for tick in exp_pending_tickets]
     autodelete(exp_pending_ticket_ids)
     
     exp_assigned_tickets = Ticket.query.filter(Ticket.updated < assigned_cutoff_time, Ticket.status == TicketStatus.assigned).all()
     exp_assigned_ticket_ids = [tick.id for tick in exp_assigned_tickets]
-    autoresolve(exp_pending_ticket_ids)
+    autoresolve(exp_assigned_ticket_ids)
     
     tickets = Ticket.query.filter(Ticket.id.in_(ticket_ids)).all()
     return {
