@@ -264,6 +264,6 @@ const ASSIGNMENTS = [
 
 const LOCATIONS = [
   '109 Morgan',
-  '400 Cory',
-  '521 Cory'
+  '247 Cory',
+  '241 Cory'
 ];
