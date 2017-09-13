@@ -58,8 +58,8 @@ def emit_presence(data):
 
 user_presence = collections.defaultdict(set) # An in memory map of presence.
 
-@app.route('/')
 @app.route('/presence')
+@app.route('/')
 @app.route('/<int:ticket_id>/')
 def index(*args, **kwargs):
     return render_template('index.html')
