@@ -136,8 +136,8 @@ class App extends React.Component {
           <ReactRouter.IndexRoute component={Queue}/>
           <ReactRouter.Route path="/:id/" component={TicketView}/>
         </ReactRouter.Route>
+        <ReactRouter.Route path="/presence" component={PresenceIndicator}/>
       </ReactRouter.Router>
     );
   }
 }
-
