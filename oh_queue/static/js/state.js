@@ -222,48 +222,18 @@ function clearMessage(state: State, id: number): void {
   }
 }
 
-/* Constants */
-const ASSIGNMENTS = [
-  'Project 1 (Hog)',
-  'Project 2 (Maps)',
-  'Project 3 (Ants)',
-  'Project 4 (Scheme)',
-  'Homework 0',
-  'Homework 1',
-  'Homework 2',
-  'Homework 3',
-  'Homework 4',
-  'Homework 5',
-  'Homework 6',
-  'Homework 7',
-  'Homework 8',
-  'Homework 9',
-  'Homework 10',
-  'Homework 11',
-  'Homework 12',
-  'Lab 0',
-  'Lab 1',
-  'Lab 2',
-  'Lab 3',
-  'Lab 4',
-  'Lab 5',
-  'Lab 6',
-  'Lab 7',
-  'Lab 8',
-  'Lab 9',
-  'Lab 10',
-  'Lab 11',
-  'Lab 12',
-  'Lab 13',
-  'Lab 14',
-  'Midterm 1',
-  'Midterm 2',
-  'Final',
-  'Other',
-];
+const ASSIGNMENTS = preval`
+  if (process.env.ASSIGNMENTS) {
+    module.exports = process.env.ASSIGNMENTS.split(',');
+  } else {
+    module.exports = ['Any'];
+  }
+`;
 
-const LOCATIONS = [
-  '109 Morgan',
-  '247 Cory',
-  '241 Cory'
-];
+const LOCATIONS = preval`
+  if (process.env.LOCATIONS) {
+    module.exports = process.env.LOCATIONS.split(',');
+  } else {
+    module.exports = ['Any'];
+  }
+`;
