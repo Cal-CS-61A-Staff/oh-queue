@@ -27,6 +27,8 @@ def glob_assets(pattern):
     finally:
         os.chdir(cwd)
 
+assets_env.config['BABEL_EXTRA_ARGS'] = ["--plugins", "preval"]
+
 assets_env.register('common.js',
     *glob_assets('js/components/*.js'),
     'js/state.js',
