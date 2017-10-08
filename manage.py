@@ -29,6 +29,7 @@ def not_in_production(f):
 @not_in_production
 def seed():
     print('Seeding...')
+    delta = datetime.timedelta(minutes=random.randrange(0, 30))
     for i in range(20):
         real_name = names.get_full_name()
         first_name, last_name = real_name.lower().split(' ')
@@ -42,30 +43,16 @@ def seed():
             student = User(name=real_name, email=email)
             db.session.add(student)
             db.session.commit()
-        delta = datetime.timedelta(minutes=random.randrange(0, 30))
-        if i % 2 == 0:
-            ticket = Ticket(
-                user=student,
-                status=TicketStatus.pending,
-                created=datetime.datetime.utcnow() - delta,
-                assignment=random.choice(['Hog', 'Scheme']),
-                description=random.choice(['', 'SyntaxError on Line 5']),
-                question=random.randrange(1, 6),
-                location=random.choice(['109 Morgan', '247 Cory']),
-            )
-        else:
-            ticket = Ticket(
-                user=student,
-                status=TicketStatus.assigned,
-                created=datetime.datetime.utcnow() - delta,
-                updated= datetime.datetime.utcnow(),
-                assignment=random.choice(['Hog', 'Scheme']),
-                description=random.choice(['', 'SyntaxError on Line 5']),
-                question=random.randrange(1, 6),
-                location=random.choice(['109 Morgan', '247 Cory']),
-                helper_id = 61
-            )
-
+        
+        ticket = Ticket(
+            user=student,
+            status=TicketStatus.pending,
+            created=datetime.datetime.utcnow() - delta,
+            assignment=random.choice(['Hog', 'Scheme']),
+            description=random.choice(['', 'SyntaxError on Line 5']),
+            question=random.randrange(1, 6),
+            location=random.choice(['109 Morgan', '247 Cory']),
+        )
         db.session.add(ticket)
         db.session.commit()
 

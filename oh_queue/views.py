@@ -41,24 +41,12 @@ def ticket_json(ticket):
     }
 
 def emit_event(ticket, event_type):
-    if event_type == TicketEventType.autodelete:
-        ticket_event = TicketEvent(
+    ticket_event = TicketEvent(
         event_type=event_type,
         ticket=ticket,
-        user_id=0 # assuming ids start @ 1, 0 signifies admin/autodelete
+        user=ticket.helper if event_type == TicketEventType.autoresolve else current_user,
+
     )
-    elif event_type == TicketEventType.autoresolve:
-        ticket_event = TicketEvent(
-        event_type=event_type,
-        ticket=ticket,
-        user_id=ticket.helper_id
-    )
-    else:
-        ticket_event = TicketEvent(
-            event_type=event_type,
-            ticket=ticket,
-            user=current_user,
-        )
     db.session.add(ticket_event)
     db.session.commit()
     socketio.emit('event', {
@@ -144,16 +132,10 @@ def disconnect():
 
 @socketio.on('refresh')
 def refresh(ticket_ids):
-    """ Cuts out tickets that have elapsed time beyond cuttoff in minutes"""
-    pending_cutoff = 180
+    """ Cuts out tickets that have elapsed time beyond cuttoff in minutes, and refreshes"""
     assigned_cutoff = 30
-
-    pending_cutoff_time = datetime.datetime.utcnow() - datetime.timedelta(minutes = pending_cutoff)
     assigned_cutoff_time = datetime.datetime.utcnow() - datetime.timedelta(minutes = assigned_cutoff)
 
-    exp_pending_tickets = Ticket.query.filter(Ticket.created < pending_cutoff_time, Ticket.status == TicketStatus.pending).all()
-    exp_pending_ticket_ids = [tick.id for tick in exp_pending_tickets]
-    autodelete(exp_pending_ticket_ids)
     
     exp_assigned_tickets = Ticket.query.filter(Ticket.updated < assigned_cutoff_time, Ticket.status == TicketStatus.assigned).all()
     exp_assigned_ticket_ids = [tick.id for tick in exp_assigned_tickets]
@@ -232,14 +214,6 @@ def delete(ticket_ids):
         emit_event(ticket, TicketEventType.delete)
     db.session.commit()
 
-@socketio.on('autodelete')
-def autodelete(ticket_ids):
-    tickets = get_tickets(ticket_ids)
-    for ticket in tickets:
-        ticket.status = TicketStatus.autodeleted
-        emit_event(ticket, TicketEventType.autodelete)
-    db.session.commit()
-
 @socketio.on('resolve')
 @logged_in
 def resolve(ticket_ids):
@@ -252,14 +226,12 @@ def resolve(ticket_ids):
     db.session.commit()
     return get_next_ticket()
 
-@socketio.on('resolve')
 def autoresolve(ticket_ids):
     tickets = get_tickets(ticket_ids)
     for ticket in tickets:
-        ticket.status = TicketStatus.autoresolved
+        ticket.status = TicketStatus.resolved
         emit_event(ticket, TicketEventType.autoresolve)
     db.session.commit()
-    #return get_next_ticket()
 
 @socketio.on('assign')
 @is_staff
