@@ -29,7 +29,7 @@ def not_in_production(f):
 @not_in_production
 def seed():
     print('Seeding...')
-    for i in range(20):
+    for i in range(50):
         real_name = names.get_full_name()
         first_name, last_name = real_name.lower().split(' ')
         email = '{0}{1}@{2}'.format(

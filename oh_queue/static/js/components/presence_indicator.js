@@ -9,7 +9,6 @@ let PresenceIndicator = ({state}) => {
   var studentMessage = numStudentsOnline + " students"
   var staffMessage =  numStaffOnline + " assistants"
 
-
   if (numStudentsOnline === 1) {
     studentMessage = studentMessage.slice(0, -1)
   }
@@ -19,45 +18,49 @@ let PresenceIndicator = ({state}) => {
 
   let message = studentMessage + " and " + staffMessage + " currently online."
 
-  // PARAM 1: average time to finish helping a single student
+  // PARAM 1: expected service time ~ Exponential(1/10)
   var avgHelpTime = 10
 
   // how many assistants are unoccupied
   var availableAssistants = numStaffOnline - assignedTickets.length
 
-  // how many students will have to wait until an assistant is free
+  // how many students need help, assuming all avaiable assistants are assigned
   var stillNeedHelp = Math.max(0, pendingTickets.length - availableAssistants)
 
   // catch if there actually are no assistants available
   if (numStaffOnline == 0) {
-    var timeRange = "Unknown"
+    var timeRange = "??"
     var col = "#646468"
   } else {
-    // expecting 10 minutes per person who still needs help, scale down by number of staff
-    var estWaitTime = Math.ceil(avgHelpTime * stillNeedHelp / numStaffOnline)
+    // min of numStaffOnline exponentials is exponential, take expectation
+    var expectedWaitFirst = Math.ceil(avgHelpTime/numStaffOnline)
+    // standard deviation of exponential equals the expectation
+    var stdDev = expectedWaitFirst
 
-    // PARAM 2: max width measured from actual est wait time to upper bound.
-    var maxWidthConstant = 20
-    // interval generally becomes smaller (sample mean approaches true mean) as more assistants available
-    var intervalConstant = Math.ceil((numStaffOnline + maxWidthConstant)/(numStaffOnline + 1))
+    // expectation for stillNeedHelp + 1th student on queue
+    var expectedWaitTotal = (stillNeedHelp + 1) * expectedWaitFirst
 
-    var estWaitTimeMin = Math.max(0, estWaitTime - intervalConstant)
-    var estWaitTimeMax = estWaitTime + intervalConstant
+    // PARAM 2: (95% conf interval by CLT, 1.96 is from inv. of Normal)
+    var bound = 1.96 * stdDev/Math.sqrt(numStaffOnline)
+
+    // interval bounds
+    var estWaitTimeMin = Math.floor(expectedWaitTotal - bound)
+    var estWaitTimeMax = Math.ceil(expectedWaitTotal + bound)
 
     // colors for the time
-    if (estWaitTime <= 5) {
+    if (expectedWaitTotal <= 5) {
       var col ="#009900"
-    } else if (estWaitTime < 10) {
+    } else if (expectedWaitTotal < 10) {
       var col ="#739900"
-    } else if (estWaitTime < 25) {
+    } else if (expectedWaitTotal < 25) {
       var col ="#cc5200"
     } else {
       var col ="#ff0000"
     }
 
+    // concatenate time range string
     var timeRange = estWaitTimeMin + " - " + estWaitTimeMax
   }
-
 
   return (
     <div className="col-xs-12">
