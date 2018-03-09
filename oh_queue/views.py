@@ -44,7 +44,8 @@ def emit_event(ticket, event_type):
     ticket_event = TicketEvent(
         event_type=event_type,
         ticket=ticket,
-        user=current_user,
+        user=ticket.helper if event_type == TicketEventType.autoresolve else current_user,
+
     )
     db.session.add(ticket_event)
     db.session.commit()
@@ -132,6 +133,15 @@ def disconnect():
 
 @socketio.on('refresh')
 def refresh(ticket_ids):
+    """ Cuts out tickets that have elapsed time beyond cuttoff in minutes, and refreshes"""
+    assigned_cutoff = 30
+    assigned_cutoff_time = datetime.datetime.utcnow() - datetime.timedelta(minutes = assigned_cutoff)
+
+    
+    exp_assigned_tickets = Ticket.query.filter(Ticket.updated < assigned_cutoff_time, Ticket.status == TicketStatus.assigned).all()
+    exp_assigned_ticket_ids = [tick.id for tick in exp_assigned_tickets]
+    autoresolve(exp_assigned_ticket_ids)
+    
     tickets = Ticket.query.filter(Ticket.id.in_(ticket_ids)).all()
     return {
         'tickets': [ticket_json(ticket) for ticket in tickets],
@@ -216,6 +226,13 @@ def resolve(ticket_ids):
         emit_event(ticket, TicketEventType.resolve)
     db.session.commit()
     return get_next_ticket()
+
+def autoresolve(ticket_ids):
+    tickets = get_tickets(ticket_ids)
+    for ticket in tickets:
+        ticket.status = TicketStatus.resolved
+        emit_event(ticket, TicketEventType.autoresolve)
+    db.session.commit()
 
 @socketio.on('assign')
 @is_staff
