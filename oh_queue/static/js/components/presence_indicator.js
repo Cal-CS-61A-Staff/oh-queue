@@ -40,11 +40,11 @@ let PresenceIndicator = ({state}) => {
     // expectation for stillNeedHelp + 1th student on queue
     var expectedWaitTotal = (stillNeedHelp + 1) * expectedWaitFirst
 
-    // PARAM 2: (95% conf interval by CLT, 1.96 is from inv. of Normal)
-    var bound = 1.96 * stdDev/Math.sqrt(numStaffOnline)
+    // PARAM 2: (75% conf interval by CLT, 1.15 is from zscore of Normal)
+    var bound = 1.15 * stdDev/Math.sqrt(numStaffOnline)
 
     // interval bounds
-    var estWaitTimeMin = Math.floor(expectedWaitTotal - bound)
+    var estWaitTimeMin = Math.max(0, Math.floor(expectedWaitTotal - bound))
     var estWaitTimeMax = Math.ceil(expectedWaitTotal + bound)
 
     // colors for the time
