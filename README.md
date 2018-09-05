@@ -30,6 +30,10 @@ Provides a web-based interface for requesting help during office hours. Allows s
 
 5. Point your browser to http://localhost:5000.  (This might take a while.)
 
+## Creating staff logins
+
+Point your browser to http://localhost:5000/testing-login/.
+
 ## Deployment
 
 First point a git remote to the Dokku server:
