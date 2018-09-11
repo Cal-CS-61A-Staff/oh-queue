@@ -1,9 +1,11 @@
-Office Hours
-============
+Office Hours Queue
+==================
 
 ## Overview
 
-Provides a web-based interface for requesting help during office hours. Allows students to find others with similar problems, or simply get help from a TA or lab assistant.
+Provides a web-based interface for requesting help during office hours.
+
+Students request help on an assignment and question number from a location.
 
 
 ## Installation
@@ -30,15 +32,13 @@ Provides a web-based interface for requesting help during office hours. Allows s
 
 5. Point your browser to http://localhost:5000.  (This might take a while.)
 
-## Creating staff logins
-
-Point your browser to http://localhost:5000/testing-login/.
+6. You can log in as any email while testing by going to http://localhost:5000/testing-login/.
 
 ## Deployment
 
 First point a git remote to the Dokku server:
 
-    git remote add dokku dokku@app.cs61a.org:officehours-web
+    git remote add dokku dokku@<server>:officehours-web
 
 To deploy from master:
 
@@ -46,27 +46,30 @@ To deploy from master:
 
 Deploy from another branch:
 
-	git push dokku my_branch:master
+    git push dokku my_branch:master
 
 ### First Time Deployment
 
-Tip:  add `alias dokku="ssh -t dokku@app.cs61a.org"` to your aliases file (e.g. `~/.bashrc`).
+    dokku apps:create app-name
+    git remote add online dokku@<server>:app-name
+    dokku mysql:create db-name
+    dokku mysql:link db-name app-name
+    # Set DNS record
+    dokku domains:set app-name <domain>
 
-	dokku apps:create app-name
-	git remote add online dokku@app.cs61a.org:app-name
-	dokku mysql:create db-name
-	dokku mysql:link db-name app-name
-	# Set DNS record
-	dokku domains:add app-name name.cs61a.org
+    dokku config:set app-name OH_QUEUE_ENV=prod OK_KEY=<OK CLIENT> OK_SECRET=<OK SECRET> SECRET_KEY=<DB SECRET> COURSE_NAME="CS 61A" COURSE_OFFERING="cal/cs61a/fa16"
+    dokku run app-name python
+    >>> from oh_queue import app
+    >>> from oh_queue.models import db
+    >>> db.create_all(app=app)
+    >>> exit()
+    dokku letsencrypt app-name
+    # Change OK OAuth to support the domain
 
-	dokku config:set app-name SECRET_KEY=<SECRET> OH_QUEUE_ENV=prod COURSE_NAME="CS 61A" COURSE_OFFERING="cal/cs61a/fa16"
-	dokku run app-name /bin/bash
-		$ python
-		>>> from oh_queue import app
-		>>> from oh_queue.models import db
-		>>> db.create_all(app=app)
-		>>> exit()
-		$ exit
-	dokku letsencrypt app-name
-	# Change OK OAuth to support the domain
+### Configuration
 
+The following env variables can be set to customize the app:
+
+- `COURSE_NAME` - Name of course as displayed in the app
+- `LOCATIONS` - Comma-separated list of locations students can request help from
+- `ASSIGNMENTS` - Comma-separate list of assignments students can request help on
