@@ -7,6 +7,7 @@ Provides a web-based interface for requesting help during office hours.
 
 Students request help on an assignment and question number from a location.
 
+This app uses [Ok](https://okpy.org) to manage access. Even if you aren't using Ok for assignments, you should create a course on Ok and enroll all of your staff, academic interns, and students with the appropriate roles.
 
 ## Installation
 
@@ -65,6 +66,8 @@ Deploy from another branch:
     >>> exit()
     dokku letsencrypt app-name
     # Change OK OAuth to support the domain
+
+For `OK_KEY` and `OK_SECRET`, you'll need to create an Ok OAuth client [here](https://okpy.org/admin/clients) and have it approved by an Ok admin.
 
 ### Configuration
 
