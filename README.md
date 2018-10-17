@@ -13,7 +13,7 @@ This app uses [Ok](https://okpy.org) to manage access. Even if you aren't using 
 
 1. Create an activate a virtualenv:
 
-    python3 -m virtualenv env
+    python3 -m virtualenv env  (If this does not work, try: `virtualenv -p python3 env`)
 
     source env/bin/activate
 
