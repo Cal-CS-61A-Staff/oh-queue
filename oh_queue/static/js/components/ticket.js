@@ -25,8 +25,11 @@ let Ticket = ({state, ticket}) => {
         <small className="visible-xs ticket-desc-xs">{description}</small>
       </h4>
       <h4 className="pull-left hidden-xs ticket-desc-md "><small>{description}</small></h4>
-
-      <h4 className="pull-right hidden-xs ticket-status-md"><small>{status}</small></h4>
+      <h4 className="pull-right hidden-xs ticket-status-md">
+        <small>{status} {moment.duration(moment.utc().diff(moment.utc(ticket.created))).asDays() > 1 &&
+        <span className="badge"> Old Ticket </span>}
+        </small>
+      </h4>
 
     </TicketLink>
   );
