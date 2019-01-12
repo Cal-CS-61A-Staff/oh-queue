@@ -13,7 +13,7 @@ oauthlib==2.0.1
 python-engineio==1.2.4
 python-socketio==1.7.1
 pytz==2016.10
-requests==2.13
+requests==2.21
 requests-oauthlib==0.8.0
 six==1.10.0
 SQLAlchemy==1.1.6
