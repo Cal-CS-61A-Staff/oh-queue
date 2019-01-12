@@ -11,6 +11,10 @@ This app uses [Ok](https://okpy.org) to manage access. Even if you aren't using 
 
 ## Installation
 
+0. Clone this repo:
+
+    git clone https://github.com/Cal-CS-61A-Staff/oh-queue.git
+
 1. Create an activate a virtualenv:
 
     python3 -m virtualenv env  (If this does not work, try: `virtualenv -p python3 env`)
@@ -26,6 +30,8 @@ This app uses [Ok](https://okpy.org) to manage access. Even if you aren't using 
 3. Reset the database to create tables.
 
     ./manage.py resetdb
+    
+    If you get the error "TypeError: OAuthRemoteApp requires consumer key and secret", you need to set your OK_KEY and OK_SECRET environment variables.
 
 4. Run the server:
 
