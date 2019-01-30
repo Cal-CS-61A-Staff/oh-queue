@@ -13,7 +13,9 @@ This app uses [Ok](https://okpy.org) to manage access. Even if you aren't using 
 
 0. Clone this repo:
 
-    git clone https://github.com/Cal-CS-61A-Staff/oh-queue.git
+```
+git clone https://github.com/Cal-CS-61A-Staff/oh-queue.git
+```
 
 1. Create an activate a virtualenv:
 
