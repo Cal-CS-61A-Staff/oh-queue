@@ -23,6 +23,7 @@ type Ticket = {
   question: string,
   description: ?string,
   helper: ?User,
+  hold_time_end: string,
 };
 
 type Filter = {
@@ -188,6 +189,10 @@ function ticketIsMine(state: State, ticket: Ticket): boolean {
 
 function isTicketHelper(state: State, ticket: Ticket): boolean {
   return state.currentUser && ticket.helper && state.currentUser.id === ticket.helper.id;
+}
+//EDITED
+function ticketOnHold(state: State, ticket: Ticket): boolean {
+  return moment().isBefore(ticket.hold_time_end);
 }
 
 /* Return the current user's active ticket. */

@@ -28,6 +28,7 @@ let Ticket = ({state, ticket}) => {
       <h4 className="pull-right hidden-xs ticket-status-md">
         <small>{status} {moment.duration(moment.utc().diff(moment.utc(ticket.created))).asDays() > 1 &&
         <span className="badge"> Old Ticket </span>}
+        {ticketOnHold(state, ticket) && <span className="badge" style={{backgroundColor: "#FF7F50"}} > On Hold </span>}
         </small>
       </h4>
 
@@ -36,8 +37,8 @@ let Ticket = ({state, ticket}) => {
 }
 
 let TicketLink = ({state, ticket, children}) => {
-  let highlight = ticketIsMine(state, ticket) || isTicketHelper(state, ticket);
-  let link = ticketIsMine(state, ticket) || isStaff(state);
+  let highlight = !ticketOnHold(state, ticket) && (ticketIsMine(state, ticket) || isTicketHelper(state, ticket));
+  let link = !ticketOnHold(state, ticket) && (ticketIsMine(state, ticket) || isStaff(state));
   let ticketClass = classNames({
     'ticket-row': true,
     'clearfix': true,

@@ -66,6 +66,8 @@ class Ticket(db.Model):
     user = db.relationship(User, foreign_keys=[user_id])
     helper = db.relationship(User, foreign_keys=[helper_id])
 
+    hold_time_end = db.Column(db.DateTime, default=db.func.now()) #MUST CHANGE***
+
     @classmethod
     def for_user(cls, user):
         if user and user.is_authenticated:
