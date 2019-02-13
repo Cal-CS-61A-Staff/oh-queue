@@ -44,7 +44,7 @@ This app uses [Ok](https://okpy.org) to manage access. Even if you aren't using 
     ./manage.py server
     ```
 
-6. Point your browser to http://localhost:5000.  (This might take a while the first time.)
+6. Point your browser to http://localhost:5000.  (This might take a while the first time!)
 
 7. You can log in as any email while testing by going to http://localhost:5000/testing-login/.
 
