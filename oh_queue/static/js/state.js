@@ -234,6 +234,6 @@ const LOCATIONS = preval`
   if (process.env.LOCATIONS) {
     module.exports = process.env.LOCATIONS.split(',');
   } else {
-    module.exports = ['Any'];
+    module.exports = ['Cory 241', 'Cory 248', 'Outer Space'];
   }
 `;
