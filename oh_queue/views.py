@@ -176,6 +176,9 @@ def create(form):
 def update_location(location):
     ticket_id, new_location = location['id'], location['new_location']
     ticket = Ticket.query.filter(Ticket.id == ticket_id).first()
+    if not (current_user.is_staff or ticket.user.id == current_user.id):
+            return socket_unauthorized()
+            
     ticket.location = new_location
     emit_event(ticket, TicketEventType.update_location)
 
