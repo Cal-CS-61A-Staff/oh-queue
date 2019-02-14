@@ -12,9 +12,9 @@ class UpdateLocationBox extends React.Component {
     }
 
     submit() {
-        let ticket = this.props.ticket;
+        let {state, ticket} = this.props;
         app.makeRequest('update_location', {'id': ticket.id, 'new_location': this.newLocation} );
-        this.setState(this.props.state); //force a render
+        this.setState(state); //force a render
     }
 
     render() {
