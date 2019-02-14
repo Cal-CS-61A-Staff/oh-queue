@@ -43,6 +43,13 @@ class TicketView extends React.Component {
             <DescriptionBox state={state} ticket={ticket}/>
           </div>
         </div>
+        <div className="row">
+          <div className="col-xs-12 col-md-6 col-md-offset-3">
+            <hr />
+            <UpdateLocationBox state={state} ticket={ticket}/>
+          </div>
+        </div>
+        
         <TicketButtons state={state} ticket={ticket}/>
       </div>
     );
