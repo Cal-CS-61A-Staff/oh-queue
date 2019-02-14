@@ -181,9 +181,6 @@ def update_location(location):
 
     db.session.commit()
 
-
-
-
 def get_tickets(ticket_ids):
     return Ticket.query.filter(Ticket.id.in_(ticket_ids)).all()
 
