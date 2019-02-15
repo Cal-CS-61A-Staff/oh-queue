@@ -261,6 +261,8 @@ def load_ticket(ticket_id):
 def describe(description):
     ticket_id, description = description['id'], description['description']
     ticket = Ticket.query.filter(Ticket.id == ticket_id).first()
+    if not (current_user.is_staff or ticket.user.id == current_user.id):
+            return socket_unauthorized()
     ticket.description = description
     emit_event(ticket, TicketEventType.describe)
 
