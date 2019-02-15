@@ -20,7 +20,7 @@ Provides a web-based interface for requesting help during office hours. Allows s
 
     npm install
 
-3. Reset the database to create tables.
+3. Reset the database to create tables:
 
     ./manage.py resetdb
 
