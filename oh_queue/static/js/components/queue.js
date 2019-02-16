@@ -37,8 +37,19 @@ let Queue = ({state}) => {
 let TicketList = ({state, status}) => {
   let tickets = getTickets(state, status);
   let filteredTickets = applyFilter(state.filter, tickets);
+  let selectedTickets = [];
+  let selectTicketCallback = (ticket, select) => {
+    if(select) {
+      selectedTickets.push(ticket);
+    } else {
+      selectedTickets = selectedTickets.filter((t) => t.id != ticket.id);
+    }
+  };
+
   let items = filteredTickets.map((ticket) =>
-    <Ticket key={ticket.id} state={state} ticket={ticket}/>
+    <CheckboxWrapper state={state} key={ticket.id} callback={selectTicketCallback} ticket={ticket}>
+    <Ticket state={state} ticket={ticket} />
+    </CheckboxWrapper>
   );
   var body;
   if (tickets.length === 0) {
@@ -55,7 +66,7 @@ let TicketList = ({state, status}) => {
     );
   } else {
     body = [
-      <GroupActions tickets={filteredTickets} status={status} state={state} />,
+      <GroupActions tickets={filteredTickets} status={status} state={state} selectedTickets={selectedTickets}/>,
       items,
     ];
   }

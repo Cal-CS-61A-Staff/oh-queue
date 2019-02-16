@@ -1,6 +1,16 @@
-let GroupActions = ({state, status, tickets}) => {
+let GroupActions = ({state, status, tickets, selectedTickets}) => {
   if (!isStaff(state)) return null;
   let ticket_ids = tickets.map(ticket => ticket.id);
+  let handleDeleteSelected = () => {
+    let selected_ticket_ids = selectedTickets.map(ticket => ticket.id);
+    console.log("selected ticket ids");
+    console.log(selected_ticket_ids)
+    app.makeRequest('delete', selected_ticket_ids);
+  }
+  let handleHelpSelected = () => {
+    let selected_ticket_ids = selectedTickets.map(ticket => ticket.id);
+    app.makeRequest('assign', selected_ticket_ids);
+  }
   var buttons;
   if (status === 'pending') {
     buttons = [
@@ -8,12 +18,21 @@ let GroupActions = ({state, status, tickets}) => {
         if (!confirm(`Are you sure you want to delete ${tickets.length} requests?`)) return;
         app.makeRequest('delete', ticket_ids);
       }} className="btn btn-danger pull-right">
-        Delete all
+      Delete all
       </button>,
       <button onClick={() => app.makeRequest('assign', ticket_ids)}
       className="btn btn-primary pull-right">
       Help all
       </button>,
+      <button onClick={handleHelpSelected}
+      className="btn btn-primary pull-right">
+      Help selected
+      </button>,
+      <button onClick={handleDeleteSelected}
+      className="btn btn-primary pull-right">
+      Delete selected
+      </button>,
+      
     ];
   } else if (status === 'assigned') {
     buttons = [

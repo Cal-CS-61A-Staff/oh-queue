@@ -1,4 +1,4 @@
-let Ticket = ({state, ticket}) => {
+let Ticket = ({state, ticket, callback}) => {
   var status;
   if (ticket.status === 'pending') {
     status = ticketDisplayTime(ticket) + ' in ' + ticket.location;
