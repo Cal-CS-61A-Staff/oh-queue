@@ -4,9 +4,16 @@ let CheckboxWrapper = ({state, ticket, children, callback}) => {
         callback(ticket, event.target.checked);
       };
     return(
-    <div class="form-check position-absolute">
-        <input type="checkbox" class="form-check-input" id={ticket.id} onClick={handleChange}/>
+    <div>
+        <div class="form-check pull-left">
+        <div className="pull-left ticket-tickbox"><input type="checkbox" class="form-check-input" size="5" id={ticket.id} onClick={handleChange}/>
+                
+      </div>
+                
+        </div>
         {children}
+        
+    
     </div>
     );
 };

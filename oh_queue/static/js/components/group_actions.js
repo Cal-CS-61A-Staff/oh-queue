@@ -3,8 +3,6 @@ let GroupActions = ({state, status, tickets, selectedTickets}) => {
   let ticket_ids = tickets.map(ticket => ticket.id);
   let handleDeleteSelected = () => {
     let selected_ticket_ids = selectedTickets.map(ticket => ticket.id);
-    console.log("selected ticket ids");
-    console.log(selected_ticket_ids)
     app.makeRequest('delete', selected_ticket_ids);
   }
   let handleHelpSelected = () => {

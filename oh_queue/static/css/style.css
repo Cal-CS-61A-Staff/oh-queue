@@ -117,7 +117,7 @@ hr {
   margin: 10px;
 }
 
-.nav-tabs > .pulsating > a{
+.nav-tabs > .csating > a{
   -webkit-animation: pulse 1.6s ease-in-out infinite alternate;
   animation: pulse 1.6s ease-in-out infinite alternate;
   border-bottom-color: transparent;
@@ -188,6 +188,11 @@ hr {
   color: #999;
 }
 
+.ticket-tickbox {
+  margin-top: 8px;
+  margin-left: 8px;
+}
+
 .truncate {
   /* http://stackoverflow.com/a/1199957/411514 */
   white-space: nowrap;
@@ -229,8 +234,9 @@ hr {
 }
 
 .group-actions .btn {
-  margin-left: 10px;
+  margin: 5px 5px 5px 5px;
   height: 34px;
+
 }
 
 .group-actions p {
