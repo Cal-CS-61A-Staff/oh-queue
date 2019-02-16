@@ -99,6 +99,20 @@ def is_staff(f):
         return f(*args, **kwds)
     return wrapper
 
+def has_ticket_access(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwds):
+        if not current_user.is_authenticated:
+            return socket_unauthorized()
+        ticket_id = args[0].get('id')
+        ticket = Ticket.query.filter(Ticket.id == ticket_id).first()
+        if not ticket:
+            return socket_error('Invalid ticket ID')
+        if not (current_user.is_staff or ticket.user.id == current_user.id):
+            return socket_unauthorized()
+        return f(*args, **kwds)
+    return wrapper
+
 @socketio.on('connect')
 def connect():
     if not current_user.is_authenticated:
@@ -172,16 +186,10 @@ def create(form):
     return socket_redirect(ticket_id=ticket.id)
 
 @socketio.on('update_location')
-@logged_in
-def update_location(location):
-    ticket_id, new_location = location['id'], location['new_location']
-    ticket = Ticket.query.filter(Ticket.id == ticket_id).first()
-    if not (current_user.is_staff or ticket.user.id == current_user.id):
-            return socket_unauthorized()
-            
-    ticket.location = new_location
+@has_ticket_access
+def update_location(data):
+    ticket.location = data['new_location']
     emit_event(ticket, TicketEventType.update_location)
-
     db.session.commit()
 
 def get_tickets(ticket_ids):
@@ -258,10 +266,8 @@ def load_ticket(ticket_id):
         return ticket_json(ticket)
 
 @socketio.on('describe')
-def describe(description):
-    ticket_id, description = description['id'], description['description']
-    ticket = Ticket.query.filter(Ticket.id == ticket_id).first()
-    ticket.description = description
+@has_ticket_access
+def describe(data):
+    ticket.description = data['description']
     emit_event(ticket, TicketEventType.describe)
-
     db.session.commit()
