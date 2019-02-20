@@ -117,7 +117,7 @@ hr {
   margin: 10px;
 }
 
-.nav-tabs > .csating > a{
+.nav-tabs > .pulsating > a{
   -webkit-animation: pulse 1.6s ease-in-out infinite alternate;
   animation: pulse 1.6s ease-in-out infinite alternate;
   border-bottom-color: transparent;
