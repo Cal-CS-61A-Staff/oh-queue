@@ -47,7 +47,7 @@ let TicketList = ({state, status}) => {
   };
 
   let items = filteredTickets.map((ticket) =>
-    <CheckboxWrapper state={state} key={ticket.id} callback={selectTicketCallback} ticket={ticket}>
+    <CheckboxWrapper state={state} key={ticket.id} onChangeHandler={selectTicketCallback} ticket={ticket}>
     <Ticket state={state} ticket={ticket} />
     </CheckboxWrapper>
   );
