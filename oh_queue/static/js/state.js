@@ -130,9 +130,14 @@ function getTicket(state: State, id: number): ?Ticket {
 function setTicket(state: State, ticket: Ticket): void {
   if (ticketIsMine(state, ticket)) {
     let oldTicket = getMyTicket(state);
-    if (oldTicket && oldTicket.status === "pending" && ticket.status === "assigned") {
-      notifyUser("Your name is being called",
-                 ticket.helper.name + " is looking for you in "+ ticket.location);
+    if (oldTicket) {
+      if(oldTicket.status === 'pending' && ticket.status === 'assigned') {
+        notifyUser('Your name is being called',
+                   ticket.helper.name + ' is looking for you in '+ ticket.location,
+                   ticket.id + '.assign');
+      } else if (oldTicket.status === 'assigned' && ticket.status !== 'assigned') {
+        cancelNotification(ticket.id + '.assign');
+      }
     }
   }
   state.tickets.set(ticket.id, ticket);

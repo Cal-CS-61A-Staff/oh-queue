@@ -70,12 +70,29 @@ class App extends React.Component {
   }
 
   updateTicket(data) {
-    if (this.shouldNotify(data.ticket, data.type)) {
-        notifyUser("New Request for " + data.ticket.assignment,
-                   data.ticket.location);
-    }
     setTicket(this.state, data.ticket);
     this.refresh();
+
+    var ticket = data.ticket;
+    switch(data.type) {
+      case 'assign':
+      case 'delete':
+      case 'resolve':
+        if(isStaff(this.state)) {
+          cancelNotification(ticket.id + ".create");
+        }
+        break;
+      case 'create':
+      case 'describe':
+      case 'unassign':
+      case 'update_location':
+        if(isStaff(this.state) && ticket.status === 'pending') {
+          notifyUser('New Request for ' + ticket.assignment,
+                     ticket.location,
+                     ticket.id + '.create');
+        }
+        break;
+    }
   }
 
   loadTicket(id) {
