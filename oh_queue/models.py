@@ -87,7 +87,7 @@ class Ticket(db.Model):
 
 TicketEventType = enum.Enum(
     'TicketEventType',
-    'create assign unassign resolve delete describe',
+    'create assign unassign resolve delete describe update_location',
 )
 
 class TicketEvent(db.Model):
