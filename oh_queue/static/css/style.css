@@ -162,9 +162,8 @@ hr {
   border-bottom-left-radius: 3px;
   border-bottom-right-radius: 3px;
   border-top: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  white-space: normal;
 }
 
 .ticket-row {
@@ -301,8 +300,6 @@ hr {
     color: #ffffff;
     background-color: #0085e1;
   }
-    .pull-left {
-    }
 }
 
 .description-box {
@@ -446,11 +443,9 @@ hr {
   }
 }
 
-@media (max-width: 500) {
+@media (max-width: 767px) {
     .pull-left {
-        width: calc(100%-44px);
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+        max-width: calc(100% - 88px);
+        min-width: 0;
     }
 }
