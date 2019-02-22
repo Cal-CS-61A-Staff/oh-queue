@@ -56,7 +56,7 @@ class Ticket(db.Model):
 
     user_id = db.Column(db.ForeignKey('user.id'), nullable=False, index=True)
     assignment = db.Column(db.String(255), nullable=False)
-    question = db.Column(db.String(255), nullable=False)
+    question = db.Column(db.String(255), nullable=True)
     location = db.Column(db.String(255), nullable=False)
 
     description = db.Column(db.Text)

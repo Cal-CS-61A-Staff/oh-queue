@@ -33,6 +33,7 @@ def ticket_json(ticket):
         'status': ticket.status.name,
         'user': student_json(ticket.user),
         'created': ticket.created.isoformat(),
+        'updated': ticket.updated.isoformat(),
         'location': ticket.location,
         'assignment': ticket.assignment,
         'description': ticket.description,
@@ -223,6 +224,7 @@ def assign(ticket_ids):
     tickets = get_tickets(ticket_ids)
     for ticket in tickets:
         ticket.status = TicketStatus.assigned
+
         ticket.helper_id = current_user.id
         emit_event(ticket, TicketEventType.assign)
     db.session.commit()

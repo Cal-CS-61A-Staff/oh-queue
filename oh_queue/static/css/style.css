@@ -204,6 +204,15 @@ hr {
   margin-top: 4px;
 }
 
+.ticket-created-md {
+  padding-left: 12px;
+}
+
+.ticket-desc-xs {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
 .ticket-status-md {
   padding-right: 12px;
 }

@@ -4,7 +4,7 @@ let Ticket = ({state, ticket}) => {
     status = ticketDisplayTime(ticket) + ' in ' + ticket.location;
   } else {
     if (isStaff(state)) {
-      status = (isTicketHelper(state, ticket) ? 'you' : ticket.helper.name) + ' (' + ticketTimeAgo(ticket)+ ')';
+      status = (isTicketHelper(state, ticket) ? 'You' : ticket.helper.name) + ' (Started helping ' + ticketTimeSinceAssigned(ticket)+ ')';
     } else {
       status = ticketStatus(state, ticket);
     }
@@ -15,6 +15,7 @@ let Ticket = ({state, ticket}) => {
     description = ticket.description;
   }
 
+
   return (
     <TicketLink state={state} ticket={ticket}>
       <div className="pull-left ticket-index">{ticketPosition(state, ticket)}</div>
@@ -23,8 +24,10 @@ let Ticket = ({state, ticket}) => {
         <br className="visible-xs" />
         <small className="visible-xs ticket-status-xs">{status}</small>
         <small className="visible-xs ticket-desc-xs">{description}</small>
+        <small className="visible-xs ticket-created-xs">Ticket created: {ticketTimeAgo(ticket)}</small> 
       </h4>
       <h4 className="pull-left hidden-xs ticket-desc-md "><small>{description}</small></h4>
+      <h4 className="pull-left hidden-xs ticket-created-md "><small>Ticket created: {ticketTimeAgo(ticket)}</small></h4>
       <h4 className="pull-right hidden-xs ticket-status-md">
         <small>{status} {moment.duration(moment.utc().diff(moment.utc(ticket.created))).asDays() > 1 &&
         <span className="badge"> Old Ticket </span>}
