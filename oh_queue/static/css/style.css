@@ -301,6 +301,8 @@ hr {
     color: #ffffff;
     background-color: #0085e1;
   }
+    .pull-left {
+    }
 }
 
 .description-box {
@@ -442,4 +444,13 @@ hr {
     border-right-color: #fff;
     border-bottom-right-radius: 0;
   }
+}
+
+@media (max-width: 500) {
+    .pull-left {
+        width: calc(100%-44px);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
 }
