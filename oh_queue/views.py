@@ -110,6 +110,7 @@ def has_ticket_access(f):
             return socket_error('Invalid ticket ID')
         if not (current_user.is_staff or ticket.user.id == current_user.id):
             return socket_unauthorized()
+        kwds['ticket'] = ticket
         return f(*args, **kwds)
     return wrapper
 
@@ -187,7 +188,7 @@ def create(form):
 
 @socketio.on('update_location')
 @has_ticket_access
-def update_location(data):
+def update_location(data, ticket):
     ticket.location = data['new_location']
     emit_event(ticket, TicketEventType.update_location)
     db.session.commit()
@@ -267,7 +268,7 @@ def load_ticket(ticket_id):
 
 @socketio.on('describe')
 @has_ticket_access
-def describe(data):
+def describe(data, ticket):
     ticket.description = data['description']
     emit_event(ticket, TicketEventType.describe)
     db.session.commit()
