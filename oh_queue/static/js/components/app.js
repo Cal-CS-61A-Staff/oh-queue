@@ -134,6 +134,7 @@ class App extends React.Component {
         createElement={createElement}>
         <ReactRouter.Route path="/" component={Base}>
           <ReactRouter.IndexRoute component={Queue}/>
+          <ReactRouter.Route path="/error" component={ErrorView}/>
           <ReactRouter.Route path="/:id/" component={TicketView}/>
         </ReactRouter.Route>
         <ReactRouter.Route path="/presence" component={PresenceIndicator}/>
