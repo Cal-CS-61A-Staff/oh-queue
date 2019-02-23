@@ -2,7 +2,10 @@ let GroupActions = ({state, status, tickets, selectedTickets}) => {
   if (!isStaff(state)) return null;
   let ticket_ids = tickets.map(ticket => ticket.id);
   let handleActionSelected = (action) => {
-    let selected_ticket_ids = selectedTickets.map(ticket => ticket.id);
+    let selected_ticket_ids = [];
+    selectedTickets.forEach((value, key) => {
+      if(value) selected_ticket_ids.push(key);
+    });
     app.makeRequest(action, selected_ticket_ids);
   }
   var buttons;
