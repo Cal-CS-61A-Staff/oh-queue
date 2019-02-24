@@ -1,8 +1,13 @@
 let RequestForm = () => {
   let submit = (e) => {
     e.preventDefault();
+    let form = $('#request-form');
+    let formDOM = form[0];
+    if(formDOM.reportValidity && !formDOM.reportValidity()) {
+      return;
+    }
     let formData = {};
-    $('#request-form').serializeArray().forEach((input) => {
+    form.serializeArray().forEach((input) => {
       formData[input.name] = input.value;
     });
     app.makeRequest('create', formData, true);
