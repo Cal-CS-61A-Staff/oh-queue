@@ -162,9 +162,8 @@ hr {
   border-bottom-left-radius: 3px;
   border-bottom-right-radius: 3px;
   border-top: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  white-space: normal;
 }
 
 .ticket-row {
@@ -442,4 +441,11 @@ hr {
     border-right-color: #fff;
     border-bottom-right-radius: 0;
   }
+}
+
+@media (max-width: 767px) {
+    .pull-left {
+        max-width: calc(100% - 88px);
+        min-width: 0;
+    }
 }
