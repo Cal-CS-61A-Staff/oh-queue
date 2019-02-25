@@ -24,11 +24,20 @@ class TicketList extends React.Component {
         let tickets = getTickets(state, status)
         let filteredTickets = applyFilter(state.filter, tickets);
         let selectedTickets = this.state.selectedTickets;
-        let items = filteredTickets.map((ticket) =>
-        <CheckboxWrapper state={state} key={ticket.id} value={selectedTickets.get(ticket.id) || false} onChangeHandler={this.selectTicketCallback} ticket={ticket}>
-            <Ticket state={state} ticket={ticket} />
-        </CheckboxWrapper>
+        let items = null;
+        if(isStaff(state)) {
+            items = filteredTickets.map((ticket) =>
+            <CheckboxWrapper state={state} key={ticket.id} value={selectedTickets.get(ticket.id) || false} onChangeHandler={this.selectTicketCallback} ticket={ticket}>
+                <Ticket state={state} ticket={ticket} />
+            </CheckboxWrapper>
         );
+        } else {
+            items = filteredTickets.map((ticket) =>
+                <Ticket key={ticket.id} state={state} ticket={ticket}/>
+            );
+        }
+
+        console.log(items);
 
         var body;
         if (filteredTickets.length === 0) {
