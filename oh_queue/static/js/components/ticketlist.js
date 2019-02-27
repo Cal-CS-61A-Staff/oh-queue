@@ -51,9 +51,7 @@ class TicketList extends React.Component {
                 <Ticket key={ticket.id} state={state} ticket={ticket}/>
             );
         }
-
-        console.log(items);
-
+        
         var body;
         if (filteredTickets.length === 0) {
         body = (
