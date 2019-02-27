@@ -13,12 +13,7 @@ let GroupActions = ({state, status, tickets, selectedTickets, handleActionSelect
         handleActionSelected('delete');}}
       className="btn btn-danger pull-right">
       Delete selected
-      </button>,
-      <button onClick={() => handleActionSelected('assign')}
-      className="btn btn-primary pull-right">
-      Select all
-      </button>,
-
+      </button>
     ];
   } else if (status === 'assigned') {
     buttons = [
