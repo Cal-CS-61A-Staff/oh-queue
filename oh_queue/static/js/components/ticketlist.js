@@ -8,6 +8,21 @@ class TicketList extends React.Component {
 
         this.state = {tickets: tickets, selectedTickets: selectedTickets};
         this.selectTicketCallback = this.selectTicketCallback.bind(this);
+        this.handleActionSelected = this.handleActionSelected.bind(this);
+      }
+      
+      handleActionSelected(action) {
+        let selected_ticket_ids = [];
+        this.state.selectedTickets.forEach((value, key) => {
+          if(value) selected_ticket_ids.push(key);
+        });
+        this.setState(state => {
+            return {
+                tickets: state.tickets,
+                selectedTickets: new Map()
+            }
+        });
+        app.makeRequest(action, selected_ticket_ids);
       }
 
       selectTicketCallback(ticket, select) {
@@ -54,7 +69,7 @@ class TicketList extends React.Component {
         );
         } else {
         body = [
-            <GroupActions tickets={filteredTickets} status={status} state={state} selectedTickets={selectedTickets}/>,
+            <GroupActions tickets={filteredTickets} status={status} state={state} selectedTickets={selectedTickets} handleActionSelected={this.handleActionSelected}/>,
             items,
         ];
         }
