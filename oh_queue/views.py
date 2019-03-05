@@ -28,17 +28,31 @@ def student_json(user):
     return user_json(user)
 
 def ticket_json(ticket):
-    return {
-        'id': ticket.id,
-        'status': ticket.status.name,
-        'user': student_json(ticket.user),
-        'created': ticket.created.isoformat(),
-        'location': ticket.location,
-        'assignment': ticket.assignment,
-        'description': ticket.description,
-        'question': ticket.question,
-        'helper': ticket.helper and user_json(ticket.helper),
-    }
+    if ticket.updated is None:
+        return {
+            'id': ticket.id,
+            'status': ticket.status.name,
+            'user': student_json(ticket.user),
+            'created': ticket.created.isoformat(),
+            'location': ticket.location,
+            'assignment': ticket.assignment,
+            'description': ticket.description,
+            'question': ticket.question,
+            'helper': ticket.helper and user_json(ticket.helper),
+        }
+    else: 
+        return {
+            'id': ticket.id,
+            'status': ticket.status.name,
+            'user': student_json(ticket.user),
+            'created': ticket.created.isoformat(),
+            'updated': ticket.updated.isoformat(),
+            'location': ticket.location,
+            'assignment': ticket.assignment,
+            'description': ticket.description,
+            'question': ticket.question,
+            'helper': ticket.helper and user_json(ticket.helper),
+        }
 
 def emit_event(ticket, event_type):
     ticket_event = TicketEvent(
@@ -245,6 +259,7 @@ def assign(ticket_ids):
     tickets = get_tickets(ticket_ids)
     for ticket in tickets:
         ticket.status = TicketStatus.assigned
+
         ticket.helper_id = current_user.id
         emit_event(ticket, TicketEventType.assign)
     db.session.commit()

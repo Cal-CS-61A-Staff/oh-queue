@@ -18,6 +18,7 @@ type Ticket = {
   status: 'pending' | 'assigned' | 'resolved' | 'deleted',
   user: User,
   created: string,  // ISO 8601 datetime string
+  updated: string,
   location: string,
   assignment: string,
   question: string,
@@ -84,6 +85,10 @@ function ticketDisplayTime(ticket: Ticket): string {
 
 function ticketTimeAgo(ticket: Ticket): string {
   return moment.utc(ticket.created).fromNow()
+}
+
+function ticketTimeSinceAssigned(ticket: Ticket): string {
+  return moment.utc(ticket.updated).fromNow()
 }
 
 function isPending(ticket: Ticket): boolean {
