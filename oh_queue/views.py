@@ -28,17 +28,31 @@ def student_json(user):
     return user_json(user)
 
 def ticket_json(ticket):
-    return {
-        'id': ticket.id,
-        'status': ticket.status.name,
-        'user': student_json(ticket.user),
-        'created': ticket.created.isoformat(),
-        'location': ticket.location,
-        'assignment': ticket.assignment,
-        'description': ticket.description,
-        'question': ticket.question,
-        'helper': ticket.helper and user_json(ticket.helper),
-    }
+    if ticket.updated is None:
+        return {
+            'id': ticket.id,
+            'status': ticket.status.name,
+            'user': student_json(ticket.user),
+            'created': ticket.created.isoformat(),
+            'location': ticket.location,
+            'assignment': ticket.assignment,
+            'description': ticket.description,
+            'question': ticket.question,
+            'helper': ticket.helper and user_json(ticket.helper),
+        }
+    else: 
+        return {
+            'id': ticket.id,
+            'status': ticket.status.name,
+            'user': student_json(ticket.user),
+            'created': ticket.created.isoformat(),
+            'updated': ticket.updated.isoformat(),
+            'location': ticket.location,
+            'assignment': ticket.assignment,
+            'description': ticket.description,
+            'question': ticket.question,
+            'helper': ticket.helper and user_json(ticket.helper),
+        }
 
 def emit_event(ticket, event_type):
     ticket_event = TicketEvent(
@@ -100,6 +114,21 @@ def is_staff(f):
     def wrapper(*args, **kwds):
         if not (current_user.is_authenticated and current_user.is_staff):
             return socket_unauthorized()
+        return f(*args, **kwds)
+    return wrapper
+
+def has_ticket_access(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwds):
+        if not current_user.is_authenticated:
+            return socket_unauthorized()
+        ticket_id = args[0].get('id')
+        ticket = Ticket.query.filter(Ticket.id == ticket_id).first()
+        if not ticket:
+            return socket_error('Invalid ticket ID')
+        if not (current_user.is_staff or ticket.user.id == current_user.id):
+            return socket_unauthorized()
+        kwds['ticket'] = ticket
         return f(*args, **kwds)
     return wrapper
 
@@ -176,16 +205,10 @@ def create(form):
     return socket_redirect(ticket_id=ticket.id)
 
 @socketio.on('update_location')
-@logged_in
-def update_location(location):
-    ticket_id, new_location = location['id'], location['new_location']
-    ticket = Ticket.query.filter(Ticket.id == ticket_id).first()
-    if not (current_user.is_staff or ticket.user.id == current_user.id):
-            return socket_unauthorized()
-
-    ticket.location = new_location
+@has_ticket_access
+def update_location(data, ticket):
+    ticket.location = data['new_location']
     emit_event(ticket, TicketEventType.update_location)
-
     db.session.commit()
 
 def get_tickets(ticket_ids):
@@ -240,6 +263,7 @@ def assign(ticket_ids):
     tickets = get_tickets(ticket_ids)
     for ticket in tickets:
         ticket.status = TicketStatus.assigned
+
         ticket.helper_id = current_user.id
         emit_event(ticket, TicketEventType.assign)
     db.session.commit()
@@ -262,10 +286,8 @@ def load_ticket(ticket_id):
         return ticket_json(ticket)
 
 @socketio.on('describe')
-def describe(description):
-    ticket_id, description = description['id'], description['description']
-    ticket = Ticket.query.filter(Ticket.id == ticket_id).first()
-    ticket.description = description
+@has_ticket_access
+def describe(data, ticket):
+    ticket.description = data['description']
     emit_event(ticket, TicketEventType.describe)
-
     db.session.commit()

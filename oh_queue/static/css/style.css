@@ -166,9 +166,8 @@ hr {
   border-bottom-left-radius: 3px;
   border-bottom-right-radius: 3px;
   border-top: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  white-space: normal;
 }
 
 .ticket-row {
@@ -206,6 +205,15 @@ hr {
 
 .ticket-desc-xs {
   margin-top: 4px;
+}
+
+.ticket-created-md {
+  padding-left: 12px;
+}
+
+.ticket-desc-xs {
+  margin-top: 4px;
+  margin-bottom: 4px;
 }
 
 .ticket-status-md {
@@ -446,4 +454,11 @@ hr {
     border-right-color: #fff;
     border-bottom-right-radius: 0;
   }
+}
+
+@media (max-width: 767px) {
+    .pull-left {
+        max-width: calc(100% - 88px);
+        min-width: 0;
+    }
 }

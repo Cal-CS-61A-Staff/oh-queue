@@ -1,7 +1,15 @@
+# Swap files
 *.swp
 
+# Local database
 *.db
+
+# macOS
+.DS_Store
+
+# NPM
 node_modules/
+package-lock.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
