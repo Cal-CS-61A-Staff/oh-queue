@@ -8,20 +8,28 @@ function requestNotificationPermission() {
   }
 }
 
-function notifyUser(title, body) {
+function notifyUser(title, body, tag) {
   try {
     Push.create(title, {
-      'body': body,
-      'icon': window.location.origin + "/static/img/logo-tiny.png",
-       onClick: function () {
+      body: body,
+      icon: window.location.origin + "/static/img/logo-tiny.png",
+      onClick: function () {
           window.focus();
           this.close();
-      }
+      },
+      tag: tag
     });
   } catch (e) {
     // Ignore Push.js errors about unsupported devices
   }
+}
 
+function cancelNotification(tag) {
+  try {
+    Push.close(tag);
+  } catch (e) {
+    // Ignore Push.js errors about unsupported devices
+  }
 }
 
 function connectSocket() {
