@@ -3,14 +3,14 @@ let Jumbotron = ({state}) => {
     var titleText = 'Hi! Please sign in';
     var subtitleText = 'Sign in with your course OK account to request help';
     var contents = (
-      <a className="btn btn-block btn-jumbo btn-outline" href="/login/">
+      <a className="btn btn-block btn-jumbo btn-outline" href="/login">
         Sign in with Ok
       </a>
     );
   } else {
     var titleText = `Hello, ${state.currentUser.shortName}`;
     var subtitleText = 'Fill out the form to request help';
-    var contents = <RequestForm/>;
+    var contents = <RequestForm state={state} />;
   }
 
   return (

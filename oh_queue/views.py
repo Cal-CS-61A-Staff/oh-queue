@@ -2,13 +2,14 @@ import datetime
 import functools
 import collections
 import pytz
+import time
 
 from flask import render_template, url_for
 from flask_login import current_user
 from flask_socketio import emit
 
 from oh_queue import app, db, socketio
-from oh_queue.models import Ticket, TicketStatus, TicketEvent, TicketEventType
+from oh_queue.models import Assignment, Location, Ticket, TicketEvent, TicketEventType, TicketStatus
 
 def user_json(user):
     return {
@@ -24,35 +25,36 @@ def student_json(user):
     can_see_details = (current_user.is_authenticated
                         and (current_user.is_staff or user.id == current_user.id))
     if not can_see_details:
-        return {}
+        return None
     return user_json(user)
 
 def ticket_json(ticket):
-    if ticket.updated is None:
-        return {
-            'id': ticket.id,
-            'status': ticket.status.name,
-            'user': student_json(ticket.user),
-            'created': ticket.created.isoformat(),
-            'location': ticket.location,
-            'assignment': ticket.assignment,
-            'description': ticket.description,
-            'question': ticket.question,
-            'helper': ticket.helper and user_json(ticket.helper),
-        }
-    else: 
-        return {
-            'id': ticket.id,
-            'status': ticket.status.name,
-            'user': student_json(ticket.user),
-            'created': ticket.created.isoformat(),
-            'updated': ticket.updated.isoformat(),
-            'location': ticket.location,
-            'assignment': ticket.assignment,
-            'description': ticket.description,
-            'question': ticket.question,
-            'helper': ticket.helper and user_json(ticket.helper),
-        }
+    return {
+        'id': ticket.id,
+        'status': ticket.status.name,
+        'user': student_json(ticket.user),
+        'created': ticket.created.isoformat(),
+        'updated': ticket.updated and ticket.updated.isoformat(),
+        'location_id': ticket.location_id,
+        'assignment_id': ticket.assignment_id,
+        'description': ticket.description,
+        'question': ticket.question,
+        'helper': ticket.helper and user_json(ticket.helper),
+    }
+
+def assignment_json(assignment):
+    return {
+        'id': assignment.id,
+        'name': assignment.name,
+        'visible': assignment.visible
+    }
+
+def location_json(location):
+    return {
+        'id': location.id,
+        'name': location.name,
+        'visible': location.visible
+    }
 
 def emit_event(ticket, event_type):
     ticket_event = TicketEvent(
@@ -67,14 +69,34 @@ def emit_event(ticket, event_type):
         'ticket': ticket_json(ticket),
     })
 
+def emit_state(attrs, broadcast=False):
+    state = {}
+    if 'tickets' in attrs:
+        tickets = Ticket.query.filter(
+            Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
+        ).all()
+        state['tickets'] = [ticket_json(ticket) for ticket in tickets]
+    if 'assignments' in attrs:
+        assignments = Assignment.query.all()
+        state['assignments'] = [assignment_json(assignment) for assignment in assignments]
+    if 'locations' in attrs:
+        locations = Location.query.all()
+        state['locations'] = [location_json(location) for location in locations]
+    if not broadcast and 'current_user' in attrs:
+        state['current_user'] = student_json(current_user)
+    if broadcast:
+        socketio.emit('state', state)
+    else:
+        emit('state', state)
+
 def emit_presence(data):
     socketio.emit('presence', {k: len(v) for k,v in data.items()})
 
 user_presence = collections.defaultdict(set) # An in memory map of presence.
 
-@app.route('/presence')
+# We run a React app, so serve index.html on all routes
 @app.route('/')
-@app.route('/<int:ticket_id>/')
+@app.route('/<path:path>')
 def index(*args, **kwargs):
     return render_template('index.html')
 
@@ -118,8 +140,11 @@ def has_ticket_access(f):
     def wrapper(*args, **kwds):
         if not current_user.is_authenticated:
             return socket_unauthorized()
-        ticket_id = args[0].get('id')
-        ticket = Ticket.query.filter(Ticket.id == ticket_id).first()
+        data = args[0]
+        ticket_id = data.get('id')
+        if not ticket_id:
+            return socket_error('Invalid ticket ID')
+        ticket = Ticket.query.get(ticket_id)
         if not ticket:
             return socket_error('Invalid ticket ID')
         if not (current_user.is_staff or ticket.user.id == current_user.id):
@@ -137,14 +162,8 @@ def connect():
     else:
         user_presence['students'].add(current_user.email)
 
-    tickets = Ticket.query.filter(
-        Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
-    ).all()
-    emit('state', {
-        'tickets': [ticket_json(ticket) for ticket in tickets],
-        'currentUser':
-            user_json(current_user) if current_user.is_authenticated else None,
-    })
+    emit_state(['tickets', 'assignments', 'locations', 'current_user'])
+
     emit_presence(user_presence)
 
 @socketio.on('disconnect')
@@ -179,19 +198,33 @@ def create(form):
             category='warning',
             ticket_id=my_ticket.ticket_id,
         )
+    assignment_id = form.get('assignment_id')
+    location_id = form.get('location_id')
+    question = form.get('question')
     # Create a new ticket and add it to persistent storage
-    if not (form.get('assignment') and form.get('question')
-            and form.get('location')):
+    if assignment_id is None or location_id is None or not question:
         return socket_error(
             'You must fill out all the fields',
+            category='warning',
+        )
+    assignment = Assignment.query.get(assignment_id)
+    if not assignment:
+        return socket_error(
+            'Unknown assignment (id: {})'.format(assignment_id),
+            category='warning',
+        )
+    location = Location.query.get(location_id)
+    if not location:
+        return socket_error(
+            'Unknown location (id: {})'.format(location_id),
             category='warning',
         )
     ticket = Ticket(
         status=TicketStatus.pending,
         user=current_user,
-        assignment=form.get('assignment'),
-        question=form.get('question'),
-        location=form.get('location'),
+        assignment=assignment,
+        location=location,
+        question=question,
     )
 
     db.session.add(ticket)
@@ -199,13 +232,6 @@ def create(form):
 
     emit_event(ticket, TicketEventType.create)
     return socket_redirect(ticket_id=ticket.id)
-
-@socketio.on('update_location')
-@has_ticket_access
-def update_location(data, ticket):
-    ticket.location = data['new_location']
-    emit_event(ticket, TicketEventType.update_location)
-    db.session.commit()
 
 def get_tickets(ticket_ids):
     return Ticket.query.filter(Ticket.id.in_(ticket_ids)).all()
@@ -277,13 +303,69 @@ def unassign(ticket_ids):
 @socketio.on('load_ticket')
 @is_staff
 def load_ticket(ticket_id):
+    if not ticket_id:
+        return socket_error('Invalid ticket ID')
     ticket = Ticket.query.get(ticket_id)
     if ticket:
         return ticket_json(ticket)
 
-@socketio.on('describe')
+@socketio.on('update_ticket')
 @has_ticket_access
-def describe(data, ticket):
-    ticket.description = data['description']
-    emit_event(ticket, TicketEventType.describe)
+def update_ticket(data, ticket):
+    if 'description' in data:
+        ticket.description = data['description']
+    if 'location_id' in data:
+        ticket.location = Location.query.get(data['location_id'])
+    emit_event(ticket, TicketEventType.update)
     db.session.commit()
+    return ticket_json(ticket)
+
+@socketio.on('add_assignment')
+@is_staff
+def add_assignment(data):
+    name = data['name']
+    assignment = Assignment(name=name)
+    db.session.add(assignment)
+    db.session.commit()
+
+    emit_state(['assignments'], broadcast=True)
+    db.session.refresh(assignment)
+    return assignment_json(assignment)
+
+@socketio.on('update_assignment')
+@is_staff
+def update_assignment(data):
+    assignment = Assignment.query.get(data['id'])
+    if 'name' in data:
+        assignment.name = data['name']
+    if 'visible' in data:
+        assignment.visible = data['visible']
+    db.session.commit()
+
+    emit_state(['assignments'], broadcast=True)
+    return assignment_json(assignment)
+
+@socketio.on('add_location')
+@is_staff
+def add_location(data):
+    name = data['name']
+    location = Location(name=name)
+    db.session.add(location)
+    db.session.commit()
+
+    emit_state(['locations'], broadcast=True)
+    db.session.refresh(location)
+    return location_json(location)
+
+@socketio.on('update_location')
+@is_staff
+def update_location(data):
+    location = Location.query.get(data['id'])
+    if 'name' in data:
+        location.name = data['name']
+    if 'visible' in data:
+        location.visible = data['visible']
+    db.session.commit()
+
+    emit_state(['locations'], broadcast=True)
+    return location_json(location)

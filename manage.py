@@ -9,7 +9,7 @@ from flask_script import Manager
 import names
 
 from oh_queue import app, socketio
-from oh_queue.models import db, Ticket, User, TicketStatus
+from oh_queue.models import db, Assignment, Location, Ticket, TicketStatus, User
 
 migrate = Migrate(app, db)
 
@@ -27,8 +27,41 @@ def not_in_production(f):
 
 @manager.command
 @not_in_production
+def seed_emails():
+    i = 1
+    users = {}
+    while i < 5297:
+        real_name = names.get_full_name()
+        first_name, last_name = real_name.lower().split(' ')
+        email = '{0}{1}@{2}'.format(
+            random.choice([first_name, first_name[0]]),
+            random.choice([last_name, last_name[0]]),
+            random.choice(['berkeley.edu']),
+        )
+        if not (email in users):
+            student = User(name=real_name, email=email)
+            users[email] = student
+            i += 1
+            if i % 100 == 0:
+                print(i)
+    for key in users:
+        db.session.add(users[key])
+    db.session.commit()
+
+@manager.command
+@not_in_production
 def seed():
     print('Seeding...')
+
+    assignments = [Assignment(name=name) for name in ['Hog', 'Maps', 'Ants', 'Scheme']]
+    locations = [Location(name=name) for name in ['109 Morgan', '241 Cory', '247 Cory']]
+    questions = list(range(1, 16)) + ['Other', 'EC', 'Checkoff']
+    descriptions = ['', 'I\'m in the hallway', 'SyntaxError on Line 5']
+
+    for assignment in assignments:
+        db.session.add(assignment)
+    for location in locations:
+        db.session.add(location)
     for i in range(50):
         real_name = names.get_full_name()
         first_name, last_name = real_name.lower().split(' ')
@@ -48,10 +81,10 @@ def seed():
             user=student,
             status=TicketStatus.pending,
             created=datetime.datetime.utcnow() - delta,
-            assignment=random.choice(['Hog', 'Scheme']),
-            description=random.choice(['', 'SyntaxError on Line 5']),
-            question=random.randrange(1, 6),
-            location=random.choice(['109 Morgan', '247 Cory']),
+            assignment=random.choice(assignments),
+            location=random.choice(locations),
+            question=random.choice(questions),
+            description=random.choice(descriptions),
         )
         db.session.add(ticket)
         db.session.commit()
@@ -69,7 +102,7 @@ def resetdb():
 @manager.command
 @not_in_production
 def server():
-    socketio.run(app)
+    socketio.run(app, host="0.0.0.0")
 
 if __name__ == '__main__':
     manager.run()

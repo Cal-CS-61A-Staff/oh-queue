@@ -18,18 +18,28 @@ type Ticket = {
   status: 'pending' | 'assigned' | 'resolved' | 'deleted',
   user: User,
   created: string,  // ISO 8601 datetime string
-  updated: string,
-  location: string,
-  assignment: string,
+  updated: ?string,
+  location_id: number,
+  assignment_id: number,
   question: string,
   description: ?string,
   helper: ?User,
 };
 
+type TicketAssignment = {
+  id: number,
+  name: string
+};
+
+type TicketLocation = {
+  id: number,
+  name: string
+};
+
 type Filter = {
   /* Selected options. null means do not filter by an attribute. */
-  location: ?string,
-  assignment: ?string,
+  assignment_id: ?number,
+  location_id: ?number,
   question: ?string,
 };
 
@@ -47,6 +57,10 @@ type State = {
   loaded: boolean,
   /* True if the websocket has disconnected. */
   offline: boolean,
+  /* Ticket assignments */
+  assignments: Map<number, TicketAssignment>,
+  /* Ticket locations */
+  locations: Map<number, TicketLocation>,
   /* All known tickets, including ones that have been resolved or deleted.
    * We may have to load past tickets asynchronously though.
    * This is an ES6 Map from ticket ID to the ticket data.
@@ -67,11 +81,13 @@ let initialState: State = {
   currentUser: null,
   loaded: false,
   offline: true,
+  assignments: {},
+  locations: {},
   tickets: new Map(),
   loadingTickets: new Set(),
   filter: {
-    location: null,
-    assignment: null,
+    location_id: null,
+    assignment_id: null,
     question: null,
   },
   queueTabIndex: 0,
@@ -102,6 +118,21 @@ function isActive(ticket: Ticket): boolean {
   return ticket.status === 'pending' || ticket.status === 'assigned';
 }
 
+function ticketAssignment(state: State, ticket: Ticket): TicketAssignment {
+  return state.assignments[ticket.assignment_id];
+}
+
+function ticketLocation(state: State, ticket: Ticket): TicketLocation {
+  return state.locations[ticket.location_id];
+}
+
+function ticketQuestion(state: State, ticket: Ticket): string {
+  var question = ticket.question;
+  if(!isNaN(question)) {
+    question = "Q" + parseInt(question);
+  }
+  return question;
+}
 
 function ticketStatus(state: State, ticket: Ticket): string {
   if (ticket.status === 'assigned' && ticket.helper) {
@@ -136,8 +167,9 @@ function setTicket(state: State, ticket: Ticket): void {
   if (ticketIsMine(state, ticket)) {
     let oldTicket = getMyTicket(state);
     if (oldTicket && oldTicket.status === "pending" && ticket.status === "assigned") {
+      var location = ticketLocation(state, ticket);
       notifyUser("Your name is being called",
-                 ticket.helper.name + " is looking for you in "+ ticket.location);
+                 ticket.helper.name + " is looking for you in "+ location.name);
     }
   }
   state.tickets.set(ticket.id, ticket);
@@ -175,11 +207,13 @@ function getTickets(state: State, status: string): Array<Ticket> {
 }
 
 function applyFilter(filter: Filter, tickets: Array<Ticket>): Array<Ticket> {
-  if (filter.location) {
-    tickets = tickets.filter((ticket) => ticket.location === filter.location);
+  let assignmentId = parseInt(filter.assignment_id);
+  if (!isNaN(assignmentId)) {
+    tickets = tickets.filter((ticket) => ticket.assignment_id === assignmentId);
   }
-  if (filter.assignment) {
-    tickets = tickets.filter((ticket) => ticket.assignment === filter.assignment);
+  let locationId = parseInt(filter.location_id);
+  if (!isNaN(locationId)) {
+    tickets = tickets.filter((ticket) => ticket.location_id === locationId);
   }
   if (filter.question) {
     tickets = tickets.filter((ticket) => ticket.question === filter.question);
@@ -226,19 +260,3 @@ function clearMessage(state: State, id: number): void {
     message.visible = false;
   }
 }
-
-const ASSIGNMENTS = preval`
-  if (process.env.ASSIGNMENTS) {
-    module.exports = process.env.ASSIGNMENTS.split(',');
-  } else {
-    module.exports = ['Any'];
-  }
-`;
-
-const LOCATIONS = preval`
-  if (process.env.LOCATIONS) {
-    module.exports = process.env.LOCATIONS.split(',');
-  } else {
-    module.exports = ['Any'];
-  }
-`;

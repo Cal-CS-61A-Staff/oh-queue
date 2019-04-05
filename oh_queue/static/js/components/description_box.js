@@ -13,7 +13,10 @@ class DescriptionBox extends React.Component {
 
   submit() {
     let ticket = this.props.ticket;
-    app.makeRequest('describe', {'id': ticket.id, 'description': this.newDescription} );
+    app.makeRequest('update_ticket', {
+      id: ticket.id,
+      description: this.newDescription
+    });
     this.newDescription = null;
     this.setState(this.props.state); // force a render
   }

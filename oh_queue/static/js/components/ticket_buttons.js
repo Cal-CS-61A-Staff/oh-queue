@@ -46,7 +46,7 @@ class TicketButtons extends React.Component {
 
     function makeButton(text, style, action) {
       return (
-        <button onClick={action}
+        <button key={text} onClick={action}
           className={`btn btn-${style} btn-lg btn-block`}>
           {text}
         </button>
@@ -55,7 +55,7 @@ class TicketButtons extends React.Component {
 
     function makeLink(text, style, href) {
       return (
-        <a href={href} target="_blank"
+        <a key={text} href={href} target="_blank"
           className={`btn btn-${style} btn-lg btn-block`}>
           {text}
         </a>

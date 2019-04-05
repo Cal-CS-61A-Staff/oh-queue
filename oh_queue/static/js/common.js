@@ -31,6 +31,10 @@ function connectSocket() {
   });
 }
 
+function initializeTooltip(elem, options) {
+  $(elem).tooltip(options);
+}
+
 // The one and only app. Other components may reference this variable.
 // See components/app.js for more documentation
-let app = ReactDOM.render(<App/>, document.getElementById('content'));
+let app = ReactDOM.render(<App />, document.getElementById('content'));

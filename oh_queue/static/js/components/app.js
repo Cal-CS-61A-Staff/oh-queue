@@ -30,6 +30,8 @@ class App extends React.Component {
     socket.on('state', (data) => app.updateState(data));
     socket.on('event', (data) => app.updateTicket(data));
     socket.on('presence', (data) => app.updatePresence(data));
+
+    this.loadTicket = this.loadTicket.bind(this);
   }
 
   refresh() {
@@ -43,9 +45,25 @@ class App extends React.Component {
 
   updateState(data) {
     this.state.loaded = true;
-    this.state.currentUser = data.currentUser;
-    for (var ticket of data.tickets) {
-      setTicket(this.state, ticket);
+    if(Array.isArray(data.assignments)) {
+      this.state.assignments = {};
+      for(var assignment of data.assignments) {
+        this.state.assignments[assignment.id] = assignment;
+      }
+    }
+    if(Array.isArray(data.locations)) {
+      this.state.locations = {};
+      for(var location of data.locations) {
+        this.state.locations[location.id] = location;
+      }
+    }
+    if(Array.isArray(data.tickets)) {
+      for (var ticket of data.tickets) {
+        setTicket(this.state, ticket);
+      }
+    }
+    if(data.hasOwnProperty('current_user')) {
+      this.state.currentUser = data.current_user;
     }
     this.refresh();
   }
@@ -71,8 +89,9 @@ class App extends React.Component {
 
   updateTicket(data) {
     if (this.shouldNotify(data.ticket, data.type)) {
-        notifyUser("New Request for " + data.ticket.assignment,
-                   data.ticket.location);
+      var assignment = ticketAssignment(this.state, data.ticket);
+      var location = ticketLocation(this.state, data.ticket);
+      notifyUser("New Request for " + assignment.name, location.name);
     }
     setTicket(this.state, data.ticket);
     this.refresh();
@@ -93,6 +112,7 @@ class App extends React.Component {
   }
 
   setFilter(filter) {
+    filter.enabled = !!this.state.filter.enabled;
     this.state.filter = filter;
     this.refresh();
   }
@@ -107,9 +127,14 @@ class App extends React.Component {
     this.refresh();
   }
 
-  makeRequest(eventType, request, follow_redirect=false) {
+  makeRequest(eventType, request, follow_redirect=false, callback) {
+    if(typeof follow_redirect === "function") {
+      callback = follow_redirect;
+      follow_redirect = false;
+    }
     this.socket.emit(eventType, request, (response) => {
       if (response == null) {
+        if(callback) callback(response);
         return;
       }
       let messages = response.messages || [];
@@ -117,27 +142,26 @@ class App extends React.Component {
         this.addMessage(message.text, message.category);
       }
       if (follow_redirect && response.redirect) {
-        ReactRouter.browserHistory.push(response.redirect);
+        this.router.history.push(response.redirect);
       }
+      if(callback) callback(response);
     });
   }
 
   render() {
-    // Give route components (e.g. Queue, TicketView) the state
+    let { BrowserRouter, Route, Switch } = ReactRouterDOM;
     let state = this.state;
-    let createElement = (Component, props) =>
-      <Component state={state} {...props}/>
-
     return (
-      <ReactRouter.Router
-        history={ReactRouter.browserHistory}
-        createElement={createElement}>
-        <ReactRouter.Route path="/" component={Base}>
-          <ReactRouter.IndexRoute component={Queue}/>
-          <ReactRouter.Route path="/:id/" component={TicketView}/>
-        </ReactRouter.Route>
-        <ReactRouter.Route path="/presence" component={PresenceIndicator}/>
-      </ReactRouter.Router>
+      <BrowserRouter ref={(router) => this.router = router}>
+        <div>
+          <Switch>
+            <Route exact path="/" render={(props) => (<Home state={state} {...props} />)} />
+            <Route path="/admin" render={(props) => (<AdminLayout state={state} {...props} />)} />
+            <Route path="/presence" render={(props) => (<PresenceIndicator state={state} {...props} />)} />
+            <Route path="/tickets/:id" render={(props) => (<TicketLayout state={state} loadTicket={this.loadTicket} {...props} />)} />
+          </Switch>
+        </div>
+      </BrowserRouter>
     );
   }
 }
