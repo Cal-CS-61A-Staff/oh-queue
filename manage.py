@@ -27,29 +27,6 @@ def not_in_production(f):
 
 @manager.command
 @not_in_production
-def seed_emails():
-    i = 1
-    users = {}
-    while i < 5297:
-        real_name = names.get_full_name()
-        first_name, last_name = real_name.lower().split(' ')
-        email = '{0}{1}@{2}'.format(
-            random.choice([first_name, first_name[0]]),
-            random.choice([last_name, last_name[0]]),
-            random.choice(['berkeley.edu']),
-        )
-        if not (email in users):
-            student = User(name=real_name, email=email)
-            users[email] = student
-            i += 1
-            if i % 100 == 0:
-                print(i)
-    for key in users:
-        db.session.add(users[key])
-    db.session.commit()
-
-@manager.command
-@not_in_production
 def seed():
     print('Seeding...')
 
