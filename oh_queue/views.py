@@ -2,6 +2,7 @@ import datetime
 import functools
 import collections
 import pytz
+from hashlib import md5
 
 from flask import render_template, url_for
 from flask_login import current_user
@@ -11,12 +12,14 @@ from oh_queue import app, db, socketio
 from oh_queue.models import Ticket, TicketStatus, TicketEvent, TicketEventType
 
 def user_json(user):
+    email = user.email.encode('utf-8')
     return {
         'id': user.id,
-        'email': user.email,
+        'email': email,
         'name': user.name,
         'shortName': user.short_name,
         'isStaff': user.is_staff,
+        'hash': md5(email).hexdigest()
     }
 
 def student_json(user):
