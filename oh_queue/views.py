@@ -78,6 +78,10 @@ user_presence = collections.defaultdict(set) # An in memory map of presence.
 def index(*args, **kwargs):
     return render_template('index.html')
 
+@app.route('/error')
+def error(*args, **kwargs):
+    return render_template('index.html')
+
 def socket_error(message, category='danger', ticket_id=None):
     return {
         'messages': [
