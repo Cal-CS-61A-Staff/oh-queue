@@ -95,6 +95,10 @@ a:hover {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
+.error-view {
+  margin-top: 20px;
+}
+
 .ticket {
   margin-top: 20px;
 }

@@ -100,6 +100,10 @@ user_presence = collections.defaultdict(set) # An in memory map of presence.
 def index(*args, **kwargs):
     return render_template('index.html')
 
+@app.route('/error')
+def error(*args, **kwargs):
+    return render_template('index.html')
+
 def socket_error(message, category='danger', ticket_id=None):
     return {
         'messages': [
@@ -236,16 +240,21 @@ def create(form):
 def get_tickets(ticket_ids):
     return Ticket.query.filter(Ticket.id.in_(ticket_ids)).all()
 
-def get_next_ticket():
+def get_next_ticket(location=None):
     """Return the user's first assigned but unresolved ticket.
     If none exist, return to the first unassigned ticket.
+
+    If a location is passed in, only returns a next ticket from
+    provided location.
     """
     ticket = Ticket.query.filter(
         Ticket.helper_id == current_user.id,
         Ticket.status == TicketStatus.assigned).first()
     if not ticket:
-        ticket = Ticket.query.filter(
-            Ticket.status == TicketStatus.pending).first()
+        ticket = Ticket.query.filter(Ticket.status == TicketStatus.pending)
+        if location:
+            ticket = ticket.filter(Ticket.location == location)
+        ticket = ticket.first()
     if ticket:
         return socket_redirect(ticket_id=ticket.id)
     else:
@@ -269,15 +278,25 @@ def delete(ticket_ids):
 
 @socketio.on('resolve')
 @logged_in
-def resolve(ticket_ids):
+def resolve(data):
+    """Gets ticket_ids and an optional argument 'local'.
+    Resolves all ticket_ids. If 'local' is set, then
+    will only return a next ticket from the same location
+    where the last ticket was resolved from.
+    """
+    ticket_ids = data.get('ticket_ids')
+    local = data.get('local', False)
+    location = None
     tickets = get_tickets(ticket_ids)
     for ticket in tickets:
         if not (current_user.is_staff or ticket.user.id == current_user.id):
             return socket_unauthorized()
         ticket.status = TicketStatus.resolved
+        if local:
+            location = ticket.location
         emit_event(ticket, TicketEventType.resolve)
     db.session.commit()
-    return get_next_ticket()
+    return get_next_ticket(location)
 
 @socketio.on('assign')
 @is_staff

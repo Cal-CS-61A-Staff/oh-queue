@@ -88,13 +88,32 @@ class App extends React.Component {
   }
 
   updateTicket(data) {
-    if (this.shouldNotify(data.ticket, data.type)) {
-      var assignment = ticketAssignment(this.state, data.ticket);
-      var location = ticketLocation(this.state, data.ticket);
-      notifyUser("New Request for " + assignment.name, location.name);
-    }
     setTicket(this.state, data.ticket);
     this.refresh();
+
+    var ticket = data.ticket;
+    switch(data.type) {
+      case 'assign':
+      case 'delete':
+      case 'resolve':
+        if(isStaff(this.state)) {
+          cancelNotification(ticket.id + ".create");
+        }
+        break;
+      case 'create':
+      case 'describe':
+      case 'unassign':
+      case 'update_location':
+        if(isStaff(this.state) && ticket.status === 'pending') {
+          var assignment = ticketAssignment(this.state, ticket);
+          var location = ticketLocation(this.state, ticket);
+          var question = ticketQuestion(this.state, ticket);
+          notifyUser('New request for ' + assignment.name + ' ' + question,
+                     location.name,
+                     ticket.id + '.create');
+        }
+        break;
+    }
   }
 
   loadTicket(id) {
@@ -157,6 +176,7 @@ class App extends React.Component {
           <Switch>
             <Route exact path="/" render={(props) => (<Home state={state} {...props} />)} />
             <Route path="/admin" render={(props) => (<AdminLayout state={state} {...props} />)} />
+            <Route path="/error" render={(props) => (<ErrorView state={state} {...props} />)} />
             <Route path="/presence" render={(props) => (<PresenceIndicator state={state} {...props} />)} />
             <Route path="/tickets/:id" render={(props) => (<TicketLayout state={state} loadTicket={this.loadTicket} {...props} />)} />
           </Switch>

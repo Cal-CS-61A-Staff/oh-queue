@@ -69,7 +69,6 @@ def login():
     callback = url_for(".authorized", _external=True)
     return auth.ok_auth.authorize(callback=callback)
 
-
 @auth.route('/assist/')
 def try_login():
     if current_user.is_authenticated:
@@ -79,9 +78,18 @@ def try_login():
 
 @auth.route('/login/authorized')
 def authorized():
-    auth_resp = auth.ok_auth.authorized_response()
-    if auth_resp is None:
-        return 'Access denied: error=%s' % (request.args['error'])
+    message = request.args.get('error')
+    if message:
+        message = 'Ok OAuth error: %s' % (message)
+        return redirect(url_for('error', message=message))
+    try:
+        auth_resp = auth.ok_auth.authorized_response()
+        if auth_resp is None:
+            message = 'Invalid Ok response: %s' % (message)
+            return redirect(url_for('error', message=message))
+    except OAuthException as ex:
+        message = str(ex)
+        return redirect(url_for('error', message=message))
     token = auth_resp['access_token']
     session['access_token'] = (token, '')  # (access_token, secret)
     info = auth.ok_auth.get('user').data['data']

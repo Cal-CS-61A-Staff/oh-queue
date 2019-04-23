@@ -4,6 +4,7 @@ class TicketButtons extends React.Component {
     this.assign = this.assign.bind(this);
     this.delete = this.delete.bind(this);
     this.resolveAndNext = this.resolveAndNext.bind(this);
+    this.resolveAndLocalNext = this.resolveAndLocalNext.bind(this);
     this.resolve = this.resolve.bind(this);
     this.unassign = this.unassign.bind(this);
     this.reassign = this.reassign.bind(this);
@@ -20,11 +21,15 @@ class TicketButtons extends React.Component {
   }
 
   resolveAndNext() {
-    app.makeRequest('resolve', [this.props.ticket.id], true)
+    app.makeRequest('resolve', {'ticket_ids': [this.props.ticket.id]}, true)
+  }
+
+  resolveAndLocalNext() {
+    app.makeRequest('resolve', {'ticket_ids': [this.props.ticket.id], 'local': true}, true)
   }
 
   resolve() {
-    app.makeRequest('resolve', [this.props.ticket.id]);
+    app.makeRequest('resolve', {'ticket_ids': [this.props.ticket.id]});
   }
 
   unassign() {
@@ -75,6 +80,7 @@ class TicketButtons extends React.Component {
       bottomButtons.push(makeButton('Resolve', 'default', this.resolve));
       if (staff) {
         if (ticket.helper.id === state.currentUser.id) {
+          topButtons.push(makeButton('Resolve and Next in Room', 'primary', this.resolveAndLocalNext)); 
           topButtons.push(makeButton('Resolve and Next', 'primary', this.resolveAndNext));
           bottomButtons.push(makeButton('Requeue', 'default', this.unassign));
         } else {

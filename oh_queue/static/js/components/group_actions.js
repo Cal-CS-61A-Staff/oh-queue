@@ -21,7 +21,7 @@ let GroupActions = ({state, status, tickets}) => {
         className="btn btn-warning pull-right">
         Requeue all
       </button>,
-      <button key="resolve-all" onClick={() => app.makeRequest('resolve', ticket_ids)}
+      <button key="resolve-all" onClick={() => app.makeRequest('resolve', {'ticket_ids': ticket_ids})}
       className="btn btn-primary pull-right">
       Resolve all
       </button>,
