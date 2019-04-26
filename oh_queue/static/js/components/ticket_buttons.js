@@ -92,10 +92,7 @@ class TicketButtons extends React.Component {
     if (staff && (ticket.status === 'resolved' || ticket.status === 'deleted')) {
       topButtons.push(makeButton('Next Ticket', 'default', this.next));
     }
-    if (staff && ticket.status !== "pending") {
-      topButtons.push(makeLink('View Latest Backup', 'default', 'https://okpy.org/admin/course/4/'+encodeURIComponent(ticket.user.email)))
-    }
-
+    
     let hr = topButtons.length && bottomButtons.length ? <hr/> : null;
 
     if (!(topButtons.length || bottomButtons.length)) {
