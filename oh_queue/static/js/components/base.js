@@ -5,8 +5,13 @@ let Base = ({state, children}) => {
     requestNotificationPermission();
   }
 
-  // TODO loading indicator instead of blank screen
-  if (!state.loaded) return null;
+  // TODO better loading indicator (less jarring)
+  if (!state.loaded) return (
+    <div className="spinner">
+      <div className="dot1"></div>
+      <div className="dot2"></div>
+    </div>
+  )
 
   return (
     <div>
