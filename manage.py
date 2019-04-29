@@ -69,7 +69,7 @@ def resetdb():
 @manager.command
 @not_in_production
 def server():
-    socketio.run(app)
+    socketio.run(app, host=app.config.get('HOST'), port=app.config.get('PORT'))
 
 if __name__ == '__main__':
     manager.run()
