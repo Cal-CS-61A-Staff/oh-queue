@@ -53,6 +53,12 @@ a:hover {
   color: #fff;
   text-decoration: underline;
 }
+.jumbotron.blue a.btn {
+  text-decoration: none;
+}
+.jumbotron.blue .bootstrap-select a {
+  color: #333;
+}
 .jumbotron.blue .page-header {
   border: 0;
 }
