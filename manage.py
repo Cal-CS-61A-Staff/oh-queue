@@ -79,7 +79,7 @@ def resetdb():
 @manager.command
 @not_in_production
 def server():
-    socketio.run(app, host="0.0.0.0")
+    socketio.run(app)
 
 if __name__ == '__main__':
     manager.run()
