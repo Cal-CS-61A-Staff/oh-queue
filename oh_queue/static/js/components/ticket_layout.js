@@ -38,7 +38,7 @@ class TicketLayout extends React.Component {
             <div className="col-xs-12">
               <h2 className="ticket-view-name text-center">
                 { (ticket.status === 'pending' && isStaff(state)) ? 'Help to View Name' : ticket.user.name }
-                <small className="clearfix">{ assignment.name } Q{ question } &middot; { location.name } </small>
+                <small className="clearfix">{ assignment.name } { question } &middot; { location.name } </small>
               </h2>
                <p className="ticket-view-text text-center"> { ticketStatus(state, ticket) } </p>
             </div>
