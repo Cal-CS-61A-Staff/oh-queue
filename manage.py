@@ -4,12 +4,14 @@ import functools
 import random
 import sys
 
-from flask_migrate import Migrate, MigrateCommand
-from flask_script import Manager
+import alembic
 import names
 
+from alembic.config import Config
+from flask_migrate import Migrate, MigrateCommand
+from flask_script import Manager
 from oh_queue import app, socketio
-from oh_queue.models import db, Ticket, User, TicketStatus
+from oh_queue.models import db, Assignment, Location, Ticket, TicketStatus, User
 
 migrate = Migrate(app, db)
 
@@ -29,6 +31,16 @@ def not_in_production(f):
 @not_in_production
 def seed():
     print('Seeding...')
+
+    assignments = [Assignment(name=name) for name in ['Hog', 'Maps', 'Ants', 'Scheme']]
+    locations = [Location(name=name) for name in ['109 Morgan', '241 Cory', '247 Cory']]
+    questions = list(range(1, 16)) + ['Other', 'EC', 'Checkoff']
+    descriptions = ['', 'I\'m in the hallway', 'SyntaxError on Line 5']
+
+    for assignment in assignments:
+        db.session.add(assignment)
+    for location in locations:
+        db.session.add(location)
     for i in range(50):
         real_name = names.get_full_name()
         first_name, last_name = real_name.lower().split(' ')
@@ -48,10 +60,10 @@ def seed():
             user=student,
             status=TicketStatus.pending,
             created=datetime.datetime.utcnow() - delta,
-            assignment=random.choice(['Hog', 'Scheme']),
-            description=random.choice(['', 'SyntaxError on Line 5']),
-            question=random.randrange(1, 6),
-            location=random.choice(['109 Morgan', '247 Cory']),
+            assignment=random.choice(assignments),
+            location=random.choice(locations),
+            question=random.choice(questions),
+            description=random.choice(descriptions),
         )
         db.session.add(ticket)
         db.session.commit()
@@ -64,7 +76,9 @@ def resetdb():
     db.drop_all(app=app)
     print('Creating tables...')
     db.create_all(app=app)
-    seed()
+    print('Stamping DB revision...')
+    alembic_cfg = Config()
+    alembic.command.stamp(alembic_cfg, "head")
 
 @manager.command
 @not_in_production

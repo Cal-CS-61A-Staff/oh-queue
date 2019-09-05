@@ -42,6 +42,22 @@ class User(db.Model, UserMixin):
             return first_name.rsplit('@')[0]
         return first_name
 
+class Assignment(db.Model):
+    """Represents a ticket's assignment."""
+    __tablename__ = 'assignment'
+    id = db.Column(db.Integer, primary_key=True)
+    created = db.Column(db.DateTime, default=db.func.now())
+    name = db.Column(db.String(255), nullable=False, unique=True)
+    visible = db.Column(db.Boolean, default=False)
+
+class Location(db.Model):
+    """Represents a ticket's location."""
+    __tablename__ = 'location'
+    id = db.Column(db.Integer, primary_key=True)
+    created = db.Column(db.DateTime, default=db.func.now())
+    name = db.Column(db.String(255), nullable=False, unique=True)
+    visible = db.Column(db.Boolean, default=False)
+
 TicketStatus = enum.Enum('TicketStatus', 'pending assigned resolved deleted')
 
 class Ticket(db.Model):
@@ -55,16 +71,18 @@ class Ticket(db.Model):
     status = db.Column(EnumType(TicketStatus), nullable=False, index=True)
 
     user_id = db.Column(db.ForeignKey('user.id'), nullable=False, index=True)
-    assignment = db.Column(db.String(255), nullable=False)
-    question = db.Column(db.String(255), nullable=True)
-    location = db.Column(db.String(255), nullable=False)
+    helper_id = db.Column(db.ForeignKey('user.id'), index=True)
+
+    assignment_id = db.Column(db.ForeignKey('assignment.id'), nullable=False, index=True)
+    location_id = db.Column(db.ForeignKey('location.id'), nullable=False, index=True)
+    question = db.Column(db.String(255), nullable=False)
 
     description = db.Column(db.Text)
 
-    helper_id = db.Column(db.ForeignKey('user.id'), index=True)
-
     user = db.relationship(User, foreign_keys=[user_id])
     helper = db.relationship(User, foreign_keys=[helper_id])
+    assignment = db.relationship(Assignment, foreign_keys=[assignment_id])
+    location = db.relationship(Location, foreign_keys=[location_id])
 
     @classmethod
     def for_user(cls, user):
@@ -87,7 +105,7 @@ class Ticket(db.Model):
 
 TicketEventType = enum.Enum(
     'TicketEventType',
-    'create assign unassign resolve delete describe update_location',
+    'create assign unassign resolve delete update',
 )
 
 class TicketEvent(db.Model):
