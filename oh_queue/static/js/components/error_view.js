@@ -3,7 +3,7 @@ class ErrorView extends React.Component {
     let query = Qs.parse(this.props.location.search.substring(1));
     let state = this.props.state;
 
-    state.message = query.message || 'Unknown error';
+    state.message = this.props.message || query.message || 'Unknown error';
   }
 
   render() {

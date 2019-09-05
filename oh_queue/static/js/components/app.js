@@ -179,6 +179,7 @@ class App extends React.Component {
             <Route path="/error" render={(props) => (<ErrorView state={state} {...props} />)} />
             <Route path="/presence" render={(props) => (<PresenceIndicator state={state} {...props} />)} />
             <Route path="/tickets/:id" render={(props) => (<TicketLayout state={state} loadTicket={this.loadTicket} {...props} />)} />
+            <Route render={(props) => (<ErrorView state={state} {...props} message="Page Not Found" />)} />
           </Switch>
         </div>
       </BrowserRouter>

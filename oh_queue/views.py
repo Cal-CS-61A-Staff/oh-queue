@@ -104,6 +104,10 @@ def index(*args, **kwargs):
 def error(*args, **kwargs):
     return render_template('index.html')
 
+@app.route('/tickets/<int:ticket_id>')
+def ticket(*args, **kwargs):
+    return render_template('index.html')
+
 def socket_error(message, category='danger', ticket_id=None):
     return {
         'messages': [
@@ -112,12 +116,12 @@ def socket_error(message, category='danger', ticket_id=None):
                 'text': message,
             },
         ],
-        'redirect': url_for('index', ticket_id=ticket_id),
+        'redirect': url_for('ticket', ticket_id=ticket_id),
     }
 
 def socket_redirect(ticket_id=None):
     return {
-        'redirect': url_for('index', ticket_id=ticket_id),
+        'redirect': url_for('ticket', ticket_id=ticket_id),
     }
 
 def socket_unauthorized():
