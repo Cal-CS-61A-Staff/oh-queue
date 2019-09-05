@@ -4,10 +4,12 @@ import functools
 import random
 import sys
 
-from flask_migrate import Migrate, MigrateCommand
-from flask_script import Manager
+import alembic
 import names
 
+from alembic.config import Config
+from flask_migrate import Migrate, MigrateCommand
+from flask_script import Manager
 from oh_queue import app, socketio
 from oh_queue.models import db, Assignment, Location, Ticket, TicketStatus, User
 
@@ -74,6 +76,9 @@ def resetdb():
     db.drop_all(app=app)
     print('Creating tables...')
     db.create_all(app=app)
+    print('Stamping DB revision...')
+    alembic_cfg = Config()
+    alembic.command.stamp(alembic_cfg, "head")
 
 @manager.command
 @not_in_production
