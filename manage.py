@@ -74,7 +74,6 @@ def resetdb():
     db.drop_all(app=app)
     print('Creating tables...')
     db.create_all(app=app)
-    seed()
 
 @manager.command
 @not_in_production
