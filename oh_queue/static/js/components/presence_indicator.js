@@ -60,8 +60,8 @@ let PresenceIndicator = ({state}) => {
 
     // concatenate time range string
     var timeRange = estWaitTimeMin + " - " + estWaitTimeMax
-    if (estWaitTimeMax > 300) {
-      timeRange = "> 300"
+    if (estWaitTimeMax > 120) {
+      timeRange = "> 120"
     }
   }
 
