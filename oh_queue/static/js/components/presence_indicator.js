@@ -77,6 +77,7 @@ let PresenceIndicator = ({state}) => {
           <li>Check out other resources, including <a href="http://www.piazza.com">piazza</a>, to make sure your question wasn&apos;t already answered</li>
           <li>We will <strong>not</strong> be helping out with extra credit unless there is no-one else on the queue</li>
         </ul>
+        <p>If there is no space in 109 Morgan, please go to the courtyard. </p>
       </div>
 
       <div className={`alert alert-${color} alert-dismissable fade in`} role="alert">
