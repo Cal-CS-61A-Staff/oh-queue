@@ -65,6 +65,8 @@ let PresenceIndicator = ({state}) => {
     }
   }
 
+  var welcomeMessage = state.config.welcome
+
   return (
     <div className="col-xs-12">
 
@@ -72,14 +74,7 @@ let PresenceIndicator = ({state}) => {
         <button type="button" className="close" aria-label="Close" data-dismiss="alert">
             <span aria-hidden="true">&times;</span>
         </button>
-        <h1><font size="6">Estimated wait time: <font color={col}><strong>{timeRange}</strong></font> minutes </font></h1>
-        <p>To help reduce wait time:</p>
-        <ul className='wait-suggestions'>
-          <li>Plan ahead what questions you want to ask (we will limit time spent to <strong> 10 </strong> minutes per person)</li>
-          <li>When applicable, be prepared to explain your reasoning, attempts, and current approach</li>
-          <li>Check out other resources, including <a href="http://www.piazza.com">piazza</a>, to make sure your question wasn&apos;t already answered</li>
-          <li>We will <strong>not</strong> be helping out with extra credit unless there is no-one else on the queue</li>
-        </ul>
+        <ReactMarkdown source={welcomeMessage} />
       </div>
 
       <div className={`alert alert-${color} alert-dismissable fade in`} role="alert">

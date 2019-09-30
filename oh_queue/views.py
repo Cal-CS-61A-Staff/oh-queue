@@ -9,7 +9,7 @@ from flask_login import current_user
 from flask_socketio import emit
 
 from oh_queue import app, db, socketio
-from oh_queue.models import Assignment, Location, Ticket, TicketEvent, TicketEventType, TicketStatus
+from oh_queue.models import Assignment, ConfigEntry, Location, Ticket, TicketEvent, TicketEventType, TicketStatus
 
 def user_json(user):
     return {
@@ -56,6 +56,13 @@ def location_json(location):
         'visible': location.visible
     }
 
+def config_json():
+    config = {}
+    for config_entry in ConfigEntry.query.all():
+        if config_entry.public:
+            config[config_entry.key] = config_entry.value
+    return config
+
 def emit_event(ticket, event_type):
     ticket_event = TicketEvent(
         event_type=event_type,
@@ -82,6 +89,8 @@ def emit_state(attrs, broadcast=False):
     if 'locations' in attrs:
         locations = Location.query.all()
         state['locations'] = [location_json(location) for location in locations]
+    if 'config' in attrs:
+        state['config'] = config_json()
     if not broadcast and 'current_user' in attrs:
         state['current_user'] = student_json(current_user)
     if broadcast:
@@ -170,7 +179,7 @@ def connect():
     else:
         user_presence['students'].add(current_user.email)
 
-    emit_state(['tickets', 'assignments', 'locations', 'current_user'])
+    emit_state(['tickets', 'assignments', 'locations', 'current_user', 'config'])
 
     emit_presence(user_presence)
 
@@ -199,6 +208,12 @@ def create(form):
     """Stores a new ticket to the persistent database, and emits it to all
     connected clients.
     """
+    is_closed = ConfigEntry.query.get('is_queue_open')
+    if (not is_closed) or (is_closed.value != 'true'):
+        return socket_error(
+            'The queue is closed',
+            category='warning',
+        )
     my_ticket = Ticket.for_user(current_user)
     if my_ticket:
         return socket_error(
@@ -392,3 +407,14 @@ def update_location(data):
 
     emit_state(['locations'], broadcast=True)
     return location_json(location)
+
+@socketio.on('update_config')
+@is_staff
+def update_config(data):
+    entry = ConfigEntry.query.get(data['key'])
+    if 'value' in data:
+        entry.value = data['value']
+    db.session.commit()
+
+    emit_state(['config'], broadcast=True)
+    return config_json()

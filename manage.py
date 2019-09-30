@@ -11,12 +11,14 @@ from alembic.config import Config
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from oh_queue import app, socketio
-from oh_queue.models import db, Assignment, Location, Ticket, TicketStatus, User
+from oh_queue.models import db, Assignment, ConfigEntry, Location, Ticket, TicketStatus, User
 
 migrate = Migrate(app, db)
 
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
+
+alembic_cfg = Config('migrations/alembic.ini')
 
 def not_in_production(f):
     @functools.wraps(f)
@@ -29,7 +31,7 @@ def not_in_production(f):
 
 @manager.command
 @not_in_production
-def seed():
+def seed_data():
     print('Seeding...')
 
     assignments = [Assignment(name=name) for name in ['Hog', 'Maps', 'Ants', 'Scheme']]
@@ -66,18 +68,36 @@ def seed():
             description=random.choice(descriptions),
         )
         db.session.add(ticket)
-        db.session.commit()
+    db.session.commit()
 
+@manager.command
+def seed_defaults():
+    print('Seeding default config values...')
+    db.session.add(ConfigEntry(
+        key='welcome',
+        value='Welcome to the OH Queue!',
+        public=True
+    ))
+    db.session.add(ConfigEntry(
+        key='is_queue_open',
+        value='true',
+        public=True
+    ))
+    db.session.commit()
 
 @manager.command
 @not_in_production
 def resetdb():
     print('Dropping tables...')
     db.drop_all(app=app)
+    initdb()
+
+@manager.command
+def initdb():
     print('Creating tables...')
     db.create_all(app=app)
+    seed_defaults()
     print('Stamping DB revision...')
-    alembic_cfg = Config()
     alembic.command.stamp(alembic_cfg, "head")
 
 @manager.command

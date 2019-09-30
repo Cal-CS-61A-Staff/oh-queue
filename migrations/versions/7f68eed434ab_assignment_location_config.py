@@ -12,7 +12,6 @@ down_revision = '42d3400175b3'
 
 from alembic import op
 import sqlalchemy as sa
-import oh_queue.models
 from sqlalchemy import orm
 from sqlalchemy.dialects import mysql
 from sqlalchemy.ext.declarative import declarative_base

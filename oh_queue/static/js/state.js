@@ -61,6 +61,8 @@ type State = {
   assignments: Map<number, TicketAssignment>,
   /* Ticket locations */
   locations: Map<number, TicketLocation>,
+  /* Server configuration */
+  config: Map<string, string>,
   /* All known tickets, including ones that have been resolved or deleted.
    * We may have to load past tickets asynchronously though.
    * This is an ES6 Map from ticket ID to the ticket data.
@@ -83,6 +85,7 @@ let initialState: State = {
   offline: true,
   assignments: {},
   locations: {},
+  config: {},
   tickets: new Map(),
   loadingTickets: new Set(),
   filter: {

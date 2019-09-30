@@ -9,6 +9,7 @@ class AdminItemsManager extends React.Component {
     this.visibilityToggles = {};
 
     this.addItemInput = this.addItemInput.bind(this);
+    this.editItem = this.editItem.bind(this);
     this.initializeToggle = this.initializeToggle.bind(this);
     this.renderItemInputRow = this.renderItemInputRow.bind(this);
     this.renderVisibilityToggle = this.renderVisibilityToggle.bind(this);
@@ -121,11 +122,6 @@ class AdminItemsManager extends React.Component {
 
     var newItemName = this.refs.newItemName;
     var name = newItemName.value;
-    var verify = window.prompt(`Are you sure you want to add this ${this.props.itemName}? Type the name again to confirm`);
-    if(verify !== name) {
-      window.alert("Incorrect name! Try again.");
-      return;
-    }
 
     this.setState({
       loading: Object.assign({}, this.state.loading, {
@@ -146,6 +142,36 @@ class AdminItemsManager extends React.Component {
     });
   }
 
+  editItem(e) {
+    e.preventDefault();
+
+    let input = e.target.elements[0]
+    let btn = e.target.elements[1]
+    var id = +input.dataset.itemId;
+    this.setState({
+      loading: Object.assign({}, this.state.loading, {
+        [id]: true
+      })
+    }, () => {
+      $(btn).addClass('is-loading');
+      $(btn).attr('disabled', true);
+      app.makeRequest(`update_${this.props.itemName}`, {
+        id: id,
+        name: input.value
+      }, (isSuccess) => {
+        var loading = Object.assign({}, this.state.loading);
+        delete loading[id];
+        this.setState({
+          loading: loading
+        });
+        $(btn).removeClass('is-loading');
+        $(btn).attr('disabled', false);
+      });
+    });
+
+    return false;
+  }
+
   render() {
     let { CSSTransition, TransitionGroup } = ReactTransitionGroup;
 
@@ -157,7 +183,18 @@ class AdminItemsManager extends React.Component {
       return (
         <tr key={item.id}>
           <td className="col-md-1">{item.id}</td>
-          <td>{item.name}</td>
+          <td>
+            <form className="form-inline" onSubmit={this.editItem}>
+              <div className="form-group form-group-sm">
+                <div className="input-group">
+                  <input className="form-control" type="text" placeholder="New Name" data-item-id={item.id} defaultValue={item.name} />
+                  <span className="input-group-btn">
+                    <button className="btn btn-default btn-sm" type="submit">Edit</button>
+                  </span>
+                </div>
+              </div>
+            </form>
+          </td>
           <td className="col-md-1">
             {this.renderVisibilityToggle(item)}
           </td>
