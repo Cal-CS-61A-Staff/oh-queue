@@ -27,10 +27,11 @@ let PresenceIndicator = ({state}) => {
   // how many students need help, assuming all avaiable assistants are assigned
   var stillNeedHelp = Math.max(0, pendingTickets.length - availableAssistants)
 
+  var waitColor = "#646468"
+
   // catch if there actually are no assistants available
   if (numStaffOnline == 0) {
     var timeRange = "??"
-    var col = "#646468"
   } else {
     // min of numStaffOnline exponentials is exponential, take expectation
     var expectedWaitFirst = Math.ceil(avgHelpTime/numStaffOnline)
@@ -49,13 +50,13 @@ let PresenceIndicator = ({state}) => {
 
     // colors for the time
     if (expectedWaitTotal <= 5) {
-      var col ="#009900"
+      waitColor ="#009900"
     } else if (expectedWaitTotal < 10) {
-      var col ="#739900"
+      waitColor ="#739900"
     } else if (expectedWaitTotal < 25) {
-      var col ="#cc5200"
+      waitColor ="#cc5200"
     } else {
-      var col ="#ff0000"
+      waitColor ="#ff0000"
     }
 
     // concatenate time range string
@@ -74,6 +75,7 @@ let PresenceIndicator = ({state}) => {
         <button type="button" className="close" aria-label="Close" data-dismiss="alert">
             <span aria-hidden="true">&times;</span>
         </button>
+        <h3>Estimated wait time: <font color={waitColor}><strong>{timeRange}</strong></font> minutes</h3>
         <ReactMarkdown source={welcomeMessage} />
       </div>
 
