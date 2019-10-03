@@ -23,13 +23,13 @@ class App extends React.Component {
     let socket = connectSocket();
     this.socket = socket;
     socket.on('connect', () => {
-      app.setOffline(false);
-      app.refreshTickets();
+      this.setOffline(false);
+      this.refreshTickets();
     });
-    socket.on('disconnect', () => app.setOffline(true));
-    socket.on('state', (data) => app.updateState(data));
-    socket.on('event', (data) => app.updateTicket(data));
-    socket.on('presence', (data) => app.updatePresence(data));
+    socket.on('disconnect', () => this.setOffline(true));
+    socket.on('state', (data) => this.updateState(data));
+    socket.on('event', (data) => this.updateTicket(data));
+    socket.on('presence', (data) => this.updatePresence(data));
 
     this.loadTicket = this.loadTicket.bind(this);
   }
@@ -61,6 +61,9 @@ class App extends React.Component {
       for (var ticket of data.tickets) {
         setTicket(this.state, ticket);
       }
+    }
+    if(data.hasOwnProperty('config')) {
+      this.state.config = data.config;
     }
     if(data.hasOwnProperty('current_user')) {
       this.state.currentUser = data.current_user;

@@ -1,4 +1,5 @@
 let Jumbotron = ({state}) => {
+  var isQueueOpen = state.config && JSON.parse(state.config.is_queue_open);
   if (!state.currentUser) {
     var titleText = 'Hi! Please sign in';
     var subtitleText = 'Sign in with your course OK account to request help';
@@ -7,9 +8,13 @@ let Jumbotron = ({state}) => {
         Sign in with Ok
       </a>
     );
+  } else if(!isQueueOpen) {
+    var titleText = `Hello, ${state.currentUser.shortName}`;
+    var subtitleText = 'The queue is currently closed. Check back later!';
+    var contents = <RequestForm state={state} disabled={true} />;
   } else {
     var titleText = `Hello, ${state.currentUser.shortName}`;
-    var subtitleText = 'Fill out the form to request help';
+    var subtitleText = 'Fill out the form to request help!';
     var contents = <RequestForm state={state} />;
   }
 

@@ -1,4 +1,7 @@
-let RequestForm = ({state}) => {
+let RequestForm = (props) => {
+  let state = props.state;
+  let disabled = !!props.disabled;
+
   let submit = (e) => {
     e.preventDefault();
     let form = $('#request-form');
@@ -22,15 +25,15 @@ let RequestForm = ({state}) => {
     <form id="request-form">
       <div className="form-group form-group-lg">
         <div className="input-group">
-          <SelectPicker options={filteredAssignments} className="selectpicker form-control form-left" data-live-search="true" data-size="8" data-width="60%" data-style="btn-lg btn-default" id="assignment_id" name="assignment_id" title="Assignment" required />
-          <input className="form-control form-right" type="text" id="question" name="question" title="Question" placeholder="Question" required />
+          <SelectPicker options={filteredAssignments} className="selectpicker form-control form-left" data-live-search="true" data-size="8" data-width="60%" data-style="btn-lg btn-default" id="assignment_id" name="assignment_id" title="Assignment" required disabled={disabled} />
+          <input className="form-control form-right" type="text" id="question" name="question" title="Question" placeholder="Question" required disabled={disabled} />
         </div>
       </div>
       <div className="form-group form-group-lg">
         <div className="input-group">
-          <SelectPicker options={filteredLocations} className="selectpicker form-control form-left" data-live-search="true" data-size="8" data-width="60%" data-style="btn-lg btn-default" id="location_id" name="location_id" title="Location" required />
+          <SelectPicker options={filteredLocations} className="selectpicker form-control form-left" data-live-search="true" data-size="8" data-width="60%" data-style="btn-lg btn-default" id="location_id" name="location_id" title="Location" required disabled={disabled} />
           <div className="input-group-btn form-right pull-left">
-            <button className="btn btn-lg btn-default" onClick={submit}>Request</button>
+            <button className="btn btn-lg btn-default" onClick={submit} disabled={disabled}>Request</button>
           </div>
         </div>
       </div>

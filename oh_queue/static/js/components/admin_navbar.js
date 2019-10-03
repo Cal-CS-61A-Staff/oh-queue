@@ -21,6 +21,7 @@ class AdminNavbar extends React.Component {
     ];
     if(user) {
       links.push(<li key="assignments"><Link to="/admin/assignments">Assignments</Link></li>);
+      links.push(<li key="config"><Link to="/admin/config">Config</Link></li>);
       links.push(<li key="locations"><Link to="/admin/locations">Locations</Link></li>);
     }
 

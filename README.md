@@ -35,7 +35,7 @@ This app uses [Ok](https://okpy.org) to manage access. Even if you aren't using 
 
 4. Reset the database to create tables.
     ```
-    ./manage.py resetdb
+    ./manage.py initdb
     ```
     If you get the error "TypeError: OAuthRemoteApp requires consumer key and secret", you need to set your OK_KEY and OK_SECRET environment variables.
 
@@ -72,11 +72,7 @@ Deploy from another branch:
     dokku domains:set app-name <domain>
 
     dokku config:set app-name OH_QUEUE_ENV=prod OK_KEY=<OK CLIENT> OK_SECRET=<OK SECRET> SECRET_KEY=<DB SECRET> COURSE_NAME="CS 61A" COURSE_OFFERING="cal/cs61a/fa16"
-    dokku run app-name python
-    >>> from oh_queue import app
-    >>> from oh_queue.models import db
-    >>> db.create_all(app=app)
-    >>> exit()
+    dokku run app-name ./manage.py initdb
     dokku letsencrypt app-name
     # Change OK OAuth to support the domain
 

@@ -42,6 +42,13 @@ class User(db.Model, UserMixin):
             return first_name.rsplit('@')[0]
         return first_name
 
+class ConfigEntry(db.Model):
+    """Represents persistent server-side configuration entries"""
+    __tablename__ = 'config_entries'
+    key = db.Column(db.String(255), primary_key=True)
+    value = db.Column(db.Text(), nullable=False)
+    public = db.Column(db.Boolean, default=False)
+
 class Assignment(db.Model):
     """Represents a ticket's assignment."""
     __tablename__ = 'assignment'
