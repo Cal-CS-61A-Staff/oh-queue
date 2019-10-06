@@ -57,6 +57,12 @@ class App extends React.Component {
         this.state.locations[location.id] = location;
       }
     }
+    if(Array.isArray(data.tags)) {
+      this.state.tags = {};
+      for(var location of data.tags) {
+        this.state.tags[tag.id] = tag;
+      }
+    }
     if(Array.isArray(data.tickets)) {
       for (var ticket of data.tickets) {
         setTicket(this.state, ticket);
@@ -106,6 +112,7 @@ class App extends React.Component {
       case 'update_location':
         if(isStaff(this.state) && ticket.status === 'pending') {
           var assignment = ticketAssignment(this.state, ticket);
+          var tag = ticketTag(this.state, ticket);
           var location = ticketLocation(this.state, ticket);
           var question = ticketQuestion(this.state, ticket);
           notifyUser('New request for ' + assignment.name + ' ' + question,

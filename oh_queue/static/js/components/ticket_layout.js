@@ -27,6 +27,7 @@ class TicketLayout extends React.Component {
 
     let assignment = ticketAssignment(state, ticket);
     let location = ticketLocation(state, ticket);
+    let tag = ticketTag(state, ticket);
     let question = ticketQuestion(state, ticket);
 
     return (

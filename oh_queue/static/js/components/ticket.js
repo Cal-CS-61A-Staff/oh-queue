@@ -1,6 +1,7 @@
 let Ticket = ({state, ticket}) => {
   let assignment = ticketAssignment(app.state, ticket);
   let location = ticketLocation(app.state, ticket);
+  let tag = ticketTag(app.state, ticket);
 
   var status;
   if (ticket.status === 'pending') {

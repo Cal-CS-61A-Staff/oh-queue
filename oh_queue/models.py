@@ -58,6 +58,14 @@ class Location(db.Model):
     name = db.Column(db.String(255), nullable=False, unique=True)
     visible = db.Column(db.Boolean, default=False)
 
+class Tag(db.Model):
+    """Represents a ticket's tag."""
+    __tablename__ = 'tag'
+    id = db.Column(db.Integer, primary_key=True)
+    created = db.Column(db.DateTime, default=db.func.now())
+    name = db.Column(db.String(255), nullable=False, unique=True)
+    visible = db.Column(db.Boolean, default=False)
+
 TicketStatus = enum.Enum('TicketStatus', 'pending assigned resolved deleted')
 
 class Ticket(db.Model):
@@ -75,6 +83,7 @@ class Ticket(db.Model):
 
     assignment_id = db.Column(db.ForeignKey('assignment.id'), nullable=False, index=True)
     location_id = db.Column(db.ForeignKey('location.id'), nullable=False, index=True)
+    tag_id = db.Column(db.ForeignKey('tag.id'), nullable=False, index=True)
     question = db.Column(db.String(255), nullable=False)
 
     description = db.Column(db.Text)
@@ -83,6 +92,7 @@ class Ticket(db.Model):
     helper = db.relationship(User, foreign_keys=[helper_id])
     assignment = db.relationship(Assignment, foreign_keys=[assignment_id])
     location = db.relationship(Location, foreign_keys=[location_id])
+    tag = db.relationship(Tag, foreign_keys=[tag_id])
 
     @classmethod
     def for_user(cls, user):

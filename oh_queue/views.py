@@ -37,6 +37,7 @@ def ticket_json(ticket):
         'updated': ticket.updated and ticket.updated.isoformat(),
         'location_id': ticket.location_id,
         'assignment_id': ticket.assignment_id,
+        'tag_id': ticket.tag_id,
         'description': ticket.description,
         'question': ticket.question,
         'helper': ticket.helper and user_json(ticket.helper),
@@ -54,6 +55,13 @@ def location_json(location):
         'id': location.id,
         'name': location.name,
         'visible': location.visible
+    }
+
+def tag_json(location):
+    return {
+        'id': tag.id,
+        'name': tag.name,
+        'visible': tag.visible
     }
 
 def emit_event(ticket, event_type):
@@ -82,6 +90,9 @@ def emit_state(attrs, broadcast=False):
     if 'locations' in attrs:
         locations = Location.query.all()
         state['locations'] = [location_json(location) for location in locations]
+    if 'tags' in attrs:
+        tags = Tag.query.all()
+        state['tags'] = [tag_json(tag) for tag in tags]
     if not broadcast and 'current_user' in attrs:
         state['current_user'] = student_json(current_user)
     if broadcast:
@@ -170,7 +181,7 @@ def connect():
     else:
         user_presence['students'].add(current_user.email)
 
-    emit_state(['tickets', 'assignments', 'locations', 'current_user'])
+    emit_state(['tickets', 'assignments', 'locations', 'tags', 'current_user'])
 
     emit_presence(user_presence)
 
@@ -208,9 +219,10 @@ def create(form):
         )
     assignment_id = form.get('assignment_id')
     location_id = form.get('location_id')
+    tag_id = form.get('tag_id')
     question = form.get('question')
     # Create a new ticket and add it to persistent storage
-    if assignment_id is None or location_id is None or not question:
+    if assignment_id is None or location_id is None or tag_id is None or not question:
         return socket_error(
             'You must fill out all the fields',
             category='warning',
@@ -227,11 +239,18 @@ def create(form):
             'Unknown location (id: {})'.format(location_id),
             category='warning',
         )
+    tag = Tag.query.get(tag_id)
+    if not tag:
+        return socket_error(
+            'Unknown location (id: {})'.format(tag_id),
+            category='warning',
+        )
     ticket = Ticket(
         status=TicketStatus.pending,
         user=current_user,
         assignment=assignment,
         location=location,
+        tag=tag,
         question=question,
     )
 
@@ -392,3 +411,29 @@ def update_location(data):
 
     emit_state(['locations'], broadcast=True)
     return location_json(location)
+
+
+@socketio.on('add_tag')
+@is_staff
+def add_location(data):
+    name = data['name']
+    tag = Tag(name=name)
+    db.session.add(tag)
+    db.session.commit()
+
+    emit_state(['tags'], broadcast=True)
+    db.session.refresh(tag)
+    return location_json(tag)
+
+@socketio.on('update_tag')
+@is_staff
+def update_location(data):
+    tag = Tag.query.get(data['id'])
+    if 'name' in data:
+        tag.name = data['name']
+    if 'visible' in data:
+        tag.visible = data['visible']
+    db.session.commit()
+
+    emit_state(['tags'], broadcast=True)
+    return location_json(tag)

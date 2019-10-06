@@ -1,3 +1,8 @@
+function initializeToggle(toggle) {
+  if(!toggle) return;
+  $(toggle).bootstrapToggle();
+}
+
 let RequestForm = ({state}) => {
   let submit = (e) => {
     e.preventDefault();
@@ -13,10 +18,11 @@ let RequestForm = ({state}) => {
     app.makeRequest('create', formData, true);
   };
 
-  let {assignments, locations} = state;
+  let {assignments, locations, tag} = state;
 
   let filteredAssignments = Object.values(assignments).filter((assignment) => assignment.visible).sort((a, b) => a.name.localeCompare(b.name));
   let filteredLocations = Object.values(locations).filter((location) => location.visible).sort((a, b) => a.name.localeCompare(b.name));
+  let filteredTags = Object.values(tags).filter((tag) => location.visible).sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <form id="request-form">
@@ -33,6 +39,15 @@ let RequestForm = ({state}) => {
             <button className="btn btn-lg btn-default" onClick={submit}>Request</button>
           </div>
         </div>
+      </div>
+      <div className="form-group form-group-lg">
+        <div className="input-group">
+          <div className="btn-group btn-group-lg" role="group" aria-label="Basic example">
+            <button type="button" className="btn btn-primary">Debugging</button>
+            <button type="button" className="btn btn-default">Content Help</button>
+          </div>
+        </div>
+      
       </div>
     </form>
   );

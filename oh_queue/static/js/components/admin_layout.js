@@ -13,6 +13,7 @@ class AdminLayout extends React.Component {
             <Switch location={location}>
               <Route exact path={match.path} render={(props) => (<AdminHome state={state} {...props} />)} />
               <Route path={`${match.path}/assignments`} render={(props) => (<AdminAssignmentsManager state={state} {...props} />)} />
+              <Route path={`${match.path}/tags`} render={(props) => (<AdminAssignmentsManager state={state} {...props} />)} />
               <Route path={`${match.path}/locations`} render={(props) => (<AdminLocationsManager state={state} {...props} />)} />
             </Switch>
           </CSSTransition>

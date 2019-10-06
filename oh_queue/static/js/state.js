@@ -21,6 +21,7 @@ type Ticket = {
   updated: ?string,
   location_id: number,
   assignment_id: number,
+  tag_id: number,
   question: string,
   description: ?string,
   helper: ?User,
@@ -36,10 +37,17 @@ type TicketLocation = {
   name: string
 };
 
+/* added */
+type TicketTag = {
+  id: number,
+  name: string
+}
+
 type Filter = {
   /* Selected options. null means do not filter by an attribute. */
   assignment_id: ?number,
   location_id: ?number,
+  tag_id: ?number,
   question: ?string,
 };
 
@@ -61,6 +69,8 @@ type State = {
   assignments: Map<number, TicketAssignment>,
   /* Ticket locations */
   locations: Map<number, TicketLocation>,
+  /* Ticket tags */
+  tags: Map<number, TicketTag>,
   /* All known tickets, including ones that have been resolved or deleted.
    * We may have to load past tickets asynchronously though.
    * This is an ES6 Map from ticket ID to the ticket data.
@@ -83,11 +93,13 @@ let initialState: State = {
   offline: true,
   assignments: {},
   locations: {},
+  tags: {},
   tickets: new Map(),
   loadingTickets: new Set(),
   filter: {
     location_id: null,
     assignment_id: null,
+    tag_id: null,
     question: null,
   },
   queueTabIndex: 0,
@@ -124,6 +136,10 @@ function ticketAssignment(state: State, ticket: Ticket): TicketAssignment {
 
 function ticketLocation(state: State, ticket: Ticket): TicketLocation {
   return state.locations[ticket.location_id];
+}
+
+function ticketTag(state: State, ticket: Ticket): TicketTag {
+  return state.tags[ticket.tag_id];
 }
 
 function ticketQuestion(state: State, ticket: Ticket): string {
@@ -219,6 +235,10 @@ function applyFilter(filter: Filter, tickets: Array<Ticket>): Array<Ticket> {
   let locationId = parseInt(filter.location_id);
   if (!isNaN(locationId)) {
     tickets = tickets.filter((ticket) => ticket.location_id === locationId);
+  }
+  let tagId = parseInt(filter.tag_id);
+  if (!isNaN(locationID)) {
+    tickets = tickets.filter((ticket) => ticket.tag_id === tagId);
   }
   if (filter.question) {
     tickets = tickets.filter((ticket) => ticket.question === filter.question);
