@@ -6,7 +6,7 @@ let RequestForm = (props) => {
     e.preventDefault();
     let form = $('#request-form');
     let formDOM = form[0];
-    if(formDOM.reportValidity && !formDOM.reportValidity()) {
+    if (formDOM.reportValidity && !formDOM.reportValidity()) {
       return;
     }
     let formData = {};
@@ -21,8 +21,20 @@ let RequestForm = (props) => {
   let filteredAssignments = Object.values(assignments).filter((assignment) => assignment.visible).sort((a, b) => a.name.localeCompare(b.name));
   let filteredLocations = Object.values(locations).filter((location) => location.visible).sort((a, b) => a.name.localeCompare(b.name));
 
+  let passwordInput = false;
+  if(state.config && state.config.queue_password_mode !== 'none') {
+    passwordInput = (
+      <div className="form-group form-group-lg">
+        <div className="input-group">
+          <input className="form-control" type="text" id="password" name="password" title="Password" placeholder="Password" required disabled={disabled} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <form id="request-form">
+      { passwordInput }
       <div className="form-group form-group-lg">
         <div className="input-group">
           <SelectPicker options={filteredAssignments} className="selectpicker form-control form-left" data-live-search="true" data-size="8" data-width="60%" data-style="btn-lg btn-default" id="assignment_id" name="assignment_id" title="Assignment" required disabled={disabled} />

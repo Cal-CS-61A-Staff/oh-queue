@@ -44,30 +44,30 @@ class App extends React.Component {
   }
 
   updateState(data) {
-    this.state.loaded = true;
-    if(Array.isArray(data.assignments)) {
+    if (Array.isArray(data.assignments)) {
       this.state.assignments = {};
-      for(var assignment of data.assignments) {
+      for (var assignment of data.assignments) {
         this.state.assignments[assignment.id] = assignment;
       }
     }
-    if(Array.isArray(data.locations)) {
+    if (Array.isArray(data.locations)) {
       this.state.locations = {};
-      for(var location of data.locations) {
+      for (var location of data.locations) {
         this.state.locations[location.id] = location;
       }
     }
-    if(Array.isArray(data.tickets)) {
+    if (Array.isArray(data.tickets)) {
       for (var ticket of data.tickets) {
         setTicket(this.state, ticket);
       }
     }
-    if(data.hasOwnProperty('config')) {
+    if (data.hasOwnProperty('config')) {
       this.state.config = data.config;
     }
-    if(data.hasOwnProperty('current_user')) {
+    if (data.hasOwnProperty('current_user')) {
       this.state.currentUser = data.current_user;
     }
+    this.state.loaded = true;
     this.refresh();
   }
 
@@ -99,7 +99,7 @@ class App extends React.Component {
       case 'assign':
       case 'delete':
       case 'resolve':
-        if(isStaff(this.state)) {
+        if (isStaff(this.state)) {
           cancelNotification(ticket.id + ".create");
         }
         break;
@@ -107,7 +107,7 @@ class App extends React.Component {
       case 'describe':
       case 'unassign':
       case 'update_location':
-        if(isStaff(this.state) && ticket.status === 'pending') {
+        if (isStaff(this.state) && ticket.status === 'pending') {
           var assignment = ticketAssignment(this.state, ticket);
           var location = ticketLocation(this.state, ticket);
           var question = ticketQuestion(this.state, ticket);
@@ -150,13 +150,17 @@ class App extends React.Component {
   }
 
   makeRequest(eventType, request, follow_redirect=false, callback) {
-    if(typeof follow_redirect === "function") {
+    if (typeof request === "function") {
+      follow_redirect = request;
+      request = undefined;
+    }
+    if (typeof follow_redirect === "function") {
       callback = follow_redirect;
       follow_redirect = false;
     }
-    this.socket.emit(eventType, request, (response) => {
+    let cb = (response) => {
       if (response == null) {
-        if(callback) callback(response);
+        if (callback) callback(response);
         return;
       }
       let messages = response.messages || [];
@@ -166,8 +170,13 @@ class App extends React.Component {
       if (follow_redirect && response.redirect) {
         this.router.history.push(response.redirect);
       }
-      if(callback) callback(response);
-    });
+      if (callback) callback(response);
+    };
+    if (request !== undefined) {
+      this.socket.emit(eventType, request, cb);
+    } else {
+      this.socket.emit(eventType, cb);
+    }
   }
 
   render() {

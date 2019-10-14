@@ -586,23 +586,23 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
 }
 .btn.is-loading:after {
   display: inline-block;
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  position: relative;
+  left: -.6em;
+  top: .1em;
 
   content: " ";
-  width: 12px;
-  height: 12px;
+  width: 1em;
+  height: 1em;
 
   margin: 0;
-  margin-top: -6px;
-  margin-left: -6px;
+  margin-top: -1em;
+  margin-left: -1em;
 
   opacity: 1;
   transition: opacity 500ms ease-out;
 
   border-radius: 50%;
-  border: 2px solid #000;
+  border: .2em solid #000;
   border-color: #000 transparent #000 transparent;
   animation: spinner-loading 1s linear infinite;
 }

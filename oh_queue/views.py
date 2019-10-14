@@ -2,6 +2,7 @@ import datetime
 import functools
 import collections
 import pytz
+import random
 import time
 
 from flask import render_template, url_for
@@ -118,6 +119,9 @@ def ticket(*args, **kwargs):
     return render_template('index.html')
 
 def socket_error(message, category='danger', ticket_id=None):
+    redirect = url_for('index')
+    if ticket_id is not None:
+        redirect = url_for('ticket', ticket_id=ticket_id)
     return {
         'messages': [
             {
@@ -125,12 +129,15 @@ def socket_error(message, category='danger', ticket_id=None):
                 'text': message,
             },
         ],
-        'redirect': url_for('ticket', ticket_id=ticket_id),
+        'redirect': redirect
     }
 
 def socket_redirect(ticket_id=None):
+    redirect = url_for('index')
+    if ticket_id is not None:
+        redirect = url_for('ticket', ticket_id=ticket_id)
     return {
-        'redirect': url_for('ticket', ticket_id=ticket_id),
+        'redirect': redirect
     }
 
 def socket_unauthorized():
@@ -202,6 +209,53 @@ def refresh(ticket_ids):
         'tickets': [ticket_json(ticket) for ticket in tickets],
     }
 
+def get_password(mode=None, data=None, time_offset=0):
+    if mode is None:
+        mode = ConfigEntry.query.get('queue_password_mode').value
+    if mode == 'none':
+        return None
+
+    if data is None:
+        data = ConfigEntry.query.get('queue_password_data').value
+    if mode == 'text':
+        return data
+    if mode == 'timed_numeric':
+        # We don't need fancy ultra-secure stuff here
+        # A basic server-side time-based, seeded RNG is enough
+        # Seed data should be in the form 'a:b:c:d', where:
+        # a: 8-byte seed (in hexadecimal)
+        # b: Downsampling interval (in seconds)
+        # c: Minimum generated number (in unsigned decimal)
+        # d: Maximum generated number (in unsigned decimal)
+        data = data.split(':')
+        # Downsample time to allow for temporal leeway
+        rand = random.Random()
+        timestamp = time.time() // int(data[1])
+        # Seeded RNG
+        rand.seed("{}.{}".format(timestamp + time_offset, data[0]))
+        return str(rand.randint(int(data[2]), int(data[3]))).zfill(len(data[3]))
+    raise Exception('Unrecognized queue password mode')
+
+def check_password(password):
+    mode = ConfigEntry.query.get('queue_password_mode').value
+    if mode == 'none':
+        return True
+    data = ConfigEntry.query.get('queue_password_data').value
+    if mode == 'timed_numeric':
+        # Allow for temporal leeway from lagging clients/humans
+        for offset in (0, -1, 1):
+            if get_password(mode, data, time_offset=offset) == password:
+                return True
+        return False
+    return get_password(mode, data) == password
+
+@socketio.on('refresh_password')
+@is_staff
+def refresh_password():
+    return {
+        'password': get_password()
+    }
+
 @socketio.on('create')
 @logged_in
 def create(form):
@@ -209,9 +263,14 @@ def create(form):
     connected clients.
     """
     is_closed = ConfigEntry.query.get('is_queue_open')
-    if (not is_closed) or (is_closed.value != 'true'):
+    if is_closed.value != 'true':
         return socket_error(
             'The queue is closed',
+            category='warning',
+        )
+    if not check_password(form.get('password')):
+        return socket_error(
+            'Invalid password',
             category='warning',
         )
     my_ticket = Ticket.for_user(current_user)
@@ -411,10 +470,23 @@ def update_location(data):
 @socketio.on('update_config')
 @is_staff
 def update_config(data):
-    entry = ConfigEntry.query.get(data['key'])
-    if 'value' in data:
-        entry.value = data['value']
+    keys = []
+    values = []
+    if 'keys' in data:
+        keys = data['keys']
+        values = data['values']
+    elif 'key' in data:
+        keys = [data['key']]
+        values = [data['value']]
+    if 'queue_password_mode' in keys:
+        # Validate new password config
+        get_password(values[keys.index('queue_password_mode')], values[keys.index('queue_password_data')])
+    for key, value in zip(keys, values):
+        entry = ConfigEntry.query.get(key)
+        entry.value = value
     db.session.commit()
 
-    emit_state(['config'], broadcast=True)
+
+    if entry.public:
+        emit_state(['config'], broadcast=True)
     return config_json()

@@ -71,19 +71,20 @@ let PresenceIndicator = ({state}) => {
   return (
     <div className="col-xs-12">
 
-      <div className={`alert alert-${color} alert-dismissable fade in`} role="alert">
+      <div className="alert alert-info alert-dismissable fade in" role="alert">
         <button type="button" className="close" aria-label="Close" data-dismiss="alert">
             <span aria-hidden="true">&times;</span>
         </button>
-        <h3>Estimated wait time: <font color={waitColor}><strong>{timeRange}</strong></font> minutes</h3>
         <ReactMarkdown source={welcomeMessage} />
       </div>
 
       <div className={`alert alert-${color} alert-dismissable fade in`} role="alert">
-        {message}
         <button type="button" className="close" aria-label="Close" data-dismiss="alert">
             <span aria-hidden="true">&times;</span>
         </button>
+        <h4>Estimated wait time: <font color={waitColor}><strong>{timeRange}</strong></font> minutes</h4>
+        <h5>{ message }</h5>
+        <PasswordDisplay state={state} />
       </div>
     </div>
   );

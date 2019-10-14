@@ -24,7 +24,7 @@ class UpdateLocationBox extends React.Component {
         let {state, ticket} = this.props;
         let {locations} = state;
         let staff = isStaff(state);
-        if(staff) {
+        if (staff) {
             return null;
         }
         return (

@@ -6,7 +6,9 @@ class AdminConfigManager extends React.Component {
       loading: {},
       loaded: false,
       isQueueOpen: false,
-      welcome: ''
+      welcome: '',
+      queuePasswordMode: 'none',
+      queuePasswordData: ''
     };
     this.toggles = {};
 
@@ -16,6 +18,9 @@ class AdminConfigManager extends React.Component {
     this.loadState = this.loadState.bind(this);
     this.editWelcome = this.editWelcome.bind(this);
     this.submitWelcome = this.submitWelcome.bind(this);
+    this.changeQueuePasswordMode = this.changeQueuePasswordMode.bind(this);
+    this.submitQueuePassword = this.submitQueuePassword.bind(this);
+    this.changeQueuePasswordData = this.changeQueuePasswordData.bind(this);
 
     this.loadState();
   }
@@ -30,11 +35,21 @@ class AdminConfigManager extends React.Component {
     this.setState({
       loaded: true,
       isQueueOpen: config.is_queue_open === 'true',
-      welcome: config.welcome || ''
-    })
+      welcome: config.welcome || '',
+      queuePasswordMode: config.queue_password_mode
+    });
+    if (config.queue_password_mode === 'text') {
+      app.makeRequest('refresh_password', (res) => {
+        if (res.password) {
+          this.setState({
+            queuePasswordData: res.password
+          });
+        }
+      });
+    }
   }
   initializeToggle(toggle) {
-    if(!toggle) return;
+    if (!toggle) return;
     var id = toggle.dataset.itemId;
     this.toggles[id] = toggle;
     $(toggle).bootstrapToggle();
@@ -88,15 +103,59 @@ class AdminConfigManager extends React.Component {
   submitWelcome(e) {
     e.preventDefault();
 
-    let btn = e.target.elements[1]
-    $(btn).addClass('is-loading');
-    $(btn).attr('disabled', true);
+    let btn = $(e.target.elements["btn-submit"]);
+    btn.addClass('is-loading');
+    btn.attr('disabled', true);
+    let time = Date.now();
     app.makeRequest(`update_config`, {
       key: 'welcome',
       value: this.state.welcome
     }, (isSuccess) => {
-      $(btn).removeClass('is-loading');
-      $(btn).attr('disabled', false);
+      setTimeout(() => {
+        btn.removeClass('is-loading');
+        btn.attr('disabled', false);
+      }, 250 - (Date.now() - time));
+    });
+
+    return false;
+  }
+
+  changeQueuePasswordMode(e) {
+    let changes = {
+      queuePasswordMode: e.target.value
+    };
+    if (e.target.value === 'text') {
+      changes.queuePasswordData = '';
+    } else if (e.target.value === 'timed_numeric') {
+      let data = '';
+      for (let i = 0; i < 8; i++) {
+        data += Math.floor(Math.random() * 256).toString(16);
+      }
+      data += ':30:0:9999'
+      changes.queuePasswordData = data;
+    }
+    this.setState(changes);
+  }
+  changeQueuePasswordData(e) {
+    this.setState({
+      queuePasswordData: e.target.value
+    });
+  }
+  submitQueuePassword(e) {
+    e.preventDefault();
+
+    let btn = $(e.target.elements["btn-submit"]);
+    btn.addClass('is-loading');
+    btn.attr('disabled', true);
+    let time = Date.now();
+    app.makeRequest(`update_config`, {
+      keys: ['queue_password_mode', 'queue_password_data'],
+      values: [this.state.queuePasswordMode, this.state.queuePasswordData]
+    }, (isSuccess) => {
+      setTimeout(() => {
+        btn.removeClass('is-loading');
+        btn.attr('disabled', false);
+      }, 250 - (Date.now() - time));
     });
 
     return false;
@@ -112,6 +171,24 @@ class AdminConfigManager extends React.Component {
       );
     }
 
+    let queuePasswordOptions = [
+      <div className="form-group">
+        <select className="form-control" value={this.state.queuePasswordMode} onChange={this.changeQueuePasswordMode}>
+          <option value="none">None</option>
+          <option value="text">Text</option>
+          <option value="timed_numeric">Time-based Numeric</option>
+        </select>
+      </div>
+    ];
+    if (this.state.queuePasswordMode === 'text') {
+      queuePasswordOptions.push(
+        <div className="form-group">
+          <input type="text" className="form-control" value={this.state.queuePasswordData} onChange={this.changeQueuePasswordData} required="required" />
+        </div>
+      );
+    }
+    queuePasswordOptions.push(<button className="btn btn-default" name="btn-submit" type="submit">Save</button>);
+
     return (
       <div className="container">
         <div className="table-responsive">
@@ -119,18 +196,26 @@ class AdminConfigManager extends React.Component {
             <thead>
               <tr>
                 <th>Option</th>
-                <th className="col-md-1">Value</th>
+                <th className="col-md-3">Value</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Should the queue be open to new tickets?</td>
-                <td className="col-md-1">
+                <td className="col-md-3">
                   {this.renderToggle('is_queue_open', {
                     offText: 'Closed',
                     onText: 'Open',
                     value: this.state.isQueueOpen
                   })}
+                </td>
+              </tr>
+              <tr>
+                <td>What type of password should the queue require to submit new tickets?</td>
+                <td className="col-md-3">
+                  <form onSubmit={this.submitQueuePassword}>
+                    { queuePasswordOptions }
+                  </form>
                 </td>
               </tr>
             </tbody>
@@ -141,10 +226,16 @@ class AdminConfigManager extends React.Component {
             <label for="welcome-input">Welcome Message (supports Markdown)</label>
             <textarea className="form-control" name="welcome-input" type="text" placeholder="Welcome" value={this.state.welcome} onChange={this.editWelcome} />
           </div>
-          <ReactMarkdown source={this.state.welcome} />
+          <label>Welcome Message Preview:</label>
+          <div className="alert alert-info alert-dismissable fade in" role="alert">
+            <button type="button" className="close" aria-label="Close" data-dismiss="alert">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <ReactMarkdown source={this.state.welcome} />
+          </div>
           <div className="form-group">
             <div>
-              <button className="btn btn-default" type="submit">Save</button>
+              <button className="btn btn-default" name="btn-submit" type="submit">Save</button>
             </div>
           </div>
         </form>

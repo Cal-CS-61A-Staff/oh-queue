@@ -5,7 +5,7 @@ class AdminNavbar extends React.Component {
     var user = state.currentUser;
 
     var userDropdown = (<li><a href="/login">Staff Login</a></li>);
-    if(user) {
+    if (user) {
       userDropdown = (
         <li className="dropdown">
           <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button">{user.name} <span className="caret"></span></a>
@@ -19,7 +19,7 @@ class AdminNavbar extends React.Component {
     var links = [
       (<li key="home"><Link to="/admin">Home</Link></li>)
     ];
-    if(user) {
+    if (user) {
       links.push(<li key="assignments"><Link to="/admin/assignments">Assignments</Link></li>);
       links.push(<li key="config"><Link to="/admin/config">Config</Link></li>);
       links.push(<li key="locations"><Link to="/admin/locations">Locations</Link></li>);
