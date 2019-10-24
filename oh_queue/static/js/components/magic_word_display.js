@@ -1,11 +1,11 @@
-class PasswordDisplay extends React.Component {
+class MagicWordDisplay extends React.Component {
   constructor(...args) {
     super(...args);
 
     this.state = {
       loaded: false,
-      oldPassword: undefined,
-      password: undefined,
+      oldMagicWord: undefined,
+      magicWord: undefined,
       refreshInterval: null
     };
 
@@ -21,21 +21,21 @@ class PasswordDisplay extends React.Component {
       setTimeout(this.loadState, 100);
       return;
     }
-    if (isStaff(this.props.state) && config.queue_password_mode !== 'none') {
+    if (isStaff(this.props.state) && config.queue_magic_word_mode !== 'none') {
       if (this.state.refreshInterval) {
         clearInterval(this.state.refreshInterval);
         this.state.refreshInterval = null;
       }
       this.setState({
         refreshInterval: setInterval(() => {
-          let mode = this.props.state.config.queue_password_mode;
+          let mode = this.props.state.config.queue_magic_word_mode;
           if (mode !== 'timed_numeric'
-            && (mode !== 'none' || this.state.password !== undefined)) return
-          app.makeRequest('refresh_password', (res) => {
-            let password = res.password || null;
+            && (mode !== 'none' || this.state.magicWord !== undefined)) return
+          app.makeRequest('refresh_magic_word', (res) => {
+            let magicWord = res.magic_word || null;
             this.setState({
-              oldPassword: this.state.password,
-              password: password
+              oldMagicWord: this.state.magicWord,
+              magicWord: magicWord
             });
           });
         }, 1000)
@@ -58,20 +58,20 @@ class PasswordDisplay extends React.Component {
       this.loadState();
       return false;
     }
-    if (this.props.state.config.queue_password_mode === 'none'
-      || this.state.password === undefined) {
+    if (this.props.state.config.queue_magic_word_mode === 'none'
+      || this.state.magicWord === undefined) {
       return false;
     }
 
-    let passwordElem = (<i>Loading...</i>);
-    if (this.state.password) {
-      let password = this.state.password;
-      passwordElem = (<code>{ password }</code>);
+    let magicWordElem = (<i>Loading...</i>);
+    if (this.state.magicWord) {
+      let magicWord = this.state.magicWord;
+      magicWordElem = (<code>{ magicWord }</code>);
     }
 
     return (
       <div>
-        <h4>Queue password: { passwordElem }</h4>
+        <h4>Magic word: { magicWordElem }</h4>
       </div>
     );
   }

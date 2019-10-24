@@ -7,8 +7,8 @@ class AdminConfigManager extends React.Component {
       loaded: false,
       isQueueOpen: false,
       welcome: '',
-      queuePasswordMode: 'none',
-      queuePasswordData: ''
+      queueMagicWordMode: 'none',
+      queueMagicWordData: ''
     };
     this.toggles = {};
 
@@ -18,9 +18,9 @@ class AdminConfigManager extends React.Component {
     this.loadState = this.loadState.bind(this);
     this.editWelcome = this.editWelcome.bind(this);
     this.submitWelcome = this.submitWelcome.bind(this);
-    this.changeQueuePasswordMode = this.changeQueuePasswordMode.bind(this);
-    this.submitQueuePassword = this.submitQueuePassword.bind(this);
-    this.changeQueuePasswordData = this.changeQueuePasswordData.bind(this);
+    this.changeQueueMagicWordMode = this.changeQueueMagicWordMode.bind(this);
+    this.submitQueueMagicWord = this.submitQueueMagicWord.bind(this);
+    this.changeQueueMagicWordData = this.changeQueueMagicWordData.bind(this);
 
     this.loadState();
   }
@@ -36,13 +36,13 @@ class AdminConfigManager extends React.Component {
       loaded: true,
       isQueueOpen: config.is_queue_open === 'true',
       welcome: config.welcome || '',
-      queuePasswordMode: config.queue_password_mode
+      queueMagicWordMode: config.queue_magic_word_mode
     });
-    if (config.queue_password_mode === 'text') {
-      app.makeRequest('refresh_password', (res) => {
-        if (res.password) {
+    if (config.queue_magic_word_mode === 'text') {
+      app.makeRequest('refresh_magic_word', (res) => {
+        if (res.magic_word) {
           this.setState({
-            queuePasswordData: res.password
+            queueMagicWordData: res.magic_word
           });
         }
       });
@@ -120,28 +120,28 @@ class AdminConfigManager extends React.Component {
     return false;
   }
 
-  changeQueuePasswordMode(e) {
+  changeQueueMagicWordMode(e) {
     let changes = {
-      queuePasswordMode: e.target.value
+      queueMagicWordMode: e.target.value
     };
     if (e.target.value === 'text') {
-      changes.queuePasswordData = '';
+      changes.queueMagicWordData = '';
     } else if (e.target.value === 'timed_numeric') {
       let data = '';
       for (let i = 0; i < 8; i++) {
         data += Math.floor(Math.random() * 256).toString(16);
       }
-      data += ':30:0:9999'
-      changes.queuePasswordData = data;
+      data += ':60:0:9999'
+      changes.queueMagicWordData = data;
     }
     this.setState(changes);
   }
-  changeQueuePasswordData(e) {
+  changeQueueMagicWordData(e) {
     this.setState({
-      queuePasswordData: e.target.value
+      queueMagicWordData: e.target.value
     });
   }
-  submitQueuePassword(e) {
+  submitQueueMagicWord(e) {
     e.preventDefault();
 
     let btn = $(e.target.elements["btn-submit"]);
@@ -149,8 +149,8 @@ class AdminConfigManager extends React.Component {
     btn.attr('disabled', true);
     let time = Date.now();
     app.makeRequest(`update_config`, {
-      keys: ['queue_password_mode', 'queue_password_data'],
-      values: [this.state.queuePasswordMode, this.state.queuePasswordData]
+      keys: ['queue_magic_word_mode', 'queue_magic_word_data'],
+      values: [this.state.queueMagicWordMode, this.state.queueMagicWordData]
     }, (isSuccess) => {
       setTimeout(() => {
         btn.removeClass('is-loading');
@@ -171,23 +171,23 @@ class AdminConfigManager extends React.Component {
       );
     }
 
-    let queuePasswordOptions = [
+    let queueMagicWordOptions = [
       <div className="form-group">
-        <select className="form-control" value={this.state.queuePasswordMode} onChange={this.changeQueuePasswordMode}>
+        <select className="form-control" value={this.state.queueMagicWordMode} onChange={this.changeQueueMagicWordMode}>
           <option value="none">None</option>
           <option value="text">Text</option>
           <option value="timed_numeric">Time-based Numeric</option>
         </select>
       </div>
     ];
-    if (this.state.queuePasswordMode === 'text') {
-      queuePasswordOptions.push(
+    if (this.state.queueMagicWordMode === 'text') {
+      queueMagicWordOptions.push(
         <div className="form-group">
-          <input type="text" className="form-control" value={this.state.queuePasswordData} onChange={this.changeQueuePasswordData} required="required" />
+          <input type="text" className="form-control" value={this.state.queueMagicWordData} onChange={this.changeQueueMagicWordData} required="required" />
         </div>
       );
     }
-    queuePasswordOptions.push(<button className="btn btn-default" name="btn-submit" type="submit">Save</button>);
+    queueMagicWordOptions.push(<button className="btn btn-default" name="btn-submit" type="submit">Save</button>);
 
     return (
       <div className="container">
@@ -211,10 +211,16 @@ class AdminConfigManager extends React.Component {
                 </td>
               </tr>
               <tr>
-                <td>What type of password should the queue require to submit new tickets?</td>
+                <td>
+                  <p>What type of magic word should the queue require to submit new tickets?</p>
+                  <ul>
+                    <li>Text = staff will provide a hard-coded magic word</li>
+                    <li>Time-based Numeric = the magic word will be a 4-digit number that changes every minute. This number is displayed under "Estimated Wait Time" on the homepage (staff view only).</li>
+                  </ul>
+                </td>
                 <td className="col-md-3">
-                  <form onSubmit={this.submitQueuePassword}>
-                    { queuePasswordOptions }
+                  <form onSubmit={this.submitQueueMagicWord}>
+                    { queueMagicWordOptions }
                   </form>
                 </td>
               </tr>

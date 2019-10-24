@@ -209,14 +209,14 @@ def refresh(ticket_ids):
         'tickets': [ticket_json(ticket) for ticket in tickets],
     }
 
-def get_password(mode=None, data=None, time_offset=0):
+def get_magic_word(mode=None, data=None, time_offset=0):
     if mode is None:
-        mode = ConfigEntry.query.get('queue_password_mode').value
+        mode = ConfigEntry.query.get('queue_magic_word_mode').value
     if mode == 'none':
         return None
 
     if data is None:
-        data = ConfigEntry.query.get('queue_password_data').value
+        data = ConfigEntry.query.get('queue_magic_word_data').value
     if mode == 'text':
         return data
     if mode == 'timed_numeric':
@@ -234,26 +234,26 @@ def get_password(mode=None, data=None, time_offset=0):
         # Seeded RNG
         rand.seed("{}.{}".format(timestamp + time_offset, data[0]))
         return str(rand.randint(int(data[2]), int(data[3]))).zfill(len(data[3]))
-    raise Exception('Unrecognized queue password mode')
+    raise Exception('Unrecognized queue magic word mode')
 
-def check_password(password):
-    mode = ConfigEntry.query.get('queue_password_mode').value
+def check_magic_word(magic_word):
+    mode = ConfigEntry.query.get('queue_magic_word_mode').value
     if mode == 'none':
         return True
-    data = ConfigEntry.query.get('queue_password_data').value
+    data = ConfigEntry.query.get('queue_magic_word_data').value
     if mode == 'timed_numeric':
         # Allow for temporal leeway from lagging clients/humans
         for offset in (0, -1, 1):
-            if get_password(mode, data, time_offset=offset) == password:
+            if get_magic_word(mode, data, time_offset=offset) == magic_word:
                 return True
         return False
-    return get_password(mode, data) == password
+    return get_magic_word(mode, data) == magic_word
 
-@socketio.on('refresh_password')
+@socketio.on('refresh_magic_word')
 @is_staff
-def refresh_password():
+def refresh_magic_word():
     return {
-        'password': get_password()
+        'magic_word': get_magic_word()
     }
 
 @socketio.on('create')
@@ -268,9 +268,9 @@ def create(form):
             'The queue is closed',
             category='warning',
         )
-    if not check_password(form.get('password')):
+    if not check_magic_word(form.get('magic_word')):
         return socket_error(
-            'Invalid password',
+            'Invalid magic_word',
             category='warning',
         )
     my_ticket = Ticket.for_user(current_user)
@@ -478,13 +478,14 @@ def update_config(data):
     elif 'key' in data:
         keys = [data['key']]
         values = [data['value']]
-    if 'queue_password_mode' in keys:
-        # Validate new password config
-        get_password(values[keys.index('queue_password_mode')], values[keys.index('queue_password_data')])
+    if 'queue_magic_word_mode' in keys:
+        # Validate new magic word config
+        get_magic_word(values[keys.index('queue_magic_word_mode')], values[keys.index('queue_magic_word_data')])
     for key, value in zip(keys, values):
         entry = ConfigEntry.query.get(key)
         entry.value = value
     db.session.commit()
+    print("potato")
 
 
     if entry.public:

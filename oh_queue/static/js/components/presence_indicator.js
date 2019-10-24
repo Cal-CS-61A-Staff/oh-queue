@@ -84,7 +84,7 @@ let PresenceIndicator = ({state}) => {
         </button>
         <h4>Estimated wait time: <font color={waitColor}><strong>{timeRange}</strong></font> minutes</h4>
         <h5>{ message }</h5>
-        <PasswordDisplay state={state} />
+        <MagicWordDisplay state={state} />
       </div>
     </div>
   );
