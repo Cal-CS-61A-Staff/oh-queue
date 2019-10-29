@@ -231,6 +231,14 @@ def create(form):
             'You must fill out all the fields',
             category='warning',
         )
+
+    description_required = ConfigEntry.query.get('description_required')
+    if description is None and descriptionRequired:
+        return socket_error(
+            'You must fill out all the fields',
+            category='warning',
+        )
+
     assignment = Assignment.query.get(assignment_id)
     if not assignment:
         return socket_error(
