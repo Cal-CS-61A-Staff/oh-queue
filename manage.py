@@ -83,6 +83,11 @@ def seed_defaults():
         value='true',
         public=True
     ))
+    db.session.add(ConfigEntry(
+        key='description_required',
+        value='false',
+        public=True
+    ))
     db.session.commit()
 
 @manager.command
