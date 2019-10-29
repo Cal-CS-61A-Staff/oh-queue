@@ -6,6 +6,7 @@ class AdminConfigManager extends React.Component {
       loading: {},
       loaded: false,
       isQueueOpen: false,
+      descriptionRequired: false,
       welcome: ''
     };
     this.toggles = {};
@@ -30,6 +31,7 @@ class AdminConfigManager extends React.Component {
     this.setState({
       loaded: true,
       isQueueOpen: config.is_queue_open === 'true',
+      descriptionRequired: config.description_required === 'true',
       welcome: config.welcome || ''
     })
   }
@@ -130,6 +132,16 @@ class AdminConfigManager extends React.Component {
                     offText: 'Closed',
                     onText: 'Open',
                     value: this.state.isQueueOpen
+                  })}
+                </td>
+              </tr>
+              <tr>
+                <td>Should the description field be required for new tickets?</td>
+                <td className="col-md-1">
+                  {this.renderToggle('description_required', {
+                    offText: 'No',
+                    onText: 'Yes',
+                    value: this.state.descriptionRequired
                   })}
                 </td>
               </tr>
