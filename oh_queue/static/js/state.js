@@ -131,7 +131,7 @@ function ticketLocation(state: State, ticket: Ticket): TicketLocation {
 
 function ticketQuestion(state: State, ticket: Ticket): string {
   var question = ticket.question;
-  if(!isNaN(question)) {
+  if (!isNaN(question)) {
     question = "Q" + parseInt(question);
   }
   return question;
@@ -170,7 +170,7 @@ function setTicket(state: State, ticket: Ticket): void {
   if (ticketIsMine(state, ticket)) {
     let oldTicket = getMyTicket(state);
     if (oldTicket) {
-      if(oldTicket.status === "pending" && ticket.status === "assigned") {
+      if (oldTicket.status === "pending" && ticket.status === "assigned") {
         var location = ticketLocation(state, ticket);
         notifyUser("Your name is being called",
                    ticket.helper.name + " is looking for you in "+ location.name,

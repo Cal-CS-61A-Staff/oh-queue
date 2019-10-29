@@ -43,7 +43,7 @@ class AdminItemsManager extends React.Component {
     });
   }
   initializeToggle(toggle) {
-    if(!toggle) return;
+    if (!toggle) return;
     var id = +toggle.dataset.itemId;
     this.visibilityToggles[id] = toggle;
     $(toggle).bootstrapToggle();
@@ -68,7 +68,7 @@ class AdminItemsManager extends React.Component {
     var {isValidInput, loading} = this.state;
     var isLoading = loading.newItem;
     var innerButton = "Add";
-    if(isLoading) {
+    if (isLoading) {
       innerButton = (<div className="spinner-loading" />);
     }
     var formGroupClassNames = classNames({
@@ -95,7 +95,7 @@ class AdminItemsManager extends React.Component {
   validateItemInput() {
     var newItemName = this.refs.newItemName;
     var name = newItemName.value;
-    if(!name) {
+    if (!name) {
       this.setState({
         isValidInput: null
       });
@@ -103,10 +103,10 @@ class AdminItemsManager extends React.Component {
     }
 
     var items = this.props.items || [];
-    if(items !== null && typeof items === "object" && !Array.isArray(items)) {
+    if (items !== null && typeof items === "object" && !Array.isArray(items)) {
       items = Object.values(items);
     }
-    if(items.some((item) => item.name === name)) {
+    if (items.some((item) => item.name === name)) {
       this.setState({
         isValidInput: false
       });
@@ -118,7 +118,7 @@ class AdminItemsManager extends React.Component {
     });
   }
   addItemInput() {
-    if(this.state.isValidInput !== true) return;
+    if (this.state.isValidInput !== true) return;
 
     var newItemName = this.refs.newItemName;
     var name = newItemName.value;
@@ -136,7 +136,7 @@ class AdminItemsManager extends React.Component {
         this.setState({
           loading: loading
         });
-        if(!isSuccess || isSuccess.name !== name) return;
+        if (!isSuccess || isSuccess.name !== name) return;
         newItemName.value = "";
       });
     });
@@ -176,7 +176,7 @@ class AdminItemsManager extends React.Component {
     let { CSSTransition, TransitionGroup } = ReactTransitionGroup;
 
     var items = this.props.items || [];
-    if(items !== null && typeof items === "object" && !Array.isArray(items)) {
+    if (items !== null && typeof items === "object" && !Array.isArray(items)) {
       items = Object.values(items);
     }
     var itemRows = items.map((item) => {

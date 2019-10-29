@@ -15,17 +15,17 @@ class SelectPicker extends React.Component {
   }
   render() {
     var {options, emptyOption} = this.props;
-    if(options && !Array.isArray(options) && typeof options === "object") {
+    if (options && !Array.isArray(options) && typeof options === "object") {
       options = Object.entries(options).map((entry) => Object.assign({}, {
         id: entry[0]
       }, entry[1]));
     }
     var optionsElements = null;
-    if(options) {
+    if (options) {
       optionsElements = options.map((obj) => {
-        if(typeof obj === "string") {
+        if (typeof obj === "string") {
           return (<option key={obj} value={obj}>{obj}</option>)
-        } else if(obj.id !== undefined && obj.name !== undefined) {
+        } else if (obj.id !== undefined && obj.name !== undefined) {
           return (<option key={obj.id} value={obj.id}>{obj.name}</option>)
         } else {
           let str = JSON.stringify(obj);

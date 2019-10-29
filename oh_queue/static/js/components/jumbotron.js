@@ -8,7 +8,7 @@ let Jumbotron = ({state}) => {
         Sign in with Ok
       </a>
     );
-  } else if(!isQueueOpen) {
+  } else if (!isQueueOpen) {
     var titleText = `Hello, ${state.currentUser.shortName}`;
     var subtitleText = 'The queue is currently closed. Check back later!';
     var contents = <RequestForm state={state} disabled={true} />;
@@ -23,8 +23,11 @@ let Jumbotron = ({state}) => {
       <div className="container">
         <section className="page-header">
           <div className="row">
+            <Messages messages={state.messages}/>
+          </div>
+          <div className="row">
             <div className="col-md-7 col-lg-8">
-              <h1 className="truncate">{titleText}</h1>
+              <h3 className="truncate">{titleText}</h3>
               <p className="truncate">{subtitleText}</p>
             </div>
             <div className="col-md-5 col-lg-4">
