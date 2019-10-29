@@ -1,11 +1,17 @@
 let RequestForm = (props) => {
   let state = props.state;
   let disabled = !!props.disabled;
+  let descriptionRequired = state.config.description_required === "true";
 
   let submit = (e) => {
     e.preventDefault();
     let form = $('#request-form');
     let descriptionBox = $('#description-box');
+
+    let descriptionDOM = descriptionBox[0];
+    if(descriptionDOM.reportValidity && !descriptionDOM.reportValidity()) {
+      return;
+    }
 
     let formData = {};
     form.serializeArray().forEach((input) => {
@@ -24,6 +30,14 @@ let RequestForm = (props) => {
     let formDOM = form[0];
     if(formDOM.reportValidity && !formDOM.reportValidity()) {
       return;
+    }
+
+    let descriptionBox = $('#description-box');
+
+    if(descriptionRequired) {
+      descriptionBox.prop('required', true);
+    } else {
+      descriptionBox.prop('required', false);
     }
 
     $('#description-overlay').show();
