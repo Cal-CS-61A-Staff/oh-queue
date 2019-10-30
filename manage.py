@@ -83,6 +83,11 @@ def seed_defaults():
         value='true',
         public=True
     ))
+    db.session.add(ConfigEntry(
+        key='queue_magic_word_mode',
+        value='none',
+        public=True
+    ))
     db.session.commit()
 
 @manager.command
