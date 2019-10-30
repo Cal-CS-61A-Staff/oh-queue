@@ -220,6 +220,7 @@ class AdminConfigManager extends React.Component {
                     onText: 'Yes',
                     value: this.state.descriptionRequired
                   })}
+                </td>
                </tr>
                <tr>
                 <td>
