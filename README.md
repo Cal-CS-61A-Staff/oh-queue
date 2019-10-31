@@ -49,7 +49,7 @@ This app uses [Ok](https://okpy.org) to manage access. Even if you aren't using 
 7. You can log in as any email while testing by going to http://localhost:5000/testing-login/.
 
 ### Dokku: Initial Deployment
-    ```
+
     dokku apps:create app-name
     dokku clone app-name https://github.com/Cal-CS-61A-Staff/oh-queue
     dokku mysql:create db-name
@@ -60,15 +60,13 @@ This app uses [Ok](https://okpy.org) to manage access. Even if you aren't using 
     dokku run app-name ./manage.py db upgrade
     dokku letsencrypt app-name
     # Change OK OAuth to support the domain
-    ```
 
 For `OK_KEY` and `OK_SECRET`, you'll need to create an Ok OAuth client [here](https://okpy.org/admin/clients) and have it approved by an Ok admin.
 
 ### Dokku: Upgrading
-    ```
+
     dokku clone app-name https://github.com/Cal-CS-61A-Staff/oh-queue
     dokku run app-name ./manage.py db upgrade
-    ```
 
 ### Configuration
 
