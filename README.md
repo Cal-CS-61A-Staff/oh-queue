@@ -33,9 +33,9 @@ This app uses [Ok](https://okpy.org) to manage access. Even if you aren't using 
     npm install
     ```
 
-4. Reset the database to create tables.
+4. Run the database migrations to setup the initial database.
     ```
-    ./manage.py initdb
+    ./manage.py db upgrade
     ```
     If you get the error "TypeError: OAuthRemoteApp requires consumer key and secret", you need to set your OK_KEY and OK_SECRET environment variables.
 
@@ -48,35 +48,25 @@ This app uses [Ok](https://okpy.org) to manage access. Even if you aren't using 
 
 7. You can log in as any email while testing by going to http://localhost:5000/testing-login/.
 
-## Deployment
-
-First point a git remote to the Dokku server:
-
-    git remote add dokku dokku@<server>:officehours-web
-
-To deploy from master:
-
-    git push dokku master
-
-Deploy from another branch:
-
-    git push dokku my_branch:master
-
-### First Time Deployment
+### Dokku: Initial Deployment
 
     dokku apps:create app-name
-    git remote add online dokku@<server>:app-name
+    dokku clone app-name https://github.com/Cal-CS-61A-Staff/oh-queue
     dokku mysql:create db-name
     dokku mysql:link db-name app-name
-    # Set DNS record
     dokku domains:set app-name <domain>
 
     dokku config:set app-name OH_QUEUE_ENV=prod OK_KEY=<OK CLIENT> OK_SECRET=<OK SECRET> SECRET_KEY=<DB SECRET> COURSE_NAME="CS 61A" COURSE_OFFERING="cal/cs61a/fa16"
-    dokku run app-name ./manage.py initdb
+    dokku run app-name ./manage.py db upgrade
     dokku letsencrypt app-name
     # Change OK OAuth to support the domain
 
 For `OK_KEY` and `OK_SECRET`, you'll need to create an Ok OAuth client [here](https://okpy.org/admin/clients) and have it approved by an Ok admin.
+
+### Dokku: Upgrading
+
+    dokku clone app-name https://github.com/Cal-CS-61A-Staff/oh-queue
+    dokku run app-name ./manage.py db upgrade
 
 ### Configuration
 
