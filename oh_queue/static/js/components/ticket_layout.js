@@ -55,6 +55,12 @@ class TicketLayout extends React.Component {
               <UpdateLocationBox state={state} ticket={ticket}/>
             </div>
           </div>
+          <div className="row">
+            <div className="col-xs-12 col-md-6 col-md-offset-3">
+              <hr />
+              <h4>If you would like to anonymously submit feedback about someone who helped you today, click <a href="https://forms.gle/rPzXDXo2azj2kU8U7">here</a>.</h4>
+            </div>
+          </div>
           <TicketButtons state={state} ticket={ticket}/>
         </div>
       </div>
