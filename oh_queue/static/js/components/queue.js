@@ -17,10 +17,10 @@ let Queue = ({state}) => {
     <div>
       {showJumbotron && <Jumbotron state={state}/>}
       <div className={containerClass}>
-        <Messages messages={state.messages}/>
+        {!showJumbotron && <Messages messages={state.messages}/>}
         <PresenceIndicator state={state} />
-        {isStaff(state) && <FilterControls filter={state.filter}/>}
-        {isStaff(state) && <hr />}
+        {staff && <FilterControls state={state} filter={state.filter} />}
+        {staff && <hr />}
         <Tabs selectedIndex={state.queueTabIndex} onSelect={selectTab}>
           <Tab label={`Waiting (${pendingTickets.length})`}>
             <TicketList status={'pending'} state={state} />
@@ -54,10 +54,7 @@ let TicketList = ({state, status}) => {
       </div>
     );
   } else {
-    body = [
-      <GroupActions tickets={filteredTickets} status={status} state={state} />,
-      items,
-    ];
+    body = [<GroupActions key="group" tickets={filteredTickets} status={status} state={state} />].concat(items)
   }
 
   return (

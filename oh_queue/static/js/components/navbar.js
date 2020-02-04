@@ -1,5 +1,8 @@
 /* React Components */
-let Navbar = ({currentUser, myTicket}) => {
+let Navbar = ({state}) => {
+  var {currentUser} = state;
+  var myTicket = getMyTicket(state);
+  var {Link} = ReactRouterDOM;
   return (
     <nav className="navbar navbar-default navbar-fixed-top">
       <div className="container">
@@ -9,24 +12,30 @@ let Navbar = ({currentUser, myTicket}) => {
             <span className="icon-bar"></span>
             <span className="icon-bar"></span>
           </button>
-          <ReactRouter.Link className="navbar-brand" to="/"><strong>{ window.courseName }</strong> Queue</ReactRouter.Link>
+          <Link className="navbar-brand" to="/"><strong>{ window.courseName } |</strong> Queue</Link>
         </div>
         <div className="collapse navbar-collapse" id="navbar-collapse-section">
           <ul className="nav navbar-nav navbar-right">
 
             {(() => {
-              if (myTicket) {
-                return <li><ReactRouter.Link to={`/${myTicket.id}/`}>My Request</ReactRouter.Link></li>;
+              if (currentUser && currentUser.isStaff) {
+                return <li><Link to="/admin">Admin</Link></li>;
               }
             })()}
 
             {(() => {
-              if (currentUser != null) {
+              if (myTicket) {
+                return <li><Link to={`/tickets/${myTicket.id}/`}>My Request</Link></li>;
+              }
+            })()}
+
+            {(() => {
+              if (currentUser) {
                 return (
                   <li className="dropdown">
                     <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button">{currentUser.name} <span className="caret"></span></a>
                     <ul className="dropdown-menu">
-                      <li><a href="/logout/">Log out</a></li>
+                      <li><a href="/logout">Log out</a></li>
                     </ul>
                   </li>
                 )

@@ -23,13 +23,15 @@ class App extends React.Component {
     let socket = connectSocket();
     this.socket = socket;
     socket.on('connect', () => {
-      app.setOffline(false);
-      app.refreshTickets();
+      this.setOffline(false);
+      this.refreshTickets();
     });
-    socket.on('disconnect', () => app.setOffline(true));
-    socket.on('state', (data) => app.updateState(data));
-    socket.on('event', (data) => app.updateTicket(data));
-    socket.on('presence', (data) => app.updatePresence(data));
+    socket.on('disconnect', () => this.setOffline(true));
+    socket.on('state', (data) => this.updateState(data));
+    socket.on('event', (data) => this.updateTicket(data));
+    socket.on('presence', (data) => this.updatePresence(data));
+
+    this.loadTicket = this.loadTicket.bind(this);
   }
 
   refresh() {
@@ -42,11 +44,30 @@ class App extends React.Component {
   }
 
   updateState(data) {
-    this.state.loaded = true;
-    this.state.currentUser = data.currentUser;
-    for (var ticket of data.tickets) {
-      setTicket(this.state, ticket);
+    if (Array.isArray(data.assignments)) {
+      this.state.assignments = {};
+      for (var assignment of data.assignments) {
+        this.state.assignments[assignment.id] = assignment;
+      }
     }
+    if (Array.isArray(data.locations)) {
+      this.state.locations = {};
+      for (var location of data.locations) {
+        this.state.locations[location.id] = location;
+      }
+    }
+    if (Array.isArray(data.tickets)) {
+      for (var ticket of data.tickets) {
+        setTicket(this.state, ticket);
+      }
+    }
+    if (data.hasOwnProperty('config')) {
+      this.state.config = data.config;
+    }
+    if (data.hasOwnProperty('current_user')) {
+      this.state.currentUser = data.current_user;
+    }
+    this.state.loaded = true;
     this.refresh();
   }
 
@@ -78,7 +99,7 @@ class App extends React.Component {
       case 'assign':
       case 'delete':
       case 'resolve':
-        if(isStaff(this.state)) {
+        if (isStaff(this.state)) {
           cancelNotification(ticket.id + ".create");
         }
         break;
@@ -86,9 +107,12 @@ class App extends React.Component {
       case 'describe':
       case 'unassign':
       case 'update_location':
-        if(isStaff(this.state) && ticket.status === 'pending') {
-          notifyUser('New Request for ' + ticket.assignment,
-                     ticket.location,
+        if (isStaff(this.state) && ticket.status === 'pending') {
+          var assignment = ticketAssignment(this.state, ticket);
+          var location = ticketLocation(this.state, ticket);
+          var question = ticketQuestion(this.state, ticket);
+          notifyUser('New request for ' + assignment.name + ' ' + question,
+                     location.name,
                      ticket.id + '.create');
         }
         break;
@@ -110,6 +134,7 @@ class App extends React.Component {
   }
 
   setFilter(filter) {
+    filter.enabled = !!this.state.filter.enabled;
     this.state.filter = filter;
     this.refresh();
   }
@@ -124,9 +149,18 @@ class App extends React.Component {
     this.refresh();
   }
 
-  makeRequest(eventType, request, follow_redirect=false) {
-    this.socket.emit(eventType, request, (response) => {
+  makeRequest(eventType, request, follow_redirect=false, callback) {
+    if (typeof request === "function") {
+      follow_redirect = request;
+      request = undefined;
+    }
+    if (typeof follow_redirect === "function") {
+      callback = follow_redirect;
+      follow_redirect = false;
+    }
+    let cb = (response) => {
       if (response == null) {
+        if (callback) callback(response);
         return;
       }
       let messages = response.messages || [];
@@ -134,27 +168,33 @@ class App extends React.Component {
         this.addMessage(message.text, message.category);
       }
       if (follow_redirect && response.redirect) {
-        ReactRouter.browserHistory.push(response.redirect);
+        this.router.history.push(response.redirect);
       }
-    });
+      if (callback) callback(response);
+    };
+    if (request !== undefined) {
+      this.socket.emit(eventType, request, cb);
+    } else {
+      this.socket.emit(eventType, cb);
+    }
   }
 
   render() {
-    // Give route components (e.g. Queue, TicketView) the state
+    let { BrowserRouter, Route, Switch } = ReactRouterDOM;
     let state = this.state;
-    let createElement = (Component, props) =>
-      <Component state={state} {...props}/>
-
     return (
-      <ReactRouter.Router
-        history={ReactRouter.browserHistory}
-        createElement={createElement}>
-        <ReactRouter.Route path="/" component={Base}>
-          <ReactRouter.IndexRoute component={Queue}/>
-          <ReactRouter.Route path="/:id/" component={TicketView}/>
-        </ReactRouter.Route>
-        <ReactRouter.Route path="/presence" component={PresenceIndicator}/>
-      </ReactRouter.Router>
+      <BrowserRouter ref={(router) => this.router = router}>
+        <div>
+          <Switch>
+            <Route exact path="/" render={(props) => (<Home state={state} {...props} />)} />
+            <Route path="/admin" render={(props) => (<AdminLayout state={state} {...props} />)} />
+            <Route path="/error" render={(props) => (<ErrorView state={state} {...props} />)} />
+            <Route path="/presence" render={(props) => (<PresenceIndicator state={state} {...props} />)} />
+            <Route path="/tickets/:id" render={(props) => (<TicketLayout state={state} loadTicket={this.loadTicket} {...props} />)} />
+            <Route render={(props) => (<ErrorView state={state} {...props} message="Page Not Found" />)} />
+          </Switch>
+        </div>
+      </BrowserRouter>
     );
   }
 }

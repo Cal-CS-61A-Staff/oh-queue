@@ -10,7 +10,7 @@ elif ENV == 'prod':
 
 if ENV == 'dev':
     SECRET_KEY = 'dev'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///' + os.path.join(basedir, 'app.db')).replace('mysql://', 'mysql+pymysql://')
 else:
     SECRET_KEY = os.getenv('SECRET_KEY')
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL').replace('mysql://', 'mysql+pymysql://')
@@ -27,3 +27,6 @@ OK_SERVER_URL = os.getenv('OK_DEPLOYMENT', 'https://okpy.org')
 
 COURSE_OFFERING = os.getenv('COURSE_OFFERING', 'ok/test/su16')
 COURSE_NAME = os.getenv('COURSE_NAME', 'OK')
+
+HOST = os.getenv('HOST', '127.0.0.1')
+PORT = int(os.getenv('PORT', '5000'))

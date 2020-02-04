@@ -27,10 +27,11 @@ let PresenceIndicator = ({state}) => {
   // how many students need help, assuming all avaiable assistants are assigned
   var stillNeedHelp = Math.max(0, pendingTickets.length - availableAssistants)
 
+  var waitColor = "#646468"
+
   // catch if there actually are no assistants available
   if (numStaffOnline == 0) {
     var timeRange = "??"
-    var col = "#646468"
   } else {
     // min of numStaffOnline exponentials is exponential, take expectation
     var expectedWaitFirst = Math.ceil(avgHelpTime/numStaffOnline)
@@ -49,41 +50,41 @@ let PresenceIndicator = ({state}) => {
 
     // colors for the time
     if (expectedWaitTotal <= 5) {
-      var col ="#009900"
+      waitColor ="#009900"
     } else if (expectedWaitTotal < 10) {
-      var col ="#739900"
+      waitColor ="#739900"
     } else if (expectedWaitTotal < 25) {
-      var col ="#cc5200"
+      waitColor ="#cc5200"
     } else {
-      var col ="#ff0000"
+      waitColor ="#ff0000"
     }
 
     // concatenate time range string
     var timeRange = estWaitTimeMin + " - " + estWaitTimeMax
+    if (estWaitTimeMax > 120) {
+      timeRange = "> 120"
+    }
   }
+
+  var welcomeMessage = state.config.welcome
 
   return (
     <div className="col-xs-12">
 
-      <div className={`alert alert-${color} alert-dismissable fade in`} role="alert">
+      <div className="alert alert-info alert-dismissable fade in" role="alert">
         <button type="button" className="close" aria-label="Close" data-dismiss="alert">
             <span aria-hidden="true">&times;</span>
         </button>
-        <h1><font size="6">Estimated wait time: <font color={col}><strong>{timeRange}</strong></font> minutes </font></h1>
-        <p>To help reduce wait time:</p>
-        <ul className='wait-suggestions'>
-          <li>Plan ahead what questions you want to ask (we will limit time spent to <strong> 10 </strong> minutes per person)</li>
-          <li>When applicable, be prepared to explain your reasoning, attempts, and current approach</li>
-          <li>Check out other resources, including <a href="http://www.piazza.com">piazza</a>, to make sure your question wasn&apos;t already answered</li>
-          <li>We will <strong>not</strong> be helping out with extra credit unless there is no-one else on the queue</li>
-        </ul>
+        <ReactMarkdown source={welcomeMessage} />
       </div>
 
       <div className={`alert alert-${color} alert-dismissable fade in`} role="alert">
-        {message}
         <button type="button" className="close" aria-label="Close" data-dismiss="alert">
             <span aria-hidden="true">&times;</span>
         </button>
+        <h4>Estimated wait time: <font color={waitColor}><strong>{timeRange}</strong></font> minutes</h4>
+        <h5>{ message }</h5>
+        <MagicWordDisplay state={state} />
       </div>
     </div>
   );

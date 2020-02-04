@@ -1,7 +1,7 @@
-let Base = ({state, children}) => {
-  let myTicket = getMyTicket(state);
+let Home = ({match, state, children}) => {
+  let { Route, Switch } = ReactRouterDOM;
 
-  if (isStaff(state) || myTicket) {
+  if (isStaff(state) || getMyTicket(state)) {
     requestNotificationPermission();
   }
 
@@ -10,9 +10,9 @@ let Base = ({state, children}) => {
 
   return (
     <div>
-      <Navbar currentUser={state.currentUser} myTicket={myTicket}/>
+      <Navbar state={state} />
       <OfflineIndicator offline={state.offline && state.loaded}/>
-      {children}
+      <Queue state={state} />
     </div>
   );
 };

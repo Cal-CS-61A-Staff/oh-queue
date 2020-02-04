@@ -4,17 +4,21 @@ import functools
 import random
 import sys
 
-from flask_migrate import Migrate, MigrateCommand
-from flask_script import Manager
+import alembic
 import names
 
+from alembic.config import Config
+from flask_migrate import Migrate, MigrateCommand
+from flask_script import Manager
 from oh_queue import app, socketio
-from oh_queue.models import db, Ticket, User, TicketStatus
+from oh_queue.models import db, Assignment, ConfigEntry, Location, Ticket, TicketStatus, User
 
 migrate = Migrate(app, db)
 
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
+
+alembic_cfg = Config('migrations/alembic.ini')
 
 def not_in_production(f):
     @functools.wraps(f)
@@ -27,8 +31,18 @@ def not_in_production(f):
 
 @manager.command
 @not_in_production
-def seed():
+def seed_data():
     print('Seeding...')
+
+    assignments = [Assignment(name=name) for name in ['Hog', 'Maps', 'Ants', 'Scheme']]
+    locations = [Location(name=name) for name in ['109 Morgan', '241 Cory', '247 Cory']]
+    questions = list(range(1, 16)) + ['Other', 'EC', 'Checkoff']
+    descriptions = ['', 'I\'m in the hallway', 'SyntaxError on Line 5']
+
+    for assignment in assignments:
+        db.session.add(assignment)
+    for location in locations:
+        db.session.add(location)
     for i in range(50):
         real_name = names.get_full_name()
         first_name, last_name = real_name.lower().split(' ')
@@ -48,28 +62,53 @@ def seed():
             user=student,
             status=TicketStatus.pending,
             created=datetime.datetime.utcnow() - delta,
-            assignment=random.choice(['Hog', 'Scheme']),
-            description=random.choice(['', 'SyntaxError on Line 5']),
-            question=random.randrange(1, 6),
-            location=random.choice(['109 Morgan', '247 Cory']),
+            assignment=random.choice(assignments),
+            location=random.choice(locations),
+            question=random.choice(questions),
+            description=random.choice(descriptions),
         )
         db.session.add(ticket)
-        db.session.commit()
+    db.session.commit()
 
+@manager.command
+def seed_defaults():
+    print('Seeding default config values...')
+    db.session.add(ConfigEntry(
+        key='welcome',
+        value='Welcome to the OH Queue!',
+        public=True
+    ))
+    db.session.add(ConfigEntry(
+        key='is_queue_open',
+        value='true',
+        public=True
+    ))
+    db.session.add(ConfigEntry(
+        key='queue_magic_word_mode',
+        value='none',
+        public=True
+    ))
+    db.session.commit()
 
 @manager.command
 @not_in_production
 def resetdb():
     print('Dropping tables...')
     db.drop_all(app=app)
+    initdb()
+
+@manager.command
+def initdb():
     print('Creating tables...')
     db.create_all(app=app)
-    seed()
+    seed_defaults()
+    print('Stamping DB revision...')
+    alembic.command.stamp(alembic_cfg, "head")
 
 @manager.command
 @not_in_production
 def server():
-    socketio.run(app)
+    socketio.run(app, host=app.config.get('HOST'), port=app.config.get('PORT'))
 
 if __name__ == '__main__':
     manager.run()

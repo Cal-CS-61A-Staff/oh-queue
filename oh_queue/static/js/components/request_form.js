@@ -1,26 +1,51 @@
-let RequestForm = () => {
+let RequestForm = (props) => {
+  let state = props.state;
+  let disabled = !!props.disabled;
+
   let submit = (e) => {
     e.preventDefault();
+    let form = $('#request-form');
+    let formDOM = form[0];
+    if (formDOM.reportValidity && !formDOM.reportValidity()) {
+      return;
+    }
     let formData = {};
-    $('#request-form').serializeArray().forEach((input) => {
+    form.serializeArray().forEach((input) => {
       formData[input.name] = input.value;
     });
     app.makeRequest('create', formData, true);
   };
 
-  return (
-    <form id="request-form">
+  let {assignments, locations} = state;
+
+  let filteredAssignments = Object.values(assignments).filter((assignment) => assignment.visible).sort((a, b) => a.name.localeCompare(b.name));
+  let filteredLocations = Object.values(locations).filter((location) => location.visible).sort((a, b) => a.name.localeCompare(b.name));
+
+  let magicWordInput = false;
+  if(state.config && state.config.queue_magic_word_mode && state.config.queue_magic_word_mode !== 'none') {
+    magicWordInput = (
       <div className="form-group form-group-lg">
         <div className="input-group">
-          <SelectPicker options={ASSIGNMENTS} className="selectpicker form-control form-left" data-live-search="true" data-size="8" data-width="60%" data-style="btn-lg btn-default" id="assignment" name="assignment" title="Assignment" required />
-          <input className="form-control form-right" type="number" name="question" id="question" title="Question" placeholder="Question" min="0" step="1" required />
+          <input className="form-control" type="password" id="magic-word" name="magic_word" title="Magic Word" placeholder="Magic Word" required disabled={disabled} />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <form id="request-form">
+      { magicWordInput }
+      <div className="form-group form-group-lg">
+        <div className="input-group">
+          <SelectPicker options={filteredAssignments} className="selectpicker form-control form-left" data-live-search="true" data-size="8" data-width="60%" data-style="btn-lg btn-default" id="assignment_id" name="assignment_id" title="Assignment" required disabled={disabled} />
+          <input className="form-control form-right" type="text" id="question" name="question" title="Question" placeholder="Question" required disabled={disabled} />
         </div>
       </div>
       <div className="form-group form-group-lg">
         <div className="input-group">
-          <SelectPicker options={LOCATIONS} className="selectpicker form-control form-left" id="location" data-width="60%" data-style="btn-lg btn-default" name="location" title="Location" required />
+          <SelectPicker options={filteredLocations} className="selectpicker form-control form-left" data-live-search="true" data-size="8" data-width="60%" data-style="btn-lg btn-default" id="location_id" name="location_id" title="Location" required disabled={disabled} />
           <div className="input-group-btn form-right pull-left">
-            <button className="btn btn-lg btn-default" onClick={submit}>Request</button>
+            <button className="btn btn-lg btn-default" onClick={submit} disabled={disabled}>Request</button>
           </div>
         </div>
       </div>
