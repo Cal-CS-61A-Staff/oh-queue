@@ -113,7 +113,6 @@ class Ticket(db.Model):
     @property
     def serialize(self):
         data = {
-            "user": self.user.name,
             "assignment": self.assignment.name,
             "id": self.id,
             "location":self.location.name,
