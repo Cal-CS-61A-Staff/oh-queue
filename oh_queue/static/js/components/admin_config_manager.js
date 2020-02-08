@@ -6,6 +6,7 @@ class AdminConfigManager extends React.Component {
       loading: {},
       loaded: false,
       isQueueOpen: false,
+      descriptionRequired: false,
       welcome: '',
       queueMagicWordMode: 'none',
       queueMagicWordData: ''
@@ -35,6 +36,7 @@ class AdminConfigManager extends React.Component {
     this.setState({
       loaded: true,
       isQueueOpen: config.is_queue_open === 'true',
+      descriptionRequired: config.description_required === 'true',
       welcome: config.welcome || '',
       queueMagicWordMode: config.queue_magic_word_mode
     });
@@ -211,6 +213,16 @@ class AdminConfigManager extends React.Component {
                 </td>
               </tr>
               <tr>
+                <td>Should the description field be required for new tickets?</td>
+                <td className="col-md-1">
+                  {this.renderToggle('description_required', {
+                    offText: 'No',
+                    onText: 'Yes',
+                    value: this.state.descriptionRequired
+                  })}
+                </td>
+               </tr>
+               <tr>
                 <td>
                   <p>What type of magic word should the queue require to submit new tickets?</p>
                   <ul>

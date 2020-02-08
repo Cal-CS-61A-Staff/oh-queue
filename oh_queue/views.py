@@ -283,12 +283,21 @@ def create(form):
     assignment_id = form.get('assignment_id')
     location_id = form.get('location_id')
     question = form.get('question')
+    description = form.get('description')
     # Create a new ticket and add it to persistent storage
     if assignment_id is None or location_id is None or not question:
         return socket_error(
             'You must fill out all the fields',
             category='warning',
         )
+
+    description_required = ConfigEntry.query.get('description_required')
+    if description is None and descriptionRequired:
+        return socket_error(
+            'You must fill out all the fields',
+            category='warning',
+        )
+
     assignment = Assignment.query.get(assignment_id)
     if not assignment:
         return socket_error(
@@ -307,6 +316,7 @@ def create(form):
         assignment=assignment,
         location=location,
         question=question,
+        description=description
     )
 
     db.session.add(ticket)

@@ -84,6 +84,11 @@ def seed_defaults():
         public=True
     ))
     db.session.add(ConfigEntry(
+        key='description_required',
+        value='false',
+        public=True
+    ))
+    db.session.add(ConfigEntry(
         key='queue_magic_word_mode',
         value='none',
         public=True
