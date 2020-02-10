@@ -11,6 +11,7 @@ from flask_socketio import emit
 
 from oh_queue import app, db, socketio
 from oh_queue.models import Assignment, ConfigEntry, Location, Ticket, TicketEvent, TicketEventType, TicketStatus
+import oh_queue.api as api
 
 def user_json(user):
     return {
@@ -501,3 +502,11 @@ def update_config(data):
     if entry.public:
         emit_state(['config'], broadcast=True)
     return config_json()
+
+@app.route('/api/v1/tickets/', methods=['GET'])
+def get_tickets():
+    return api.get_tickets()
+
+@app.route('/api/v1/tickets/<int:ticket_id>', methods=['GET'])
+def get_ticket(ticket_id):
+    return api.get_ticket(ticket_id)

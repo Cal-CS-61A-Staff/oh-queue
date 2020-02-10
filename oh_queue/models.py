@@ -110,6 +110,17 @@ class Ticket(db.Model):
            cls.status.in_(status)
         ).order_by(cls.created).all()
 
+    @property
+    def serialize(self):
+        data = {
+            "assignment": self.assignment.name,
+            "id": self.id,
+            "location":self.location.name,
+            "status":self.status.__str__(),
+            "updated_time":self.updated
+        }
+        return data
+
 TicketEventType = enum.Enum(
     'TicketEventType',
     'create assign unassign resolve delete update',
