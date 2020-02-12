@@ -17,8 +17,8 @@ def record_params(setup_state):
     server_url = app.config.get('OK_SERVER_URL')
     auth.ok_auth = oauth.remote_app(
         'ok-server',
-        consumer_key=app.config.get('OK_KEY'),
-        consumer_secret=app.config.get('OK_SECRET'),
+        consumer_key=app.config.get('OK_KEY') or "local-dev-email",
+        consumer_secret=app.config.get('OK_SECRET') or "KH0mvknMUWT5w3U7zvz6wsUQZoy6UmQ",
         request_token_params={
             'scope': 'email',
             'state': lambda: security.gen_salt(10)
