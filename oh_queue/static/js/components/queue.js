@@ -2,8 +2,9 @@ let Queue = ({state}) => {
   let staff = isStaff(state);
   let myTicket = getMyTicket(state);
   let showJumbotron = !staff && !myTicket;
-  let pendingTickets = getTickets(state, 'pending');
+  let pendingTickets = getTickets(state, 'pending').concat(...getTickets(state, "rerequested"));
   let assignedTickets = getTickets(state, 'assigned');
+  let juggledTickets = getTickets(state, 'juggled');
   let shouldHighlightAssigned = staff && getHelpingTicket(state);
   let selectTab = (index) => {
     state.queueTabIndex = index;
@@ -23,10 +24,13 @@ let Queue = ({state}) => {
         {staff && <hr />}
         <Tabs selectedIndex={state.queueTabIndex} onSelect={selectTab}>
           <Tab label={`Waiting (${pendingTickets.length})`}>
-            <TicketList status={'pending'} state={state} />
+            <TicketList tickets={pendingTickets} tstatus={'pending'} state={state} />
+          </Tab>
+          <Tab label={`On Hold (${juggledTickets.length})`} shouldHighlight={shouldHighlightAssigned}>
+            <TicketList tickets={juggledTickets} status={'juggled'} state={state} />
           </Tab>
           <Tab label={`Assigned (${assignedTickets.length})`} shouldHighlight={shouldHighlightAssigned}>
-            <TicketList status={'assigned'} state={state} />
+            <TicketList tickets={assignedTickets} status={'assigned'} state={state} />
           </Tab>
         </Tabs>
       </div>
@@ -34,8 +38,7 @@ let Queue = ({state}) => {
   );
 }
 
-let TicketList = ({state, status}) => {
-  let tickets = getTickets(state, status);
+let TicketList = ({tickets, state, status}) => {
   let filteredTickets = applyFilter(state.filter, tickets);
   let items = filteredTickets.map((ticket) =>
     <Ticket key={ticket.id} state={state} ticket={ticket}/>
