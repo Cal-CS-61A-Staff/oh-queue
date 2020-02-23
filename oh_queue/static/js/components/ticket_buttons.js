@@ -124,7 +124,7 @@ class TicketButtons extends React.Component {
       topButtons.push(makeButton('Next Ticket', 'default', this.next));
     }
     if (ticket.status === "juggled") {
-        const isWaiting = moment.utc(ticket.juggle_time).isAfter();
+        const isWaiting = moment.utc(ticket.rerequest_threshold).isAfter();
         if (staff) {
             if (!isTicketHelper(state, ticket)) {
                 if (isWaiting) {

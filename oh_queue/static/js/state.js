@@ -18,7 +18,9 @@ type Ticket = {
   status: 'pending' | 'assigned' | 'resolved' | 'deleted' | 'juggled' | 'rerequested',
   user: User,
   created: string,  // ISO 8601 datetime string
-  juggle_time: ?string, // ISO 8601 datetime string
+  rerequest_threshold: ?string, // ISO 8601 datetime string
+  hold_time: ?string, // ISO 8601 datetime string
+  rerequest_time: ?string, // ISO 8601 datetime string
   updated: ?string,
   location_id: number,
   assignment_id: number,
@@ -112,7 +114,7 @@ function ticketTimeSinceAssigned(ticket: Ticket): string {
 }
 
 function ticketTimeToReRequest(ticket: Ticket): string {
-    return moment.utc(ticket.juggle_time).fromNow();
+    return moment.utc(ticket.rerequest_threshold).fromNow();
 }
 
 function isPending(ticket: Ticket): boolean {

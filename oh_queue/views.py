@@ -35,7 +35,9 @@ def ticket_json(ticket):
         'status': ticket.status.name,
         'user': student_json(ticket.user),
         'created': ticket.created.isoformat(),
-        'juggle_time': ticket.juggle_time and ticket.juggle_time.isoformat(),
+        'rerequest_threshold': ticket.rerequest_threshold and ticket.rerequest_threshold.isoformat(),
+        'hold_time': ticket.hold_time and ticket.hold_time.isoformat(),
+        'rerequest_time': ticket.rerequest_time and ticket.rerequest_time.isoformat(),
         'updated': ticket.updated and ticket.updated.isoformat(),
         'location_id': ticket.location_id,
         'assignment_id': ticket.assignment_id,
@@ -398,7 +400,8 @@ def juggle(data):
     location = None
     for ticket in tickets:
         ticket.status = TicketStatus.juggled
-        ticket.juggle_time = datetime.datetime.utcnow() + datetime.timedelta(seconds=5)
+        ticket.hold_time = datetime.datetime.utcnow()
+        ticket.rerequest_threshold = ticket.hold_time + datetime.timedelta(seconds=5)
         location = ticket.location
         emit_event(ticket, TicketEventType.juggle)
     db.session.commit()
@@ -435,10 +438,12 @@ def rerequest(data):
         if not ticket.user.id == current_user.id:
             return socket_unauthorized()
 
-        if ticket.juggle_time > datetime.datetime.utcnow():
+        if ticket.rerequest_threshold > datetime.datetime.utcnow():
             return socket_unauthorized()
 
         ticket.status = TicketStatus.rerequested
+        ticket.rerequest_time = datetime.datetime.utcnow()
+
         emit_event(ticket, TicketEventType.rerequest)
 
     db.session.commit()
