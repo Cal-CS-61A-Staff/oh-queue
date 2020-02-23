@@ -9,7 +9,8 @@ class AdminConfigManager extends React.Component {
       descriptionRequired: false,
       welcome: '',
       queueMagicWordMode: 'none',
-      queueMagicWordData: ''
+      queueMagicWordData: '',
+      jugglingTimeout: 0,
     };
     this.toggles = {};
 
@@ -22,6 +23,8 @@ class AdminConfigManager extends React.Component {
     this.changeQueueMagicWordMode = this.changeQueueMagicWordMode.bind(this);
     this.submitQueueMagicWord = this.submitQueueMagicWord.bind(this);
     this.changeQueueMagicWordData = this.changeQueueMagicWordData.bind(this);
+    this.changeJugglingTimeout = this.changeJugglingTimeout.bind(this);
+    this.submitJugglingTimeout = this.submitJugglingTimeout.bind(this);
 
     this.loadState();
   }
@@ -38,7 +41,8 @@ class AdminConfigManager extends React.Component {
       isQueueOpen: config.is_queue_open === 'true',
       descriptionRequired: config.description_required === 'true',
       welcome: config.welcome || '',
-      queueMagicWordMode: config.queue_magic_word_mode
+      queueMagicWordMode: config.queue_magic_word_mode,
+      jugglingTimeout: parseInt(config.juggling_delay),
     });
     if (config.queue_magic_word_mode === 'text') {
       app.makeRequest('refresh_magic_word', (res) => {
@@ -163,6 +167,28 @@ class AdminConfigManager extends React.Component {
     return false;
   }
 
+  changeJugglingTimeout(e) {
+      this.setState({
+          jugglingTimeout: e.target.value,
+      });
+  }
+
+  submitJugglingTimeout(e) {
+    let btn = $(e.target.elements["btn-submit"]);
+    btn.addClass('is-loading');
+    btn.attr('disabled', true);
+    let time = Date.now();
+    app.makeRequest(`update_config`, {
+      keys: ['juggling_delay'],
+      values: [this.state.jugglingTimeout]
+    }, (isSuccess) => {
+      setTimeout(() => {
+        btn.removeClass('is-loading');
+        btn.attr('disabled', false);
+      }, 250 - (Date.now() - time));
+    });
+  }
+
   render() {
     if (!this.state.loaded) {
       this.loadState();
@@ -233,6 +259,19 @@ class AdminConfigManager extends React.Component {
                 <td className="col-md-3">
                   <form onSubmit={this.submitQueueMagicWord}>
                     { queueMagicWordOptions }
+                  </form>
+                </td>
+              </tr>
+               <tr>
+                <td>
+                  <p>What should the delay be before students can request to be taken off hold? (in minutes)</p>
+                </td>
+                <td className="col-md-3">
+                  <form onSubmit={this.submitJugglingTimeout}>
+                    <div className="form-group">
+                      <input type="number" className="form-control" value={this.state.jugglingTimeout} onChange={this.changeJugglingTimeout} required="required" />
+                    </div>
+                    <button className="btn btn-default" name="btn-submit" type="submit">Save</button>
                   </form>
                 </td>
               </tr>

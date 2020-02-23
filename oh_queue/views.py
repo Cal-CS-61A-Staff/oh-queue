@@ -401,7 +401,7 @@ def juggle(data):
     for ticket in tickets:
         ticket.status = TicketStatus.juggled
         ticket.hold_time = datetime.datetime.utcnow()
-        ticket.rerequest_threshold = ticket.hold_time + datetime.timedelta(seconds=5)
+        ticket.rerequest_threshold = ticket.hold_time + datetime.timedelta(minutes=int(ConfigEntry.query.get("juggling_delay").value))
         location = ticket.location
         emit_event(ticket, TicketEventType.juggle)
     db.session.commit()

@@ -98,6 +98,11 @@ def seed_defaults():
         value='',
         public=False
     ))
+    db.session.add(ConfigEntry(
+        key='juggling_delay',
+        value='5',
+        public=True,
+    ))
     db.session.commit()
 
 @manager.command

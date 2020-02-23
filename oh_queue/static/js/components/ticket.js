@@ -4,8 +4,8 @@ let Ticket = ({state, ticket}) => {
 
   const staff = isStaff(state);
 
-  const staffName = ticket.helper ? (isTicketHelper(state, ticket) ? 'you' : ticket.helper.name) : "anyone";
-  const studentName = ticket.user ? ticketIsMine(state, ticket) ? 'you' : staff ? ticket.user.name : "a student" : "anyone";
+  const staffName = ticket.helper ? (isTicketHelper(state, ticket) ? 'you' : ticket.helper.name) : "someone";
+  const studentName = ticket.user ? (ticketIsMine(state, ticket) ? 'you' : staff ? ticket.user.name : "a student") : "someone";
 
   const capitalize = x => x[0].toUpperCase() + x.slice(1);
   const possessive = x => x === "you" ? "your" : x + "'s";
