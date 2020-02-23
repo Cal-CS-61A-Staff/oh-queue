@@ -120,12 +120,9 @@ function ticketTimeToReRequest(ticket: Ticket): string {
 function isPending(ticket: Ticket): boolean {
   return ticket.status === 'pending';
 }
-function isActive(ticket: Ticket): boolean {
-  return ticket.status === 'assigned';
-}
 
 function isActive(ticket: Ticket): boolean {
-  return ticket.status === 'pending' || ticket.status === 'assigned';
+  return ['pending', 'assigned', 'juggled', 'rerequested'].includes(ticket.status);
 }
 
 function ticketAssignment(state: State, ticket: Ticket): TicketAssignment {
