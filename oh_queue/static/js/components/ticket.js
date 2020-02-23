@@ -62,7 +62,7 @@ let TicketLink = ({state, ticket, children}) => {
     'clearfix': true,
     'ticket-link': link,
     'ticket-highlight': highlight,
-    'ticket-rerequesting': ticket.status === "rerequested",
+    'ticket-rerequested': ticket.status === "rerequested",
     'ticket-juggled': ticket.status === "juggled",
   });
   if (link) {

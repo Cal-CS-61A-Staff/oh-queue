@@ -227,15 +227,15 @@ hr {
    background-color: #f3f3f3;
 }
 
-.ticket-rerequesting {
+.ticket-rerequested {
    background-color: palegoldenrod;
 }
 
-.ticket-rerequesting:hover {
+.ticket-rerequested:hover {
     background-color: #ebc894;
 }
 
-.ticket-rerequesting h4 {
+.ticket-rerequested h4 {
     color: orange;
 }
 .ticket-juggled {
