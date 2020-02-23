@@ -2,12 +2,24 @@ let Ticket = ({state, ticket}) => {
   let assignment = ticketAssignment(app.state, ticket);
   let location = ticketLocation(app.state, ticket);
 
+  const staff = isStaff(state);
+
+  const staffName = ticket.helper ? (isTicketHelper(state, ticket) ? 'you' : ticket.helper.name) : "anyone";
+  const studentName = ticket.user ? ticketIsMine(state, ticket) ? 'you' : staff ? ticket.user.name : "a student" : "anyone";
+
+  const capitalize = x => x[0].toUpperCase() + x.slice(1);
+  const possessive = x => x === "you" ? "your" : x + "'s";
+
   var status;
   if (ticket.status === 'pending') {
     status = ticketDisplayTime(ticket) + ' in ' + location.name;
+  } else if (ticket.status === "juggled") {
+    status = `${capitalize(staffName)} put ${studentName} on hold XYZ minutes ago.`
+  } else if (ticket.status === "rerequested") {
+      status = `${capitalize(studentName)} asked for ${possessive(staffName)} help again XYZ minutes ago.`
   } else {
     if (isStaff(state)) {
-      status = (isTicketHelper(state, ticket) ? 'You' : ticket.helper.name) + ' (Started helping ' + ticketTimeSinceAssigned(ticket)+ ')';
+      status = capitalize(staffName) + ' (Started helping ' + ticketTimeSinceAssigned(ticket)+ ')';
     } else {
       status = ticketStatus(state, ticket);
     }
@@ -37,7 +49,6 @@ let Ticket = ({state, ticket}) => {
         <span className="badge"> Old Ticket </span>}
         </small>
       </h4>
-
     </TicketLink>
   );
 }
@@ -51,6 +62,8 @@ let TicketLink = ({state, ticket, children}) => {
     'clearfix': true,
     'ticket-link': link,
     'ticket-highlight': highlight,
+    'ticket-rerequesting': ticket.status === "rerequested",
+    'ticket-juggled': ticket.status === "juggled",
   });
   if (link) {
     return (

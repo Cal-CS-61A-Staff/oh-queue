@@ -114,7 +114,7 @@ class Ticket(db.Model):
 
 TicketEventType = enum.Enum(
     'TicketEventType',
-    'create assign unassign resolve delete update juggle rerequest return_to',
+    'create assign unassign resolve delete update juggle rerequest return_to hold_released',
 )
 
 class TicketEvent(db.Model):

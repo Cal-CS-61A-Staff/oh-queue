@@ -109,7 +109,7 @@ class TicketButtons extends React.Component {
     if (ticket.status === 'assigned') {
       bottomButtons.push(makeButton('Resolve', 'default', this.resolve));
       if (staff) {
-        if (ticket.helper.id === state.currentUser.id) {
+        if (isTicketHelper(state, ticket)) {
           topButtons.push(makeButton('Resolve and Next in Room', 'primary', this.resolveAndLocalNext));
           topButtons.push(makeButton('Resolve and Next', 'primary', this.resolveAndNext));
           topButtons.push(makeButton('Come Back Later', 'warning', this.comeBackLater));
@@ -126,10 +126,19 @@ class TicketButtons extends React.Component {
     if (ticket.status === "juggled") {
         const isWaiting = moment.utc(ticket.juggle_time).isAfter();
         if (staff) {
-            if (isWaiting) {
-                topButtons.push(makeButton("Continue helping (ahead of schedule)", "danger", this.returnTo));
-            } else {
-                topButtons.push(makeButton("Continue helping", "warning", this.returnTo));
+            if (!isTicketHelper(state, ticket)) {
+                if (isWaiting) {
+                    topButtons.push(makeButton("Take over helping (ahead of schedule)", "danger", this.returnTo));
+                } else {
+                    topButtons.push(makeButton("Take over helping", "danger", this.returnTo));
+                }
+            }
+            else {
+                if (isWaiting) {
+                    topButtons.push(makeButton("Continue helping (ahead of schedule)", "danger", this.returnTo));
+                } else {
+                    topButtons.push(makeButton("Continue helping", "warning", this.returnTo));
+                }
             }
             bottomButtons.push(makeButton('Resolve', 'default', this.resolve));
         } else {
@@ -145,7 +154,11 @@ class TicketButtons extends React.Component {
     }
     if (ticket.status === "rerequested") {
         if (staff) {
-            topButtons.push(makeButton('Continue helping', 'warning', this.returnTo));
+            if (isTicketHelper(state, ticket)) {
+                topButtons.push(makeButton('Continue helping', 'warning', this.returnTo));
+            } else {
+                topButtons.push(makeButton("Take over helping", "danger", this.returnTo));
+            }
             bottomButtons.push(makeButton('Resolve', 'default', this.resolve));
         } else {
             topButtons.push(makeButton("Help re-requested, wait for staff", "warning disabled"));

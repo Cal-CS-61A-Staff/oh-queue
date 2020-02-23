@@ -15,7 +15,7 @@ type User = {
 
 type Ticket = {
   id: number,
-  status: 'pending' | 'assigned' | 'resolved' | 'deleted',
+  status: 'pending' | 'assigned' | 'resolved' | 'deleted' | 'juggled' | 'rerequested',
   user: User,
   created: string,  // ISO 8601 datetime string
   juggle_time: ?string, // ISO 8601 datetime string
@@ -152,7 +152,7 @@ function ticketStatus(state: State, ticket: Ticket): string {
   } else if (ticket.status === "juggled") {
     return "Working solo";
   } else if (ticket.status === "rerequested") {
-    return `Waiting for ${isTicketHelper(state, ticket) ? "you" : ticket.helper.name} to come back`
+    return `Waiting for ${isTicketHelper(state, ticket) ? "you" : ticket.helper ? ticket.helper.name : "any assistant"} to come back`
   } else {
     return 'Queued';
   }

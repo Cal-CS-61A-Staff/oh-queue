@@ -1,6 +1,8 @@
 let GroupActions = ({state, status, tickets}) => {
   if (!isStaff(state)) return null;
   let ticket_ids = tickets.map(ticket => ticket.id);
+  const heldTickets = tickets.filter(ticket => ["juggled", "rerequested"].includes(ticket.status));
+  const myHeldTickets = heldTickets.filter(ticket => isTicketHelper(state, ticket));
   var buttons;
   if (status === 'pending') {
     buttons = [
@@ -14,6 +16,11 @@ let GroupActions = ({state, status, tickets}) => {
       className="btn btn-primary pull-right">
       Help all
       </button>,
+      !!heldTickets.length &&
+      <button key="release-my-holds" onClick={() => app.makeRequest('release_holds', myHeldTickets.map(t => t.id))}
+      className="btn btn-warning pull-right">
+      Release my holds
+      </button>,
     ];
   } else if (status === 'assigned') {
     buttons = [
@@ -26,6 +33,18 @@ let GroupActions = ({state, status, tickets}) => {
       Resolve all
       </button>,
     ];
+  } else if (status === "held") {
+    buttons = [
+      <button key="release-all-holds" onClick={() => app.makeRequest('release_holds', heldTickets.map(t => t.id))}
+      className="btn btn-danger pull-right">
+      Release all holds
+      </button>,
+      <button key="release-my-holds" onClick={() => app.makeRequest('release_holds', myHeldTickets.map(t => t.id))}
+      className="btn btn-warning pull-right">
+      Release my holds
+      </button>,
+    ];
+
   }
 
   return (

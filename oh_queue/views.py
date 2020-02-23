@@ -417,7 +417,7 @@ def assign(ticket_ids):
 
 @socketio.on('return_to')
 @is_staff
-def assign(ticket_ids):
+def return_to(ticket_ids):
     tickets = get_tickets(ticket_ids)
     for ticket in tickets:
         ticket.status = TicketStatus.assigned
@@ -454,6 +454,15 @@ def rerequest(data):
         ticket.status = TicketStatus.juggled
         emit_event(ticket, TicketEventType.juggle)
 
+    db.session.commit()
+
+@socketio.on("release_holds")
+@is_staff
+def release_holds(ticket_ids):
+    tickets = get_tickets(ticket_ids)
+    for ticket in tickets:
+        ticket.helper_id = None
+        emit_event(ticket, TicketEventType.hold_released)
     db.session.commit()
 
 @socketio.on('unassign')
