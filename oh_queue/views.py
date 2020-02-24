@@ -467,12 +467,16 @@ def rerequest(data):
 
 @socketio.on("release_holds")
 @is_staff
-def release_holds(ticket_ids):
+def release_holds(data):
+    ticket_ids = data.get("ticket_ids")
+    to_me = data.get("to_me")
     tickets = get_tickets(ticket_ids)
     for ticket in tickets:
-        ticket.helper_id = None
+        ticket.helper_id = current_user.id if to_me else None
         emit_event(ticket, TicketEventType.hold_released)
     db.session.commit()
+
+    return socket_redirect()
 
 @socketio.on('unassign')
 @is_staff

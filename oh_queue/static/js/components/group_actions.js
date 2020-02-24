@@ -16,8 +16,12 @@ let GroupActions = ({state, status, tickets}) => {
       className="btn btn-primary pull-right">
       Help all
       </button>,
-      !!heldTickets.length &&
-      <button key="release-my-holds" onClick={() => app.makeRequest('release_holds', myHeldTickets.map(t => t.id))}
+      !!myHeldTickets.length &&
+      <button key="release-my-holds" onClick={() => {
+          if (!confirm(`Are you sure you want to release all ${myHeldTickets.length} of your requests?`)) return;
+          app.makeRequest(
+          'release_holds', {ticket_ids: myHeldTickets.map(t => t.id)}
+          )}}
       className="btn btn-warning pull-right">
       Release my holds
       </button>,
@@ -35,11 +39,16 @@ let GroupActions = ({state, status, tickets}) => {
     ];
   } else if (status === "held") {
     buttons = [
-      <button key="release-all-holds" onClick={() => app.makeRequest('release_holds', heldTickets.map(t => t.id))}
+      <button key="release-all-holds" onClick={() => {
+          if (!confirm(`Are you sure you want to release all ${heldTickets.length} of EVERYONE'S requests?`)) return;
+          app.makeRequest('release_holds', {ticket_ids: heldTickets.map(t => t.id)})}}
       className="btn btn-danger pull-right">
       Release all holds
       </button>,
-      <button key="release-my-holds" onClick={() => app.makeRequest('release_holds', myHeldTickets.map(t => t.id))}
+      !!myHeldTickets.length &&
+      <button key="release-my-holds" onClick={() => {
+          if (!confirm(`Are you sure you want to release all ${myHeldTickets.length} of your requests?`)) return;
+          app.makeRequest('release_holds', {ticket_ids: myHeldTickets.map(t => t.id)})}}
       className="btn btn-warning pull-right">
       Release my holds
       </button>,

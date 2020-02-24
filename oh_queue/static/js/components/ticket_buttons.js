@@ -7,6 +7,8 @@ class TicketButtons extends React.Component {
     this.resolveAndNext = this.resolveAndNext.bind(this);
     this.resolveAndLocalNext = this.resolveAndLocalNext.bind(this);
     this.comeBackLater = this.comeBackLater.bind(this);
+    this.releaseToAnyone = this.releaseToAnyone.bind(this);
+    this.releaseToMe = this.releaseToMe.bind(this);
     this.rerequest = this.rerequest.bind(this);
     this.cancelRerequest = this.cancelRerequest.bind(this);
     this.resolve = this.resolve.bind(this);
@@ -48,6 +50,16 @@ class TicketButtons extends React.Component {
 
   comeBackLater() {
       app.makeRequest('juggle', {'ticket_ids': [this.props.ticket.id] }, true)
+  }
+
+  releaseToAnyone() {
+      if (!confirm("Release this ticket to anyone else?")) return;
+      app.makeRequest('release_holds', {'ticket_ids': [this.props.ticket.id] })
+  }
+
+  releaseToMe() {
+      if (this.props.ticket.helper && !confirm("Take over responsibility for this ticket?")) return;
+      app.makeRequest('release_holds', {'ticket_ids': [this.props.ticket.id], to_me: true })
   }
 
   rerequest() {
@@ -126,19 +138,17 @@ class TicketButtons extends React.Component {
     if (ticket.status === "juggled") {
         const isWaiting = moment.utc(ticket.rerequest_threshold).isAfter();
         if (staff) {
-            if (!isTicketHelper(state, ticket)) {
-                if (isWaiting) {
-                    topButtons.push(makeButton("Take over helping (ahead of schedule)", "danger", this.returnTo));
-                } else {
-                    topButtons.push(makeButton("Take over helping", "danger", this.returnTo));
-                }
-            }
-            else {
+            if (isTicketHelper(state, ticket)) {
                 if (isWaiting) {
                     topButtons.push(makeButton("Continue helping (ahead of schedule)", "danger", this.returnTo));
                 } else {
                     topButtons.push(makeButton("Continue helping", "warning", this.returnTo));
                 }
+            } else {
+                topButtons.push(makeButton("Take over", "warning", this.releaseToMe));
+            }
+            if (ticket.helper) {
+                topButtons.push(makeButton("Release hold", "danger", this.releaseToAnyone));
             }
             bottomButtons.push(makeButton('Resolve', 'default', this.resolve));
         } else {
@@ -157,7 +167,10 @@ class TicketButtons extends React.Component {
             if (isTicketHelper(state, ticket)) {
                 topButtons.push(makeButton('Continue helping', 'warning', this.returnTo));
             } else {
-                topButtons.push(makeButton("Take over helping", "danger", this.returnTo));
+                topButtons.push(makeButton("Take over", "warning", this.releaseToMe));
+            }
+            if (ticket.helper) {
+                topButtons.push(makeButton("Release hold", "danger", this.releaseToAnyone));
             }
             bottomButtons.push(makeButton('Resolve', 'default', this.resolve));
         } else {

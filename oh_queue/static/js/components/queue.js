@@ -6,7 +6,7 @@ let Queue = ({state}) => {
                          .concat(...getTickets(state, 'pending'))
                          .concat(...getTickets(state, "juggled").filter(ticket => isTicketHelper(state, ticket) || !ticket.helper));
   let assignedTickets = getTickets(state, 'assigned');
-  let heldTickets = getTickets(state, 'juggled').concat(...getTickets(state, 'rerequested'));
+  let heldTickets = getTickets(state, 'rerequested').concat(...getTickets(state, 'juggled'));
   if (!staff) {
       assignedTickets.push(...heldTickets);
   }
