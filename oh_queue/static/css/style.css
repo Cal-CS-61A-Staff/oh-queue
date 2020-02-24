@@ -228,26 +228,34 @@ hr {
 }
 
 .ticket-rerequested {
-   background-color: palegoldenrod;
+   background-color: #fff08c;
 }
 
 .ticket-rerequested:hover {
-    background-color: #ebc894;
+    background-color: #ffea6f;
 }
 
 .ticket-rerequested h4 {
-    color: orange;
+    color: #292929;
 }
+
+.ticket-rerequested:hover h4 {
+    color: black;
+}
+
 .ticket-juggled {
-   background-color: lightgray
+   background-color: #e2e3e5
 }
 
 .ticket-juggled:hover {
-    background-color: darkgray;
+    background-color: #d6d8d9;
 }
 
 .ticket-juggled h4 {
-    color: black;
+    color: #474b4f;
+}
+.ticket-juggled:hover h4 {
+    color: #1b1e21;
 }
 
 .ticket-index {
