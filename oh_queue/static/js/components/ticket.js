@@ -16,7 +16,7 @@ let Ticket = ({state, ticket}) => {
   } else if (ticket.status === "juggled") {
     status = `${capitalize(staffName)} put ${studentName} on hold ${moment.utc(ticket.hold_time).fromNow()}.`
   } else if (ticket.status === "rerequested") {
-      status = `${capitalize(studentName)} asked for ${possessive(staffName)} help again ${moment.utc(ticket.rerequest_time).fromNow()}.`
+      status = `${capitalize(studentName)} re-requested ${possessive(staffName)} help ${moment.utc(ticket.rerequest_time).fromNow()}.`
   } else {
     if (isStaff(state)) {
       status = capitalize(staffName) + ' (Started helping ' + ticketTimeSinceAssigned(ticket)+ ')';

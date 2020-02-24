@@ -333,6 +333,7 @@ def get_tickets(ticket_ids):
 
 def get_next_ticket(location=None):
     """Return the user's first assigned but unresolved ticket.
+    If none exist, return the first pending student re-request.
     If none exist, return to the first unassigned ticket.
 
     If a location is passed in, only returns a next ticket from
@@ -341,6 +342,9 @@ def get_next_ticket(location=None):
     ticket = Ticket.query.filter(
         Ticket.helper_id == current_user.id,
         Ticket.status == TicketStatus.assigned).first()
+    if not ticket:
+        ticket = Ticket.query.filter(Ticket.status == TicketStatus.rerequested and Ticket.helper_id == current_user.id)
+        ticket = ticket.first()
     if not ticket:
         ticket = Ticket.query.filter(Ticket.status == TicketStatus.pending)
         if location:
