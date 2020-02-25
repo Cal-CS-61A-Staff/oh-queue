@@ -174,6 +174,8 @@ class AdminConfigManager extends React.Component {
   }
 
   submitJugglingTimeout(e) {
+    e.preventDefault();
+
     let btn = $(e.target.elements["btn-submit"]);
     btn.addClass('is-loading');
     btn.attr('disabled', true);
