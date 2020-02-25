@@ -35,6 +35,9 @@ def ticket_json(ticket):
         'status': ticket.status.name,
         'user': student_json(ticket.user),
         'created': ticket.created.isoformat(),
+        'rerequest_threshold': ticket.rerequest_threshold and ticket.rerequest_threshold.isoformat(),
+        'hold_time': ticket.hold_time and ticket.hold_time.isoformat(),
+        'rerequest_time': ticket.rerequest_time and ticket.rerequest_time.isoformat(),
         'updated': ticket.updated and ticket.updated.isoformat(),
         'location_id': ticket.location_id,
         'assignment_id': ticket.assignment_id,
@@ -81,7 +84,7 @@ def emit_state(attrs, broadcast=False):
     state = {}
     if 'tickets' in attrs:
         tickets = Ticket.query.filter(
-            Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned])
+            Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned, TicketStatus.juggled, TicketStatus.rerequested])
         ).all()
         state['tickets'] = [ticket_json(ticket) for ticket in tickets]
     if 'assignments' in attrs:
@@ -330,6 +333,7 @@ def get_tickets(ticket_ids):
 
 def get_next_ticket(location=None):
     """Return the user's first assigned but unresolved ticket.
+    If none exist, return the first pending student re-request.
     If none exist, return to the first unassigned ticket.
 
     If a location is passed in, only returns a next ticket from
@@ -338,6 +342,9 @@ def get_next_ticket(location=None):
     ticket = Ticket.query.filter(
         Ticket.helper_id == current_user.id,
         Ticket.status == TicketStatus.assigned).first()
+    if not ticket:
+        ticket = Ticket.query.filter(Ticket.status == TicketStatus.rerequested and Ticket.helper_id == current_user.id)
+        ticket = ticket.first()
     if not ticket:
         ticket = Ticket.query.filter(Ticket.status == TicketStatus.pending)
         if location:
@@ -386,6 +393,24 @@ def resolve(data):
     db.session.commit()
     return get_next_ticket(location)
 
+@socketio.on("juggle")
+@is_staff
+def juggle(data):
+    """
+    Gets ticket_ids and places them all on the juggle queue for the corresponding staff member
+    """
+    ticket_ids = data.get('ticket_ids')
+    tickets = get_tickets(ticket_ids)
+    location = None
+    for ticket in tickets:
+        ticket.status = TicketStatus.juggled
+        ticket.hold_time = datetime.datetime.utcnow()
+        ticket.rerequest_threshold = ticket.hold_time + datetime.timedelta(minutes=int(ConfigEntry.query.get("juggling_delay").value))
+        location = ticket.location
+        emit_event(ticket, TicketEventType.juggle)
+    db.session.commit()
+    return get_next_ticket(location)
+
 @socketio.on('assign')
 @is_staff
 def assign(ticket_ids):
@@ -396,6 +421,62 @@ def assign(ticket_ids):
         ticket.helper_id = current_user.id
         emit_event(ticket, TicketEventType.assign)
     db.session.commit()
+
+@socketio.on('return_to')
+@is_staff
+def return_to(ticket_ids):
+    tickets = get_tickets(ticket_ids)
+    for ticket in tickets:
+        ticket.status = TicketStatus.assigned
+
+        ticket.helper_id = current_user.id
+        emit_event(ticket, TicketEventType.return_to)
+
+    db.session.commit()
+
+@socketio.on('rerequest')
+def rerequest(data):
+    ticket_ids = data.get("ticket_ids")
+    tickets = get_tickets(ticket_ids)
+    for ticket in tickets:
+        if not ticket.user.id == current_user.id:
+            return socket_unauthorized()
+
+        if ticket.rerequest_threshold > datetime.datetime.utcnow():
+            return socket_unauthorized()
+
+        ticket.status = TicketStatus.rerequested
+        ticket.rerequest_time = datetime.datetime.utcnow()
+
+        emit_event(ticket, TicketEventType.rerequest)
+
+    db.session.commit()
+
+@socketio.on('cancel_rerequest')
+def rerequest(data):
+    ticket_ids = data.get("ticket_ids")
+    tickets = get_tickets(ticket_ids)
+    for ticket in tickets:
+        if not ticket.user.id == current_user.id:
+            return socket_unauthorized()
+
+        ticket.status = TicketStatus.juggled
+        emit_event(ticket, TicketEventType.juggle)
+
+    db.session.commit()
+
+@socketio.on("release_holds")
+@is_staff
+def release_holds(data):
+    ticket_ids = data.get("ticket_ids")
+    to_me = data.get("to_me")
+    tickets = get_tickets(ticket_ids)
+    for ticket in tickets:
+        ticket.helper_id = current_user.id if to_me else None
+        emit_event(ticket, TicketEventType.hold_released)
+    db.session.commit()
+
+    return socket_redirect()
 
 @socketio.on('unassign')
 @is_staff

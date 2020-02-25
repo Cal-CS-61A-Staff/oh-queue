@@ -65,7 +65,7 @@ class Location(db.Model):
     name = db.Column(db.String(255), nullable=False, unique=True)
     visible = db.Column(db.Boolean, default=False)
 
-TicketStatus = enum.Enum('TicketStatus', 'pending assigned resolved deleted')
+TicketStatus = enum.Enum('TicketStatus', 'pending assigned resolved deleted juggled rerequested')
 
 class Ticket(db.Model):
     """Represents an ticket in the queue. A student submits a ticket and receives
@@ -76,6 +76,10 @@ class Ticket(db.Model):
     created = db.Column(db.DateTime, default=db.func.now(), index=True)
     updated = db.Column(db.DateTime, onupdate=db.func.now())
     status = db.Column(EnumType(TicketStatus), nullable=False, index=True)
+
+    rerequest_threshold = db.Column(db.DateTime)  # time when student allowed to re-request help
+    hold_time = db.Column(db.DateTime)  # time when student was put on hold
+    rerequest_time = db.Column(db.DateTime)  # time when student re-requested help
 
     user_id = db.Column(db.ForeignKey('user.id'), nullable=False, index=True)
     helper_id = db.Column(db.ForeignKey('user.id'), index=True)
@@ -112,7 +116,7 @@ class Ticket(db.Model):
 
 TicketEventType = enum.Enum(
     'TicketEventType',
-    'create assign unassign resolve delete update',
+    'create assign unassign resolve delete update juggle rerequest return_to hold_released',
 )
 
 class TicketEvent(db.Model):

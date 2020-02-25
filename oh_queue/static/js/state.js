@@ -15,9 +15,12 @@ type User = {
 
 type Ticket = {
   id: number,
-  status: 'pending' | 'assigned' | 'resolved' | 'deleted',
+  status: 'pending' | 'assigned' | 'resolved' | 'deleted' | 'juggled' | 'rerequested',
   user: User,
   created: string,  // ISO 8601 datetime string
+  rerequest_threshold: ?string, // ISO 8601 datetime string
+  hold_time: ?string, // ISO 8601 datetime string
+  rerequest_time: ?string, // ISO 8601 datetime string
   updated: ?string,
   location_id: number,
   assignment_id: number,
@@ -110,15 +113,16 @@ function ticketTimeSinceAssigned(ticket: Ticket): string {
   return moment.utc(ticket.updated).fromNow()
 }
 
+function ticketTimeToReRequest(ticket: Ticket): string {
+    return moment.utc(ticket.rerequest_threshold).fromNow();
+}
+
 function isPending(ticket: Ticket): boolean {
   return ticket.status === 'pending';
 }
-function isActive(ticket: Ticket): boolean {
-  return ticket.status === 'assigned';
-}
 
 function isActive(ticket: Ticket): boolean {
-  return ticket.status === 'pending' || ticket.status === 'assigned';
+  return ['pending', 'assigned', 'juggled', 'rerequested'].includes(ticket.status);
 }
 
 function ticketAssignment(state: State, ticket: Ticket): TicketAssignment {
@@ -144,6 +148,10 @@ function ticketStatus(state: State, ticket: Ticket): string {
     return 'Resolved by ' + ticket.helper.name;
   } else if (ticket.status === 'deleted') {
     return 'Deleted';
+  } else if (ticket.status === "juggled") {
+    return "Working solo";
+  } else if (ticket.status === "rerequested") {
+    return `Waiting for ${isTicketHelper(state, ticket) ? "you" : ticket.helper ? ticket.helper.name : "any assistant"} to come back`
   } else {
     return 'Queued';
   }

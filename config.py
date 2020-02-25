@@ -20,8 +20,8 @@ DATABASE_CONNECT_OPTIONS = {}
 
 LOCAL_TIMEZONE = os.getenv('TIMEZONE', 'US/Pacific')
 
-OK_KEY = os.getenv('OK_KEY')
-OK_SECRET = os.getenv('OK_SECRET')
+OK_KEY = os.getenv('OK_KEY', 'local-dev-email')
+OK_SECRET = os.getenv('OK_SECRET', 'KH0mvknMUWT5w3U7zvz6wsUQZoy6UmQ')
 
 OK_SERVER_URL = os.getenv('OK_DEPLOYMENT', 'https://okpy.org')
 
