@@ -227,6 +227,18 @@ hr {
    background-color: #f3f3f3;
 }
 
+.assigned-tickets-header {
+    text-align: center;
+}
+
+.ticket-independent {
+    background-color: white;
+    margin-top: 10px;
+    border: 1px solid #0072c1;
+    color: #0072c1;
+    border-radius: 5px;
+}
+
 .ticket-rerequested {
    background-color: #fff08c;
 }

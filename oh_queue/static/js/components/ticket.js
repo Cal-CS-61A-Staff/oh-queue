@@ -1,4 +1,4 @@
-let Ticket = ({state, ticket}) => {
+let Ticket = ({state, ticket, independent}) => {
   let assignment = ticketAssignment(app.state, ticket);
   let location = ticketLocation(app.state, ticket);
 
@@ -33,7 +33,7 @@ let Ticket = ({state, ticket}) => {
   let question = ticketQuestion(app.state, ticket);
 
   return (
-    <TicketLink state={state} ticket={ticket}>
+    <TicketLink state={state} ticket={ticket} independent={independent}>
       <div className="pull-left ticket-index">{ticketPosition(state, ticket)}</div>
       <h4 className="pull-left">
         {assignment.name} {question}
@@ -53,7 +53,7 @@ let Ticket = ({state, ticket}) => {
   );
 }
 
-let TicketLink = ({state, ticket, children}) => {
+let TicketLink = ({state, ticket, children, independent}) => {
   var {Link} = ReactRouterDOM;
   let highlight = ticketIsMine(state, ticket) || isTicketHelper(state, ticket);
   let link = ticketIsMine(state, ticket) || isStaff(state);
@@ -62,6 +62,7 @@ let TicketLink = ({state, ticket, children}) => {
     'clearfix': true,
     'ticket-link': link,
     'ticket-highlight': highlight,
+    'ticket-independent': independent,
     'ticket-rerequested': ticket.status === "rerequested",
     'ticket-juggled': ticket.status === "juggled",
   });
