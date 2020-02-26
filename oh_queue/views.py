@@ -10,7 +10,9 @@ from flask_login import current_user
 from flask_socketio import emit
 
 from oh_queue import app, db, socketio
-from oh_queue.models import Assignment, ConfigEntry, Location, Ticket, TicketEvent, TicketEventType, TicketStatus
+from oh_queue.models import Assignment, ConfigEntry, Location, Ticket, TicketEvent, TicketEventType, TicketStatus, \
+    active_statuses
+
 
 def user_json(user):
     return {
@@ -84,7 +86,7 @@ def emit_state(attrs, broadcast=False):
     state = {}
     if 'tickets' in attrs:
         tickets = Ticket.query.filter(
-            Ticket.status.in_([TicketStatus.pending, TicketStatus.assigned, TicketStatus.juggled, TicketStatus.rerequested])
+            Ticket.status.in_(active_statuses)
         ).all()
         state['tickets'] = [ticket_json(ticket) for ticket in tickets]
     if 'assignments' in attrs:
@@ -103,7 +105,10 @@ def emit_state(attrs, broadcast=False):
         emit('state', state)
 
 def emit_presence(data):
-    socketio.emit('presence', {k: len(v) for k,v in data.items()})
+    out = {k: len(v) for k,v in data.items()}
+    active_staff = {t.helper.email for t in Ticket.query.filter(Ticket.status.in_(active_statuses), Ticket.helper != None).all()}
+    out["staff"] = len(data["staff"] | active_staff)
+    socketio.emit('presence', out)
 
 user_presence = collections.defaultdict(set) # An in memory map of presence.
 
@@ -343,7 +348,7 @@ def get_next_ticket(location=None):
         Ticket.helper_id == current_user.id,
         Ticket.status == TicketStatus.assigned).first()
     if not ticket:
-        ticket = Ticket.query.filter(Ticket.status == TicketStatus.rerequested and Ticket.helper_id == current_user.id)
+        ticket = Ticket.query.filter(Ticket.status == TicketStatus.rerequested).filter(Ticket.helper_id == current_user.id)
         ticket = ticket.first()
     if not ticket:
         ticket = Ticket.query.filter(Ticket.status == TicketStatus.pending)
