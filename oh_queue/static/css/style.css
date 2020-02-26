@@ -229,6 +229,8 @@ hr {
 
 .assigned-tickets-header {
     text-align: center;
+    font-size: 15pt;
+    font-weight: 500;
 }
 
 .ticket-independent {
