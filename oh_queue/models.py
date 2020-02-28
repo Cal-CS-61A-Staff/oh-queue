@@ -67,6 +67,8 @@ class Location(db.Model):
 
 TicketStatus = enum.Enum('TicketStatus', 'pending assigned resolved deleted juggled rerequested')
 
+active_statuses = [TicketStatus.pending, TicketStatus.assigned, TicketStatus.juggled, TicketStatus.rerequested]
+
 class Ticket(db.Model):
     """Represents an ticket in the queue. A student submits a ticket and receives
     help from a staff member.
