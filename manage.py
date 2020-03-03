@@ -103,6 +103,11 @@ def seed_defaults():
         value='5',
         public=True,
     ))
+    db.session.add(ConfigEntry(
+        key='ticket_prompt',
+        value='',
+        public=True,
+    ))
     db.session.commit()
 
 @manager.command
