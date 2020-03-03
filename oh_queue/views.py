@@ -97,6 +97,7 @@ def emit_state(attrs, broadcast=False):
         state['locations'] = [location_json(location) for location in locations]
     if 'config' in attrs:
         state['config'] = config_json()
+
     if not broadcast and 'current_user' in attrs:
         state['current_user'] = student_json(current_user)
     if broadcast:
@@ -581,7 +582,6 @@ def update_config(data):
         entry = ConfigEntry.query.get(key)
         entry.value = value
     db.session.commit()
-    print("potato")
 
 
     if entry.public:

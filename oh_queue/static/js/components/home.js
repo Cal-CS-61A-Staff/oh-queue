@@ -10,7 +10,7 @@ let Home = ({match, state, children}) => {
 
   return (
     <div>
-      <Navbar state={state} />
+      <Navbar state={state} mode="queue" />
       <OfflineIndicator offline={state.offline && state.loaded}/>
       <Queue state={state} />
     </div>

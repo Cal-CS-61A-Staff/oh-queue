@@ -705,3 +705,33 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
     transform: rotate(360deg);
   }
 }
+
+.card-holder {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-gap: 10px;
+    justify-content: space-between;
+}
+
+.slot-add-button.slot-add-button {
+    color: #337ab7;
+}
+
+#slots-form .form-right {
+    width: 40%;
+    border-left: none;
+}
+
+.panel-heading {
+    position: relative;
+}
+
+.btn-take-over {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.appointment-header {
+    margin-top: 0;
+}

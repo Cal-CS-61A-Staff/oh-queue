@@ -31,7 +31,7 @@ class TicketLayout extends React.Component {
 
     return (
       <div>
-        <Navbar state={state}/>
+        <Navbar state={state} mode="queue" />
         <div className="container">
           <Messages messages={state.messages}/>
           <div className="row ticket">

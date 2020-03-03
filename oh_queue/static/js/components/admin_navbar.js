@@ -16,12 +16,10 @@ class AdminNavbar extends React.Component {
       );
     }
 
-    var links = [
-      (<li key="home"><Link to="/admin">Home</Link></li>)
-    ];
+    var links = [];
     if (user) {
+      links.push(<li key="config"><Link to="/admin">Config</Link></li>);
       links.push(<li key="assignments"><Link to="/admin/assignments">Assignments</Link></li>);
-      links.push(<li key="config"><Link to="/admin/config">Config</Link></li>);
       links.push(<li key="locations"><Link to="/admin/locations">Locations</Link></li>);
     }
 
@@ -36,7 +34,7 @@ class AdminNavbar extends React.Component {
               <span className="icon-bar"></span>
             </button>
             <span className="navbar-brand">
-              <Link to="/admin"><strong>{ window.courseName } |</strong> <span className="code">Admin</span></Link>
+              <Link to="/admin"><strong>{ window.courseName } |</strong> Admin</Link>
             </span>
           </div>
 

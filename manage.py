@@ -108,6 +108,11 @@ def seed_defaults():
         value='',
         public=True,
     ))
+    db.session.add(ConfigEntry(
+        key='appointments_open',
+        value='false',
+        public=True,
+    ))
     db.session.commit()
 
 @manager.command
