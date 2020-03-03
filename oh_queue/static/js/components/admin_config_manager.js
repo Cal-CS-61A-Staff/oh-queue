@@ -8,6 +8,7 @@ class AdminConfigManager extends React.Component {
       isQueueOpen: false,
       descriptionRequired: false,
       welcome: '',
+      ticketPrompt: '',
       queueMagicWordMode: 'none',
       queueMagicWordData: '',
       jugglingTimeout: 0,
@@ -20,6 +21,8 @@ class AdminConfigManager extends React.Component {
     this.loadState = this.loadState.bind(this);
     this.editWelcome = this.editWelcome.bind(this);
     this.submitWelcome = this.submitWelcome.bind(this);
+    this.editTicketPrompt = this.editTicketPrompt.bind(this);
+    this.submitTicketPrompt = this.submitTicketPrompt.bind(this);
     this.changeQueueMagicWordMode = this.changeQueueMagicWordMode.bind(this);
     this.submitQueueMagicWord = this.submitQueueMagicWord.bind(this);
     this.changeQueueMagicWordData = this.changeQueueMagicWordData.bind(this);
@@ -41,6 +44,7 @@ class AdminConfigManager extends React.Component {
       isQueueOpen: config.is_queue_open === 'true',
       descriptionRequired: config.description_required === 'true',
       welcome: config.welcome || '',
+      ticketPrompt: config.ticket_prompt || '',
       queueMagicWordMode: config.queue_magic_word_mode,
       jugglingTimeout: parseInt(config.juggling_delay),
     });
@@ -125,6 +129,31 @@ class AdminConfigManager extends React.Component {
 
     return false;
   }
+
+  editTicketPrompt(e) {
+    this.setState({
+      ticketPrompt: e.target.value
+    });
+  }
+
+  submitTicketPrompt(e) {
+      e.preventDefault();
+
+      let btn = $(e.target.elements["btn-submit"]);
+      btn.addClass('is-loading');
+      btn.attr('disabled', true);
+      let time = Date.now();
+      app.makeRequest(`update_config`, {
+          key: 'ticket_prompt',
+          value: this.state.ticketPrompt
+      }, (isSuccess) => {
+          setTimeout(() => {
+              btn.removeClass('is-loading');
+              btn.attr('disabled', false);
+          }, 250 - (Date.now() - time));
+      });
+  }
+
 
   changeQueueMagicWordMode(e) {
     let changes = {
@@ -283,7 +312,7 @@ class AdminConfigManager extends React.Component {
         <form onSubmit={this.submitWelcome}>
           <div className="form-group">
             <label for="welcome-input">Welcome Message (supports Markdown)</label>
-            <textarea className="form-control" name="welcome-input" type="text" placeholder="Welcome" value={this.state.welcome} onChange={this.editWelcome} />
+            <textarea className="form-control" name="welcome-input" type="text" placeholder="Welcome" value={this.state.welcome} onChange={this.editTicketPrompt} />
           </div>
           <label>Welcome Message Preview:</label>
           <div className="alert alert-info alert-dismissable fade in" role="alert">
@@ -298,6 +327,28 @@ class AdminConfigManager extends React.Component {
             </div>
           </div>
         </form>
+        <form onSubmit={this.submitTicketPrompt}>
+          <div className="form-group">
+              <label htmlFor="welcome-input">Ticket Prompt (supports Markdown)</label>
+              <textarea className="form-control" name="ticket-input"
+                        placeholder="Have fun with your ticket!" value={this.state.ticketPrompt}
+                        onChange={this.editTicketPrompt}/>
+          </div>
+          <label>Ticket Prompt Preview:</label>
+          <div className="alert alert-info alert-dismissable fade in" role="alert">
+              <button type="button" className="close" aria-label="Close" data-dismiss="alert">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+              <ReactMarkdown source={this.state.ticketPrompt}/>
+          </div>
+          <div className="form-group">
+              <div>
+                  <button className="btn btn-default" name="btn-submit" type="submit">Save
+                  </button>
+              </div>
+          </div>
+        </form>
+
       </div>
     );
   }
