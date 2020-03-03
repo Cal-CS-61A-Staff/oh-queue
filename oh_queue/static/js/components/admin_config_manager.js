@@ -346,7 +346,7 @@ class AdminConfigManager extends React.Component {
                         <label for="welcome-input">Welcome Message (supports Markdown)</label>
                         <textarea className="form-control" name="welcome-input" type="text"
                                   placeholder="Welcome" value={this.state.welcome}
-                                  onChange={this.editTicketPrompt}/>
+                                  onChange={this.editWelcome}/>
                     </div>
                     <label>Welcome Message Preview:</label>
                     <div className="alert alert-info alert-dismissable fade in" role="alert">
@@ -387,7 +387,6 @@ class AdminConfigManager extends React.Component {
                         </div>
                     </div>
                 </form>
-
             </div>
         );
     }
