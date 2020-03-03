@@ -312,7 +312,7 @@ class AdminConfigManager extends React.Component {
         <form onSubmit={this.submitWelcome}>
           <div className="form-group">
             <label for="welcome-input">Welcome Message (supports Markdown)</label>
-            <textarea className="form-control" name="welcome-input" type="text" placeholder="Welcome" value={this.state.welcome} onChange={this.editTicketPrompt} />
+            <textarea className="form-control" name="welcome-input" type="text" placeholder="Welcome" value={this.state.welcome} onChange={this.editWelcome} />
           </div>
           <label>Welcome Message Preview:</label>
           <div className="alert alert-info alert-dismissable fade in" role="alert">
