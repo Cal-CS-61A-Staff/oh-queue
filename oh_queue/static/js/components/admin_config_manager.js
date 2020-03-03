@@ -21,6 +21,8 @@ class AdminConfigManager extends React.Component {
     this.loadState = this.loadState.bind(this);
     this.editWelcome = this.editWelcome.bind(this);
     this.submitWelcome = this.submitWelcome.bind(this);
+    this.editTicketPrompt = this.editTicketPrompt.bind(this);
+    this.submitTicketPrompt = this.submitTicketPrompt.bind(this);
     this.changeQueueMagicWordMode = this.changeQueueMagicWordMode.bind(this);
     this.submitQueueMagicWord = this.submitQueueMagicWord.bind(this);
     this.changeQueueMagicWordData = this.changeQueueMagicWordData.bind(this);
@@ -42,6 +44,7 @@ class AdminConfigManager extends React.Component {
       isQueueOpen: config.is_queue_open === 'true',
       descriptionRequired: config.description_required === 'true',
       welcome: config.welcome || '',
+      ticketPrompt: config.ticket_prompt || '',
       queueMagicWordMode: config.queue_magic_word_mode,
       jugglingTimeout: parseInt(config.juggling_delay),
     });
@@ -129,7 +132,7 @@ class AdminConfigManager extends React.Component {
 
   editTicketPrompt(e) {
     this.setState({
-      welcome: e.target.value
+      ticketPrompt: e.target.value
     });
   }
 
@@ -329,7 +332,7 @@ class AdminConfigManager extends React.Component {
               <label htmlFor="welcome-input">Ticket Prompt (supports Markdown)</label>
               <textarea className="form-control" name="ticket-input"
                         placeholder="Have fun with your ticket!" value={this.state.ticketPrompt}
-                        onChange={this.editWelcome}/>
+                        onChange={this.editTicketPrompt}/>
           </div>
           <label>Ticket Prompt Preview:</label>
           <div className="alert alert-info alert-dismissable fade in" role="alert">
