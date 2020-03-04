@@ -1,4 +1,3 @@
-import datetime
 import enum
 
 from flask_login import UserMixin
@@ -132,3 +131,37 @@ class TicketEvent(db.Model):
 
     ticket = db.relationship(Ticket)
     user = db.relationship(User)
+
+
+class Appointment(db.Model):
+    """Represents an appointment block."""
+    __tablename__ = "appointment"
+    id = db.Column(db.Integer, primary_key=True)
+    start_time = db.Column(db.DateTime, index=True, nullable=False)
+    duration = db.Column(db.Interval, nullable=False)
+    capacity = db.Column(db.Integer, nullable=False)
+
+    location_id = db.Column(db.ForeignKey('location.id'), nullable=False, index=True)
+    location = db.relationship(Location, foreign_keys=[location_id])
+
+    helper_id = db.Column(db.ForeignKey('user.id'), index=True)
+    helper = db.relationship(User, foreign_keys=[helper_id])
+
+    signups = db.relationship("AppointmentSignup", back_populates="appointment")
+
+
+class AppointmentSignup(db.Model):
+    __tablename__ = "appointment_signup"
+    id = db.Column(db.Integer, primary_key=True)
+
+    appointment_id = db.Column(db.ForeignKey('appointment.id'), nullable=False, index=True)
+    appointment = db.relationship("Appointment", back_populates="signups")
+
+    user_id = db.Column(db.ForeignKey('user.id'), nullable=False, index=True)
+    user = db.relationship(User, foreign_keys=[user_id])
+
+    assignment_id = db.Column(db.ForeignKey('assignment.id'), nullable=False, index=True)
+    assignment = db.relationship(Assignment, foreign_keys=[assignment_id])
+
+    question = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text)

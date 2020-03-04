@@ -11,7 +11,7 @@ from flask_socketio import emit
 
 from oh_queue import app, db, socketio
 from oh_queue.models import Assignment, ConfigEntry, Location, Ticket, TicketEvent, TicketEventType, TicketStatus, \
-    active_statuses
+    active_statuses, Appointment, AppointmentSignup
 
 
 def user_json(user):
@@ -69,6 +69,31 @@ def config_json():
             config[config_entry.key] = config_entry.value
     return config
 
+def appointments_json(appointment: Appointment):
+    return {
+        'id': appointment.id,
+        "start_time": appointment.start_time.isoformat(),
+        "duration": appointment.duration.total_seconds(),
+        "signups": [signup_json(signup) for signup in appointment.signups],
+        "capacity": appointment.capacity,
+        "location_id": appointment.location_id,
+        "helper": appointment.helper and user_json(appointment.helper)
+    }
+
+def signup_json(signup: AppointmentSignup):
+    public = {
+        "id": signup.id,
+        "assignment_id": signup.assignment_id
+    }
+    can_see_details = current_user.is_authenticated and (current_user.is_staff or signup.user_id == current_user.id)
+    if can_see_details:
+        public.update({
+            "user": user_json(signup.user),
+            "question": signup.question,
+            "description": signup.description
+        })
+    return public
+
 def emit_event(ticket, event_type):
     ticket_event = TicketEvent(
         event_type=event_type,
@@ -97,6 +122,9 @@ def emit_state(attrs, broadcast=False):
         state['locations'] = [location_json(location) for location in locations]
     if 'config' in attrs:
         state['config'] = config_json()
+    if 'appointments' in attrs:
+        appointments = Appointment.query.filter(Appointment.start_time > datetime.datetime.utcnow()).all()
+        state['appointments'] = [appointments_json(appointment) for appointment in appointments]
 
     if not broadcast and 'current_user' in attrs:
         state['current_user'] = student_json(current_user)
@@ -195,7 +223,7 @@ def connect():
     else:
         user_presence['students'].add(current_user.email)
 
-    emit_state(['tickets', 'assignments', 'locations', 'current_user', 'config'])
+    emit_state(['tickets', 'assignments', 'locations', 'current_user', 'config', 'appointments'])
 
     emit_presence(user_presence)
 
@@ -587,3 +615,47 @@ def update_config(data):
     if entry.public:
         emit_state(['config'], broadcast=True)
     return config_json()
+
+
+@socketio.on("assign_staff_appointment")
+@is_staff
+def assign_staff_appointment(appointment_id):
+    Appointment.query.filter(Appointment.id == appointment_id).first().helper_id = current_user.id
+    db.session.commit()
+    emit_state(['appointments'], broadcast=True)
+
+
+@socketio.on("unassign_staff_appointment")
+@is_staff
+def unassign_staff_appointment(appointment_id):
+    Appointment.query.filter(Appointment.id == appointment_id).first().helper_id = None
+    db.session.commit()
+    emit_state(['appointments'], broadcast=True)
+
+
+@socketio.on("assign_appointment")
+def assign_appointment(data):
+    old_signup = AppointmentSignup.query.filter(
+        AppointmentSignup.appointment_id == data["appointment_id"], AppointmentSignup.user_id == current_user.id
+    ).first()
+
+    if old_signup:
+        db.session.delete(old_signup)
+        db.session.commit()
+
+    appointment = Appointment.query.filter(Appointment.id == data["appointment_id"]).first() # type = Appointment
+
+    if len(appointment.signups) >= appointment.capacity and not current_user.is_staff and not old_signup:
+        return socket_unauthorized()
+
+    signup = AppointmentSignup(
+        appointment_id=data["appointment_id"],
+        user_id=current_user.id,
+        assignment_id=data["assignment_id"],
+        question=data["question"],
+        description=data["description"]
+    )
+    db.session.add(signup)
+    db.session.commit()
+    emit_state(['appointments'], broadcast=True)
+

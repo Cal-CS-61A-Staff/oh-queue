@@ -67,6 +67,12 @@ class App extends React.Component {
     if (data.hasOwnProperty('current_user')) {
       this.state.currentUser = data.current_user;
     }
+    if (data.hasOwnProperty('appointments')) {
+        this.state.appointments = {};
+        for (const appointment of data.appointments) {
+            this.state.appointments[appointment.id] = appointment;
+        }
+    }
     this.state.loaded = true;
     this.refresh();
   }

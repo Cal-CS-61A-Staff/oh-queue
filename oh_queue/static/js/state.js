@@ -53,6 +53,26 @@ type Message = {
   visible: boolean,
 };
 
+type Appointment = {
+    id: number,
+    start_time: string, // datetime string
+    duration: number, // seconds
+    signups: Array<Signup>,
+    capacity: number,
+    location_id: number,
+    helper: ?User,
+}
+
+
+type Signup = {
+    id: number,
+    assignment_id: number,
+    user: ?User,
+    question: ?string,
+    description: ?string,
+}
+
+
 type State = {
   /* May be null if the user is not logged in. */
   currentUser: ?User,
@@ -62,6 +82,8 @@ type State = {
   offline: boolean,
   /* Ticket assignments */
   assignments: Map<number, TicketAssignment>,
+  /* Ticket locations */
+  appointments: Map<number, Appointment>,
   /* Ticket locations */
   locations: Map<number, TicketLocation>,
   /* Server configuration */
@@ -89,6 +111,7 @@ let initialState: State = {
   assignments: {},
   locations: {},
   config: {},
+  appointments: {},
   tickets: new Map(),
   loadingTickets: new Set(),
   filter: {

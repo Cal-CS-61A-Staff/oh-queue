@@ -20,7 +20,7 @@ let Navbar = ({ state, mode }) => {
                 <div className="collapse navbar-collapse" id="navbar-collapse-section">
                     <ul className="nav navbar-nav navbar-right">
 
-                        {currentUser && state.config.appointments_open && mode !== "appointments" &&
+                        {currentUser && JSON.parse(state.config.appointments_open) && mode !== "appointments" &&
                         <li><Link to="/appointments">Appointments</Link></li>}
 
                         {currentUser && mode !== "queue" &&

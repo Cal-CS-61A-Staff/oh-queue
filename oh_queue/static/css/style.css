@@ -717,6 +717,10 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
     color: #337ab7;
 }
 
+.slot-disabled {
+    color: gray;
+}
+
 #slots-form .form-right {
     width: 40%;
     border-left: none;
@@ -724,6 +728,16 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
 
 .panel-heading {
     position: relative;
+}
+
+.panel-warning {
+    border-color: orange;
+}
+
+.panel-warning > .panel-heading {
+    color: white;
+    background-color: orange;
+    border-color: orange;
 }
 
 .btn-take-over {
