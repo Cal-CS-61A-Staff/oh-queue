@@ -740,6 +740,17 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
     border-color: orange;
 }
 
+.panel-success {
+    border-color: #4cae4c;
+}
+
+.panel-success > .panel-heading {
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+
+
 .btn-take-over {
     position: absolute;
     right: 10px;
@@ -748,4 +759,11 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
 
 .appointment-header {
     margin-top: 0;
+}
+
+.confirmed-appointment-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 10px;
+    justify-content: space-between;
 }

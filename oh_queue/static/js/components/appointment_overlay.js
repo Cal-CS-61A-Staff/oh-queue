@@ -3,8 +3,6 @@ function AppointmentOverlay({ assignments, onSubmit }) {
     const [question, setQuestion] = React.useState("");
     const [description, setDescription] = React.useState("");
 
-    const active = Math.min(assignment.length, question.length, description.length) > 0;
-
     const handleClick = () => {
         onSubmit({
             assignment,
@@ -14,8 +12,7 @@ function AppointmentOverlay({ assignments, onSubmit }) {
     };
 
     return ReactDOM.createPortal(
-        <div className="modal fade" id="appointment-overlay" tabIndex="-1" role="dialog"
-             aria-labelledby="myModalLabel">
+        <div className="modal fade" id="appointment-overlay" tabIndex="-1" role="dialog">
             <div className="modal-dialog" role="document">
                 <div className="modal-content">
                     <div className="modal-header">
@@ -41,7 +38,6 @@ function AppointmentOverlay({ assignments, onSubmit }) {
                         <button
                             type="button"
                             className="btn btn-primary"
-                            disabled={!active}
                             onClick={handleClick}
                         >Confirm</button>
                     </div>

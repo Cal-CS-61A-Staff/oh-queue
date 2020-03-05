@@ -38,9 +38,11 @@ function FutureSlots({ state }) {
 
     return (
         <React.Fragment>
+            {/*{currentUser && !currentUser.isStaff && <ConfirmedAppointment/>}*/}
+            <AppointmentsJumbotron />
+            {/*<br />*/}
             <div className="container">
-                <br/>
-                {currentUser && !currentUser.isStaff && <ConfirmedAppointment/>}
+                <FilterControls state={state} />
                 {Array.from(days.entries()).map(([day, dayAppointments]) =>
                     <div>
                         <h3> {day} </h3>

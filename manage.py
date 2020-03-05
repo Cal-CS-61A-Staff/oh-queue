@@ -48,7 +48,7 @@ def seed_data():
         duration=datetime.timedelta(minutes=random.randrange(30, 120, 30)),
         location=random.choice(locations),
         capacity=5,
-    ) for _ in range(20)]
+    ) for _ in range(70)]
 
     for assignment in assignments:
         db.session.add(assignment)
@@ -94,7 +94,7 @@ def seed_data():
         assignment=random.choice(assignments),
         question=random.choice(questions),
         description=random.choice(descriptions)
-    ) for _ in range(50)]
+    ) for _ in range(120)]
 
     for signup in signups:
         db.session.add(signup)

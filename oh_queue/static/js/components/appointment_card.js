@@ -14,7 +14,7 @@ function AppointmentCard({ currentUser, locations, appointment, assignments, onS
         }
     } else {
         if (appointment.signups.some(({ user }) => user && user.id === currentUser.id)) {
-            panelColor = "panel-warning";
+            panelColor = "panel-success";
             canAdd = false;
         } else if (spareCapacity === 0) {
             panelColor = "panel-danger";
@@ -105,7 +105,7 @@ function AppointmentCardStudentList({ appointment, assignments, currentUser, onS
         appointment.signups.map(({ user, assignment_id }) =>
             <Slot
                 link={user && (user.id === currentUser.id || currentUser.isStaff)}
-                badgeText={assignments[assignment_id].name}
+                badgeText={assignment_id && assignments[assignment_id].name}
                 onClick={onStudentSignup}
             >
                 {currentUser.isStaff ?

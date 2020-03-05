@@ -160,7 +160,7 @@ class AppointmentSignup(db.Model):
     user_id = db.Column(db.ForeignKey('user.id'), nullable=False, index=True)
     user = db.relationship(User, foreign_keys=[user_id])
 
-    assignment_id = db.Column(db.ForeignKey('assignment.id'), nullable=False, index=True)
+    assignment_id = db.Column(db.ForeignKey('assignment.id'), index=True)
     assignment = db.relationship(Assignment, foreign_keys=[assignment_id])
 
     question = db.Column(db.String(255), nullable=False)
