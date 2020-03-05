@@ -32,6 +32,7 @@ class App extends React.Component {
     socket.on('presence', (data) => this.updatePresence(data));
 
     this.loadTicket = this.loadTicket.bind(this);
+    this.loadAppointment = this.loadAppointment.bind(this);
   }
 
   refresh() {
@@ -131,6 +132,13 @@ class App extends React.Component {
     });
   }
 
+  loadAppointment(id) {
+    this.socket.emit('load_appointment', id, (appointment) => {
+        setAppointment(this.state, appointment);
+        this.refresh();
+    });
+  }
+
   toggleFilter() {
     this.state.filter.enabled = !this.state.filter.enabled;
     this.refresh();
@@ -190,12 +198,12 @@ class App extends React.Component {
         <div>
           <Switch>
             <Route exact path="/" render={(props) => (<Home state={state} {...props} />)} />
-            <Route path="/appointments" render={(props) => (<Appointments state={state} {...props} />)} />
+            <Route exact path="/appointments" render={(props) => (<Appointments state={state} {...props} />)} />
             <Route path="/admin" render={(props) => (<AdminLayout state={state} {...props} />)} />
             <Route path="/error" render={(props) => (<ErrorView state={state} {...props} />)} />
             <Route path="/presence" render={(props) => (<PresenceIndicator state={state} {...props} />)} />
             <Route path="/tickets/:id" render={(props) => (<TicketLayout state={state} loadTicket={this.loadTicket} {...props} />)} />
-            <Route path="/appointments/:id" render={(props) => (<AppointmentLayout state={state} loadTicket={this.loadTicket} {...props} />)} />
+            <Route path="/appointments/:id" render={(props) => (<AppointmentLayout state={state} loadAppointment={this.loadAppointment} {...props} />)} />
             <Route render={(props) => (<ErrorView state={state} {...props} message="Page Not Found" />)} />
           </Switch>
         </div>

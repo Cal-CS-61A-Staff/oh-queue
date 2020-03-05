@@ -333,3 +333,36 @@ function getMyAppointmentsStaff(state: State) {
     }
     return myAppointments;
 }
+
+function getAppointment(state: State, appointment_id: number) {
+    return state.appointments.find(({ id }) => id === appointment_id);
+}
+
+function setAppointment(state: State, appointment: Appointment): void {
+  const oldAppointment = getAppointment(state, appointment.id);
+  if (appointmentIsAssignedToMe(state, appointment)) {
+    if (oldAppointment) {
+      if (oldAppointment.status === "pending" && appointment.status === "active") {
+        notifyUser("Your name is being called",
+                   appointment.helper.name + " is looking for you in "+ state.locations[appointment.location_id].name,
+                   appointment.id + '.appointment.assign');
+      } else if (oldAppointment.status === 'assigned' && appointment.status !== 'assigned') {
+        cancelNotification(appointment.id + '.appointment.assign');
+      }
+    }
+  }
+  if (oldAppointment) {
+      state.appointments.splice(state.appointments.indexOf(oldAppointment), 1);
+  }
+  state.appointments.push(appointment);
+  state.appointments.sort(appointmentTimeComparator);
+}
+
+function appointmentIsAssignedToMe(state: State, appointment: Appointment) {
+    for (const signup of appointment.signups) {
+        if (signup.user && signup.user.id === state.currentUser.id) {
+            return true;
+        }
+    }
+    return false;
+}

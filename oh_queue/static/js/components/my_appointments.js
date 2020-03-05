@@ -22,6 +22,7 @@ function MyAppointments({ state }) {
 
     const staffContent = getMyAppointmentsStaff(state)
         .filter(appointment => isSoon(appointment.start_time))
+        .sort((x, y) => (+!!y.helper - +!!x.helper) * 2 + appointmentTimeComparator(x, y))
         .map(appointment => {
             return (
                 <StaffUpcomingAppointmentCard

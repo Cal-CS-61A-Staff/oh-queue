@@ -679,11 +679,11 @@ def unassign_appointment(signup_id):
     emit_state(['appointments'], broadcast=True)
 
 
-@socketio.on('load_ticket')
+@socketio.on('load_appointment')
 @is_staff
-def load_ticket(ticket_id):
-    if not ticket_id:
-        return socket_error('Invalid ticket ID')
-    ticket = Ticket.query.get(ticket_id)
-    if ticket:
-        return ticket_json(ticket)
+def load_appointment(appointment_id):
+    if not appointment_id:
+        return socket_error('Invalid appointment ID')
+    appointment = Appointment.query.get(appointment_id)
+    if appointment:
+        return appointments_json(appointment)

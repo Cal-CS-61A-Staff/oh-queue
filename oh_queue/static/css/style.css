@@ -781,3 +781,8 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
     height: 100%;
     overflow-y: hidden;
 }
+
+.badge-danger {
+    color: #fff;
+    background-color: #dc3545;
+}
