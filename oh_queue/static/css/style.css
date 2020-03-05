@@ -722,7 +722,7 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
     color: gray;
 }
 
-#slots-form .form-right {
+.slots-form .form-right {
     width: 40%;
     border-left: none;
 }
@@ -777,7 +777,7 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
     height: 100%;
 }
 
-.confirmed-appointment-container .list-group a {
+.panel .list-group a {
     height: 100%;
     overflow-y: hidden;
 }

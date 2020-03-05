@@ -12,7 +12,7 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from oh_queue import app, socketio
 from oh_queue.models import db, Assignment, ConfigEntry, Location, Ticket, TicketStatus, User, Appointment, \
-    AppointmentSignup
+    AppointmentSignup, AppointmentStatus
 
 migrate = Migrate(app, db)
 
@@ -44,10 +44,11 @@ def seed_data():
     descriptions = ['', 'I\'m in the hallway', 'SyntaxError on Line 5']
 
     appointments = [Appointment(
-        start_time=datetime.datetime.utcnow() + datetime.timedelta(hours=random.randrange(0, 300)),
+        start_time=datetime.datetime.now() + datetime.timedelta(hours=random.randrange(-8, 50)),
         duration=datetime.timedelta(minutes=random.randrange(30, 120, 30)),
         location=random.choice(locations),
         capacity=5,
+        status=AppointmentStatus.pending,
     ) for _ in range(70)]
 
     for assignment in assignments:

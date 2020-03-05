@@ -1,25 +1,45 @@
 function MyAppointments({ state }) {
-    const appointment = Array.from(Object.values(state.appointments))[0];
-    const signup = appointment.signups[0];
-
     const history = ReactRouterDOM.useHistory();
 
-    const handleClick = () => {
-        history.push("/appointments");
+    const redirect = (id) => {
+        history.push("/appointments/" + id);
     };
 
-    return (
+    const studentContent = getMySignups(state)
+        .filter(({ appointment }) => isSoon(appointment.start_time))
+        .map(({ appointment, signup }) => {
+            const handleClick = appointment.status !== "pending" && (() => redirect(appointment.id));
+            return (
+                <ConfirmedAppointmentCard
+                    assignments={state.assignments}
+                    locations={state.locations}
+                    appointment={appointment}
+                    signup={signup}
+                    onClick={handleClick}
+                />
+            )
+        });
+
+    const staffContent = getMyAppointmentsStaff(state)
+        .filter(appointment => isSoon(appointment.start_time))
+        .map(appointment => {
+            return (
+                <StaffUpcomingAppointmentCard
+                    appointment={appointment}
+                    locations={state.locations}
+                    onClick={() => redirect(appointment.id)}
+                />
+            )
+        });
+
+    const content = state.currentUser && state.currentUser.isStaff ? staffContent : studentContent;
+
+    return content.length > 0 && (
         <div>
             <div className="assigned-tickets-header">
                 Upcoming Appointments
             </div>
-            <ConfirmedAppointmentCard
-                assignments={state.assignments}
-                locations={state.locations}
-                appointment={appointment}
-                signup={signup}
-                onClick={handleClick}
-            />
+            {content}
         </div>
     )
 }

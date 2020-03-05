@@ -300,16 +300,36 @@ function clearMessage(state: State, id: number): void {
   }
 }
 
-const timeComparator = (a, b) => moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1;
+const appointmentTimeComparator = (a, b) => moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1;
 
 function getMySignups(state: State) {
+    if (!state.currentUser) {
+        return [];
+    }
     const mySignups = [];
     for (const appointment of state.appointments) {
         for (const signup of appointment.signups) {
-            if (signup.user && signup.user.id === currentUser.id) {
+            if (signup.user && signup.user.id === state.currentUser.id) {
                 mySignups.push({ appointment, signup });
             }
         }
     }
     return mySignups;
+}
+
+function isSoon(timeString) {
+    return moment(timeString).isBefore(moment().add(2, "hours"));
+}
+
+function getMyAppointmentsStaff(state: State) {
+    if (!state.currentUser) {
+        return [];
+    }
+    const myAppointments = [];
+    for (const appointment of state.appointments) {
+        if (!appointment.helper || appointment.helper.id === state.currentUser.id) {
+            myAppointments.push(appointment);
+        }
+    }
+    return myAppointments;
 }

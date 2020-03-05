@@ -6,7 +6,7 @@ function SlotsForm({
                        description, onDescriptionChange
                    }) {
     return (
-        <form id="slots-form">
+        <form class="slots-form">
             <div className="form-group form-group-lg">
                 {showEmail && (
                     <React.Fragment>

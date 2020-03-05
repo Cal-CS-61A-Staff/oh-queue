@@ -68,7 +68,7 @@ class App extends React.Component {
       this.state.currentUser = data.current_user;
     }
     if (data.hasOwnProperty('appointments')) {
-        this.state.appointments = Array.from(data.appointments).sort(timeComparator);
+        this.state.appointments = Array.from(data.appointments).sort(appointmentTimeComparator);
     }
     this.state.loaded = true;
     this.refresh();

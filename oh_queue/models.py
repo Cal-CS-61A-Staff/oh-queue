@@ -133,6 +133,9 @@ class TicketEvent(db.Model):
     user = db.relationship(User)
 
 
+AppointmentStatus = enum.Enum('AppointmentStatus', 'pending active resolved')
+
+
 class Appointment(db.Model):
     """Represents an appointment block."""
     __tablename__ = "appointment"
@@ -148,6 +151,8 @@ class Appointment(db.Model):
     helper = db.relationship(User, foreign_keys=[helper_id])
 
     signups = db.relationship("AppointmentSignup", back_populates="appointment")
+
+    status = db.Column(EnumType(AppointmentStatus), nullable=False, index=True)
 
 
 class AppointmentSignup(db.Model):

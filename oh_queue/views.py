@@ -77,7 +77,8 @@ def appointments_json(appointment: Appointment):
         "signups": [signup_json(signup) for signup in appointment.signups],
         "capacity": appointment.capacity,
         "location_id": appointment.location_id,
-        "helper": appointment.helper and user_json(appointment.helper)
+        "helper": appointment.helper and user_json(appointment.helper),
+        "status": appointment.status.name,
     }
 
 def signup_json(signup: AppointmentSignup):
@@ -118,7 +119,7 @@ def emit_state(attrs, broadcast=False):
     if 'config' in attrs:
         state['config'] = config_json()
     if 'appointments' in attrs:
-        appointments = Appointment.query.filter(Appointment.start_time > datetime.datetime.utcnow()).all()
+        appointments = Appointment.query.filter(Appointment.start_time > datetime.datetime.now()).all()
         state['appointments'] = [appointments_json(appointment) for appointment in appointments]
 
     if not broadcast and 'current_user' in attrs:

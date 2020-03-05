@@ -1,4 +1,4 @@
-function ConfirmedAppointmentCard({ appointment, signup, locations, assignments })  {
+function ConfirmedAppointmentCard({ appointment, signup, locations, assignments, onClick })  {
     const startTimeObj = moment.utc(appointment.start_time);
     const endTimeObj = moment.utc(appointment.start_time).add(appointment.duration, "seconds");
 
@@ -17,9 +17,18 @@ function ConfirmedAppointmentCard({ appointment, signup, locations, assignments 
 
     const [modalOpen, setModalOpen] = React.useState(false);
 
+    const handleClick = (e) => {
+        e.preventDefault();
+        if (onClick) {
+            onClick()
+        } else {
+            setModalOpen(true);
+        }
+    };
+
     return (
         <React.Fragment>
-            <div className="panel panel-default" onClick={() => setModalOpen(true)}>
+            <div className="panel panel-default" onClick={handleClick}>
                 <ul className="list-group">
                     <a href="#" className="list-group-item">
                         <h4 className="list-group-item-heading">

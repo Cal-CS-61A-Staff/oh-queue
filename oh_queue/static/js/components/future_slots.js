@@ -12,7 +12,7 @@ function FutureSlots({ state }) {
     }
 
     for (const value of days.values()) {
-        value.sort(timeComparator);
+        value.sort(appointmentTimeComparator);
     }
 
     const [openedAppointment, setOpenedAppointment] = React.useState();
@@ -46,7 +46,6 @@ function FutureSlots({ state }) {
                     mySignups={mySignups}
                     locations={locations}
                     assignments={assignments}
-                    onSignupClick={handleAddClick}
                 />
             )}
             {(!currentUser || currentUser.isStaff) && <br />}

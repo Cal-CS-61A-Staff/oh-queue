@@ -1,4 +1,4 @@
-function ConfirmedAppointment({ mySignups, locations, assignments, onSignupClick }) {
+function ConfirmedAppointment({ mySignups, locations, assignments }) {
     let body;
     if (mySignups.length === 0) {
         body = <p>Choose a slot to schedule a visit to office hours! </p>;
@@ -9,7 +9,6 @@ function ConfirmedAppointment({ mySignups, locations, assignments, onSignupClick
                     assignments={assignments}
                     signup={signup}
                     locations={locations}
-                    onClick={() => onSignupClick(appointment.id, signup)}
                 />
             )
         );
