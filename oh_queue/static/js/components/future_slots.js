@@ -7,7 +7,7 @@ function FutureSlots({ state }) {
 
     const days = new Map();
     for (const appointment of appointmentsList) {
-        const date = moment(appointment.start_time).format('LL');
+        const date = moment(appointment.start_time).format('dddd, MMMM D');
         if (!days.has(date)) {
             days.set(date, []);
         }
@@ -19,10 +19,12 @@ function FutureSlots({ state }) {
     }
 
     const [openedAssignment, setOpenedAssignment] = React.useState();
+    const [openedSignup, setOpenedSignup] = React.useState();
 
-    const handleAddClick = (assignmentId) => {
+    const handleAddClick = (assignmentId, signup) => {
         setOpenedAssignment(assignmentId);
-        $("#appointment-overlay").modal();
+        setOpenedSignup(signup);
+        $("#appointment-overlay").modal("show");
     };
 
     const handleStudentSignup = (data) => {
@@ -33,14 +35,30 @@ function FutureSlots({ state }) {
                 assignment_id: parseInt(data.assignment),
                 question: data.question,
                 description: data.description,
+                email: openedSignup ? openedSignup.user.email : data.email,
             });
     };
 
+    const mySignups = [];
+    for (const appointment of appointmentsList) {
+        for (const signup of appointment.signups) {
+            if (signup.user && signup.user.id === currentUser.id) {
+                mySignups.push({ appointment, signup });
+            }
+        }
+    }
+
     return (
         <React.Fragment>
-            {/*{currentUser && !currentUser.isStaff && <ConfirmedAppointment/>}*/}
-            <AppointmentsJumbotron />
-            {/*<br />*/}
+            {currentUser && !currentUser.isStaff && (
+                <ConfirmedAppointment
+                    mySignups={mySignups}
+                    locations={locations}
+                    assignments={assignments}
+                    onSignupClick={handleAddClick}
+                />
+            )}
+            {(!currentUser || currentUser.isStaff) && <br />}
             <div className="container">
                 <FilterControls state={state} />
                 {Array.from(days.entries()).map(([day, dayAppointments]) =>
@@ -64,7 +82,11 @@ function FutureSlots({ state }) {
                     </div>)
                 }
             </div>
-            <AppointmentOverlay assignments={filteredAssignments} onSubmit={handleStudentSignup} />
+            <AppointmentOverlay
+                assignments={filteredAssignments}
+                signup={openedSignup}
+                staffMode={currentUser && currentUser.isStaff}
+                onSubmit={handleStudentSignup} />
         </React.Fragment>
     );
 }

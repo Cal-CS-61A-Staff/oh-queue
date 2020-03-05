@@ -767,3 +767,16 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
     grid-gap: 10px;
     justify-content: space-between;
 }
+
+.confirmed-appointment-container .panel {
+    height: 100%;
+}
+
+.confirmed-appointment-container .list-group {
+    height: 100%;
+}
+
+.confirmed-appointment-container .list-group a {
+    height: 100%;
+    overflow-y: hidden;
+}

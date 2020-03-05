@@ -35,9 +35,9 @@ function AppointmentCard({ currentUser, locations, appointment, assignments, onS
         // TODO: handle race conditions between students
     };
 
-    const handleStudentSignup = (e) => {
+    const handleStudentSignup = (e, signup) => {
         e.preventDefault();
-        onStudentSignup(appointment.id);
+        onStudentSignup(appointment.id, signup);
     };
 
     return (
@@ -102,15 +102,15 @@ function AppointmentCardHelperRow({ appointment, currentUser, onStaffSignup, onS
 
 function AppointmentCardStudentList({ appointment, assignments, currentUser, onStudentSignup }) {
     return (
-        appointment.signups.map(({ user, assignment_id }) =>
+        appointment.signups.map(signup =>
             <Slot
-                link={user && (user.id === currentUser.id || currentUser.isStaff)}
-                badgeText={assignment_id && assignments[assignment_id].name}
-                onClick={onStudentSignup}
+                link={signup.user && (signup.user.id === currentUser.id || currentUser.isStaff)}
+                badgeText={signup.assignment_id && assignments[signup.assignment_id].name}
+                onClick={e => onStudentSignup(e, signup)}
             >
                 {currentUser.isStaff ?
-                    user.name :
-                    user && currentUser.id === user.id ?
+                    signup.user.name :
+                    signup.user && currentUser.id === signup.user.id ?
                         "You (click to edit)" :
                         "Anonymous Student"
                 }
@@ -121,22 +121,23 @@ function AppointmentCardStudentList({ appointment, assignments, currentUser, onS
 
 function AppointmentCardPostList({ appointment, currentUser, onStudentSignup, canAdd }) {
     const spareCapacity = calcSpareCapacity(appointment);
-    return Array(Math.max(spareCapacity, currentUser.isStaff ? 1 : 0)).fill().map(() => (
+    return (
         <React.Fragment>
             {currentUser.isStaff && (
                 <Slot link onClick={onStudentSignup}>
                     Add a student to the section
                 </Slot>
             )}
-            {!currentUser.isStaff && canAdd && (
+            {!currentUser.isStaff && canAdd && spareCapacity > 0 && (
                 <Slot link onClick={onStudentSignup}>
                     Add yourself to the section
                 </Slot>
             )}
-            {!currentUser.isStaff && !canAdd &&
-            <Slot className="slot-disabled">Extra Slot</Slot>}
+            {Array(Math.max(spareCapacity - (canAdd || currentUser.isStaff), 0)).fill().map(() => (
+                <Slot className="slot-disabled">Extra Slot</Slot>
+            ))}
         </React.Fragment>
-    ))
+    );
 }
 
 function Slot({ children, badgeText, onClick, className = "", link }) {

@@ -11,7 +11,7 @@ from flask_socketio import emit
 
 from oh_queue import app, db, socketio
 from oh_queue.models import Assignment, ConfigEntry, Location, Ticket, TicketEvent, TicketEventType, TicketStatus, \
-    active_statuses, Appointment, AppointmentSignup
+    active_statuses, Appointment, AppointmentSignup, User
 
 
 def user_json(user):
@@ -81,18 +81,13 @@ def appointments_json(appointment: Appointment):
     }
 
 def signup_json(signup: AppointmentSignup):
-    public = {
+    return {
         "id": signup.id,
-        "assignment_id": signup.assignment_id
+        "assignment_id": signup.assignment_id,
+        "user": user_json(signup.user),
+        "question": signup.question,
+        "description": signup.description
     }
-    can_see_details = current_user.is_authenticated and (current_user.is_staff or signup.user_id == current_user.id)
-    if can_see_details:
-        public.update({
-            "user": user_json(signup.user),
-            "question": signup.question,
-            "description": signup.description
-        })
-    return public
 
 def emit_event(ticket, event_type):
     ticket_event = TicketEvent(
@@ -635,8 +630,16 @@ def unassign_staff_appointment(appointment_id):
 
 @socketio.on("assign_appointment")
 def assign_appointment(data):
+    user_id = current_user.id
+
+    if current_user.is_staff:
+        user = User.query.filter(User.email == data["email"]).first()
+        if not user:
+            return socket_unauthorized()
+        user_id = user.id
+
     old_signup = AppointmentSignup.query.filter(
-        AppointmentSignup.appointment_id == data["appointment_id"], AppointmentSignup.user_id == current_user.id
+        AppointmentSignup.appointment_id == data["appointment_id"], AppointmentSignup.user_id == user_id
     ).first()
 
     if old_signup:
@@ -650,7 +653,7 @@ def assign_appointment(data):
 
     signup = AppointmentSignup(
         appointment_id=data["appointment_id"],
-        user_id=current_user.id,
+        user_id=user_id,
         assignment_id=data["assignment_id"],
         question=data["question"],
         description=data["description"]
@@ -659,3 +662,17 @@ def assign_appointment(data):
     db.session.commit()
     emit_state(['appointments'], broadcast=True)
 
+
+@socketio.on("unassign_appointment")
+def unassign_appointment(signup_id):
+    old_signup = AppointmentSignup.query.filter(
+        AppointmentSignup.id == signup_id
+    ).first()
+
+    if not current_user.is_staff and (not old_signup or old_signup.user_id != current_user.id):
+        return socket_unauthorized()
+
+    db.session.delete(old_signup)
+    db.session.commit()
+
+    emit_state(['appointments'], broadcast=True)
