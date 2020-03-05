@@ -68,10 +68,7 @@ class App extends React.Component {
       this.state.currentUser = data.current_user;
     }
     if (data.hasOwnProperty('appointments')) {
-        this.state.appointments = {};
-        for (const appointment of data.appointments) {
-            this.state.appointments[appointment.id] = appointment;
-        }
+        this.state.appointments = Array.from(data.appointments).sort(timeComparator);
     }
     this.state.loaded = true;
     this.refresh();
@@ -198,6 +195,7 @@ class App extends React.Component {
             <Route path="/error" render={(props) => (<ErrorView state={state} {...props} />)} />
             <Route path="/presence" render={(props) => (<PresenceIndicator state={state} {...props} />)} />
             <Route path="/tickets/:id" render={(props) => (<TicketLayout state={state} loadTicket={this.loadTicket} {...props} />)} />
+            <Route path="/appointments/:id" render={(props) => (<AppointmentLayout state={state} loadTicket={this.loadTicket} {...props} />)} />
             <Route render={(props) => (<ErrorView state={state} {...props} message="Page Not Found" />)} />
           </Switch>
         </div>

@@ -55,6 +55,7 @@ class TicketLayout extends React.Component {
               <UpdateLocationBox state={state} ticket={ticket}/>
             </div>
           </div>
+          <TicketButtons state={state} ticket={ticket}/>
             {state.config.ticket_prompt &&
             <div className="row">
                 <div className="col-xs-12 col-md-6 col-md-offset-3">
@@ -63,7 +64,6 @@ class TicketLayout extends React.Component {
                 </div>
             </div>
             }
-          <TicketButtons state={state} ticket={ticket}/>
         </div>
       </div>
     );

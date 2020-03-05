@@ -47,6 +47,12 @@ let RequestForm = (props) => {
         $('#description-overlay').show();
     }
 
+    const history = ReactRouterDOM.useHistory();
+
+    const openAppointments = () => {
+        history.push("/appointments");
+    };
+
     let { assignments, locations } = state;
 
     let filteredAssignments = Object.values(assignments).filter((assignment) => assignment.visible).sort((a, b) => a.name.localeCompare(b.name));
@@ -69,39 +75,41 @@ let RequestForm = (props) => {
         <div>
             <form id="request-form">
                 {magicWordInput}
-                <div className="form-group form-group-lg">
-                    <div className="input-group">
-                        <SelectPicker options={filteredAssignments}
-                                      className="selectpicker form-control form-left"
-                                      data-live-search="true" data-size="8" data-width="60%"
-                                      data-style="btn-lg btn-default" id="assignment_id"
-                                      name="assignment_id" title="Assignment" required
-                                      disabled={disabled && !appointments}/>
-                        <input className="form-control form-right" type="text" id="question"
-                               name="question" title="Question" placeholder="Question" required
-                               disabled={disabled && !appointments}/>
-                    </div>
-                </div>
-                {(!disabled || !appointments) &&
-                <div className="form-group form-group-lg">
-                    <div className="input-group">
-                        <SelectPicker options={filteredLocations}
-                                      className="selectpicker form-control form-left"
-                                      data-live-search="true" data-size="8" data-width="60%"
-                                      data-style="btn-lg btn-default" id="location_id"
-                                      name="location_id" title="Location" required
-                                      disabled={disabled}/>
-                        <div className="input-group-btn form-right pull-left">
-                            <button className="btn btn-lg btn-default" onClick={show}
-                                    disabled={disabled}>Request
-                            </button>
+                {(!disabled || !appointments) && (
+                    <React.Fragment>
+                        <div className="form-group form-group-lg">
+                            <div className="input-group">
+                                <SelectPicker options={filteredAssignments}
+                                              className="selectpicker form-control form-left"
+                                              data-live-search="true" data-size="8" data-width="60%"
+                                              data-style="btn-lg btn-default" id="assignment_id"
+                                              name="assignment_id" title="Assignment" required
+                                              disabled={disabled && !appointments}/>
+                                <input className="form-control form-right" type="text" id="question"
+                                       name="question" title="Question" placeholder="Question" required
+                                       disabled={disabled && !appointments}/>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                }
+                        <div className="form-group form-group-lg">
+                            <div className="input-group">
+                                <SelectPicker options={filteredLocations}
+                                              className="selectpicker form-control form-left"
+                                              data-live-search="true" data-size="8" data-width="60%"
+                                              data-style="btn-lg btn-default" id="location_id"
+                                              name="location_id" title="Location" required
+                                              disabled={disabled}/>
+                                <div className="input-group-btn form-right pull-left">
+                                    <button className="btn btn-lg btn-default" onClick={show}
+                                            disabled={disabled}>Request
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </React.Fragment>
+                )}
                 {appointments &&
                 <div className="form-group form-group-lg">
-                    <button className="btn btn-lg btn-default" onClick={show}>
+                    <button className="btn btn-lg btn-default" onClick={openAppointments}>
                         {disabled ? "Schedule Appointment" : "Or make an appointment"}
                     </button>
                 </div>

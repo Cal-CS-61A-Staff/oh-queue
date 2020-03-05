@@ -83,7 +83,7 @@ type State = {
   /* Ticket assignments */
   assignments: Map<number, TicketAssignment>,
   /* Ticket locations */
-  appointments: Map<number, Appointment>,
+  appointments: Array<Appointment>,
   /* Ticket locations */
   locations: Map<number, TicketLocation>,
   /* Server configuration */
@@ -111,7 +111,7 @@ let initialState: State = {
   assignments: {},
   locations: {},
   config: {},
-  appointments: {},
+  appointments: [],
   tickets: new Map(),
   loadingTickets: new Set(),
   filter: {
@@ -298,4 +298,18 @@ function clearMessage(state: State, id: number): void {
   if (message) {
     message.visible = false;
   }
+}
+
+const timeComparator = (a, b) => moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1;
+
+function getMySignups(state: State) {
+    const mySignups = [];
+    for (const appointment of state.appointments) {
+        for (const signup of appointment.signups) {
+            if (signup.user && signup.user.id === currentUser.id) {
+                mySignups.push({ appointment, signup });
+            }
+        }
+    }
+    return mySignups;
 }

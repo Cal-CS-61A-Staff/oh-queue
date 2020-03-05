@@ -21,7 +21,7 @@ let Jumbotron = ({ state }) => {
     }
 
     if (appointments && !isQueueOpen) {
-        subtitleText = " Fill out the form to make an appointment for a future OH!"
+        subtitleText = " Click the button to make an appointment for a future OH!"
     }
 
 

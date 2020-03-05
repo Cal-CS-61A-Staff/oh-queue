@@ -676,3 +676,13 @@ def unassign_appointment(signup_id):
     db.session.commit()
 
     emit_state(['appointments'], broadcast=True)
+
+
+@socketio.on('load_ticket')
+@is_staff
+def load_ticket(ticket_id):
+    if not ticket_id:
+        return socket_error('Invalid ticket ID')
+    ticket = Ticket.query.get(ticket_id)
+    if ticket:
+        return ticket_json(ticket)

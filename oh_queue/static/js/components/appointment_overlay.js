@@ -1,8 +1,10 @@
-function AppointmentOverlay({ staffMode, assignments, signup, onSubmit }) {
+function AppointmentOverlay({ staffMode, appointment, assignments, signup, onSubmit, isOpen }) {
     const [email, setEmail] = React.useState("");
     const [assignment, setAssignment] = React.useState("");
     const [question, setQuestion] = React.useState("");
     const [description, setDescription] = React.useState("");
+
+    const root = React.useRef();
 
     React.useEffect(() => {
         if (signup) {
@@ -18,22 +20,37 @@ function AppointmentOverlay({ staffMode, assignments, signup, onSubmit }) {
         }
     }, [signup]);
 
-    const handleClick = () => {
-        onSubmit({
-            email,
-            assignment,
-            question,
-            description,
-        })
-    };
+    React.useEffect(() => {
+        if (isOpen) {
+            $(root.current).modal("show");
+        } else {
+            $(root.current).modal("hide");
+        }
+    }, [isOpen]);
+
+    React.useEffect(() => {
+        $(root.current).on("hide.bs.modal", onSubmit);
+    }, []);
 
     const handleCancel = () => {
         app.makeRequest("unassign_appointment", signup.id);
-        $("#appointment-overlay").modal("hide");
+        onSubmit();
+    };
+
+    const handleSubmit = () => {
+        app.makeRequest(
+        'assign_appointment', {
+            appointment_id: appointment,
+            assignment_id: parseInt(assignment),
+            question: question,
+            description: description,
+            email: signup ? signup.user.email : email,
+        });
+        onSubmit();
     };
 
     return ReactDOM.createPortal(
-        <div className="modal fade" id="appointment-overlay" tabIndex="-1" role="dialog">
+        <div className="modal fade" ref={root} tabIndex="-1" role="dialog">
             <div className="modal-dialog" role="document">
                 <div className="modal-content">
                     <div className="modal-header">
@@ -77,7 +94,7 @@ function AppointmentOverlay({ staffMode, assignments, signup, onSubmit }) {
                         <button
                             type="button"
                             className="btn btn-primary"
-                            onClick={handleClick}
+                            onClick={handleSubmit}
                         >Confirm</button>
                     </div>
                 </div>

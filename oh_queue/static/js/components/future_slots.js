@@ -1,12 +1,9 @@
 function FutureSlots({ state }) {
-    const { assignments, appointments, locations, currentUser } = state;
+    const { assignments, appointments, locations, currentUser, messages } = state;
     const filteredAssignments = Object.values(assignments).filter(assignment => assignment.visible).sort((a, b) => a.name.localeCompare(b.name));
 
-    const timeComparator = (a, b) => moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1;
-    const appointmentsList = Array.from(Object.values(appointments)).sort(timeComparator);
-
     const days = new Map();
-    for (const appointment of appointmentsList) {
+    for (const appointment of appointments) {
         const date = moment(appointment.start_time).format('dddd, MMMM D');
         if (!days.has(date)) {
             days.set(date, []);
@@ -18,29 +15,23 @@ function FutureSlots({ state }) {
         value.sort(timeComparator);
     }
 
-    const [openedAssignment, setOpenedAssignment] = React.useState();
+    const [openedAppointment, setOpenedAppointment] = React.useState();
     const [openedSignup, setOpenedSignup] = React.useState();
 
-    const handleAddClick = (assignmentId, signup) => {
-        setOpenedAssignment(assignmentId);
+    const [modalOpen, setModalOpen] = React.useState(false);
+
+    const handleAddClick = (appointmentID, signup) => {
+        setOpenedAppointment(appointmentID);
         setOpenedSignup(signup);
-        $("#appointment-overlay").modal("show");
+        setModalOpen(true);
     };
 
-    const handleStudentSignup = (data) => {
-        $("#appointment-overlay").modal("hide");
-        app.makeRequest(
-            'assign_appointment', {
-                appointment_id: openedAssignment,
-                assignment_id: parseInt(data.assignment),
-                question: data.question,
-                description: data.description,
-                email: openedSignup ? openedSignup.user.email : data.email,
-            });
+    const handleSubmit = () => {
+        setModalOpen(false);
     };
 
     const mySignups = [];
-    for (const appointment of appointmentsList) {
+    for (const appointment of appointments) {
         for (const signup of appointment.signups) {
             if (signup.user && signup.user.id === currentUser.id) {
                 mySignups.push({ appointment, signup });
@@ -60,6 +51,7 @@ function FutureSlots({ state }) {
             )}
             {(!currentUser || currentUser.isStaff) && <br />}
             <div className="container">
+                <Messages messages={messages}/>
                 <FilterControls state={state} />
                 {Array.from(days.entries()).map(([day, dayAppointments]) =>
                     <div>
@@ -84,9 +76,12 @@ function FutureSlots({ state }) {
             </div>
             <AppointmentOverlay
                 assignments={filteredAssignments}
+                appointment={openedAppointment}
                 signup={openedSignup}
                 staffMode={currentUser && currentUser.isStaff}
-                onSubmit={handleStudentSignup} />
+                isOpen={modalOpen}
+                onSubmit={handleSubmit}
+            />
         </React.Fragment>
     );
 }

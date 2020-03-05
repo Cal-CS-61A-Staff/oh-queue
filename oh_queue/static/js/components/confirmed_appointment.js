@@ -9,7 +9,7 @@ function ConfirmedAppointment({ mySignups, locations, assignments, onSignupClick
                     assignments={assignments}
                     signup={signup}
                     locations={locations}
-                    onSignupClick={() => onSignupClick(appointment.id, signup)}
+                    onClick={() => onSignupClick(appointment.id, signup)}
                 />
             )
         );
