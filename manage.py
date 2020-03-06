@@ -104,6 +104,45 @@ def seed_data():
 
 
 @manager.command
+def seed_appointments():
+    print('Seeding appointments...')
+
+    Appointment.query.delete()
+    AppointmentSignup.query.delete()
+
+    assignments = Assignment.query.all()
+    locations = Location.query.all()
+    questions = list(range(1, 16)) + ['Other', 'EC', 'Checkoff']
+    descriptions = ['', 'I\'m in the hallway', 'SyntaxError on Line 5']
+    students = User.query.all()
+
+    appointments = [Appointment(
+        start_time=datetime.datetime.now() + datetime.timedelta(hours=random.randrange(-8, 50)),
+        duration=datetime.timedelta(minutes=random.randrange(30, 120, 30)),
+        location=random.choice(locations),
+        capacity=5,
+        status=AppointmentStatus.pending,
+    ) for _ in range(70)]
+
+    for appointment in appointments:
+        db.session.add(appointment)
+
+    db.session.commit()
+
+    signups = [AppointmentSignup(
+        appointment=random.choice(appointments),
+        user=random.choice(students),
+        assignment=random.choice(assignments),
+        question=random.choice(questions),
+        description=random.choice(descriptions)
+    ) for _ in range(120)]
+
+    for signup in signups:
+        db.session.add(signup)
+
+    db.session.commit()
+
+@manager.command
 def seed_defaults():
     print('Seeding default config values...')
     db.session.add(ConfigEntry(
