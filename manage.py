@@ -117,7 +117,7 @@ def seed_appointments():
     students = User.query.all()
 
     appointments = [Appointment(
-        start_time=datetime.datetime.now() + datetime.timedelta(hours=random.randrange(-8, 50)),
+        start_time=datetime.datetime.now() + datetime.timedelta(hours=random.randrange(-20, 50)),
         duration=datetime.timedelta(minutes=random.randrange(30, 120, 30)),
         location=random.choice(locations),
         capacity=5,
