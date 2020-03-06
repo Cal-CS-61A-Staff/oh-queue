@@ -121,7 +121,7 @@ def emit_state(attrs, broadcast=False):
         state['config'] = config_json()
     if 'appointments' in attrs:
         appointments = Appointment.query.filter(
-            Appointment.start_time > datetime.datetime.now() - datetime.timedelta(hours=5), Appointment.status != AppointmentStatus.resolved
+            Appointment.start_time > datetime.datetime.utcnow() - datetime.timedelta(hours=5), Appointment.status != AppointmentStatus.resolved
         ).all()
         state['appointments'] = [appointments_json(appointment) for appointment in appointments]
 
