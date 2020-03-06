@@ -13,6 +13,8 @@ down_revision = '7141eb5952ee'
 from alembic import op
 import sqlalchemy as sa
 import oh_queue.models
+from sqlalchemy import orm
+
 from oh_queue.models import *
 
 
@@ -50,6 +52,15 @@ def upgrade():
     op.create_index(op.f('ix_appointment_signup_appointment_id'), 'appointment_signup', ['appointment_id'], unique=False)
     op.create_index(op.f('ix_appointment_signup_assignment_id'), 'appointment_signup', ['assignment_id'], unique=False)
     op.create_index(op.f('ix_appointment_signup_user_id'), 'appointment_signup', ['user_id'], unique=False)
+
+    # Get alembic DB bind
+    connection = op.get_bind()
+    session = orm.Session(bind=connection)
+
+    session.add(ConfigEntry(key='appointments_open', value='false', public=True))
+
+    session.commit()
+
     # ### end Alembic commands ###
 
 
@@ -65,3 +76,13 @@ def downgrade():
     op.drop_index(op.f('ix_appointment_helper_id'), table_name='appointment')
     op.drop_table('appointment')
     # ### end Alembic commands ###
+
+    # Get alembic DB bind
+    connection = op.get_bind()
+    session = orm.Session(bind=connection)
+
+    # Delete config values
+    query = session.query(ConfigEntry)
+    query.filter(ConfigEntry.key == 'appointments_open').delete(synchronize_session=False)
+
+    session.commit()
