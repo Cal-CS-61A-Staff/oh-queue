@@ -11,7 +11,7 @@ from flask_socketio import emit
 
 from oh_queue import app, db, socketio
 from oh_queue.models import Assignment, ConfigEntry, Location, Ticket, TicketEvent, TicketEventType, TicketStatus, \
-    active_statuses, Appointment, AppointmentSignup, User
+    active_statuses, Appointment, AppointmentSignup, User, AppointmentStatus, AttendanceStatus
 
 
 def user_json(user):
@@ -87,7 +87,8 @@ def signup_json(signup: AppointmentSignup):
         "assignment_id": signup.assignment_id,
         "user": user_json(signup.user),
         "question": signup.question,
-        "description": signup.description
+        "description": signup.description,
+        "attendance_status": signup.attendance_status.name,
     }
 
 def emit_event(ticket, event_type):
@@ -119,7 +120,9 @@ def emit_state(attrs, broadcast=False):
     if 'config' in attrs:
         state['config'] = config_json()
     if 'appointments' in attrs:
-        appointments = Appointment.query.filter(Appointment.start_time > datetime.datetime.now()).all()
+        appointments = Appointment.query.filter(
+            Appointment.start_time > datetime.datetime.now() - datetime.timedelta(hours=5), Appointment.status != AppointmentStatus.resolved
+        ).all()
         state['appointments'] = [appointments_json(appointment) for appointment in appointments]
 
     if not broadcast and 'current_user' in attrs:
@@ -643,6 +646,8 @@ def assign_appointment(data):
         AppointmentSignup.appointment_id == data["appointment_id"], AppointmentSignup.user_id == user_id
     ).first()
 
+    old_attendance = old_signup.attendance_status
+
     if old_signup:
         db.session.delete(old_signup)
         db.session.commit()
@@ -657,7 +662,8 @@ def assign_appointment(data):
         user_id=user_id,
         assignment_id=data["assignment_id"],
         question=data["question"],
-        description=data["description"]
+        description=data["description"],
+        attendance_status=old_attendance,
     )
     db.session.add(signup)
     db.session.commit()
@@ -687,3 +693,27 @@ def load_appointment(appointment_id):
     appointment = Appointment.query.get(appointment_id)
     if appointment:
         return appointments_json(appointment)
+
+
+@socketio.on('set_appointment_status')
+@is_staff
+def set_appointment_status(data):
+    appointment_id = data["appointment"]
+    status = data["status"]
+    Appointment.query.get(appointment_id).status = AppointmentStatus[status]
+    db.session.commit()
+
+    emit_state(['appointments'], broadcast=True)
+
+
+@socketio.on("mark_attendance")
+@is_staff
+def mark_attendance(data):
+    signup_id = data["signup_id"]
+    attendance_status = data["status"]
+
+    AppointmentSignup.query.get(signup_id).attendance_status = AttendanceStatus[attendance_status]
+    db.session.commit()
+
+    emit_state(['appointments'], broadcast=True)
+

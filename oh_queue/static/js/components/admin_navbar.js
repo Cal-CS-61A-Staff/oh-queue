@@ -34,7 +34,7 @@ class AdminNavbar extends React.Component {
               <span className="icon-bar"></span>
             </button>
             <span className="navbar-brand">
-              <Link to="/admin"><strong>{ window.courseName } |</strong> Admin</Link>
+              <Link to="/"><strong>{ window.courseName } |</strong> Admin</Link>
             </span>
           </div>
 
@@ -43,7 +43,8 @@ class AdminNavbar extends React.Component {
               {links}
             </ul>
             <ul className="nav navbar-nav navbar-right">
-              <li><Link to="/">Queue</Link></li>
+              <li><Link to="/admin">Admin</Link></li>
+              <li><Link to="/appointments">Appointments</Link></li>
               {userDropdown}
             </ul>
           </div>

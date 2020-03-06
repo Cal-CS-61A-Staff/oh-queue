@@ -61,6 +61,7 @@ type Appointment = {
     capacity: number,
     location_id: number,
     helper: ?User,
+    status: 'pending' | 'active' | 'resolved',
 }
 
 
@@ -70,6 +71,7 @@ type Signup = {
     user: ?User,
     question: ?string,
     description: ?string,
+    attendance_status: 'unknown' | 'present' | 'excused' | 'absent',
 }
 
 
@@ -334,7 +336,8 @@ function getMyAppointmentsStaff(state: State) {
     return myAppointments;
 }
 
-function getAppointment(state: State, appointment_id: number) {
+function getAppointment(state: State, appointment_id: number) : Appointment {
+    console.log(state.appointments);
     return state.appointments.find(({ id }) => id === appointment_id);
 }
 

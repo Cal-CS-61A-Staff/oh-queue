@@ -17,6 +17,7 @@ function StaffUpcomingAppointmentCard({ appointment, locations, onClick })  {
     };
 
     const style = {};
+
     if (!appointment.helper) {
         style.borderLeft = "2px solid red";
     }
@@ -25,13 +26,14 @@ function StaffUpcomingAppointmentCard({ appointment, locations, onClick })  {
         <div className="panel panel-default" onClick={handleClick} style={style}>
             <ul className="list-group">
                 <a href="#" className="list-group-item">
-                    {!appointment.helper && <span className="badge badge-danger">WARNING: No helper assigned!</span>}
+                    {!appointment.helper && <span className="badge badge-danger">No helper assigned!</span>}
                     <h4 className="list-group-item-heading">
-                        {startTimeObj.format("dddd, MMMM D")} at {startTimeObj.format("h:mma")}-{endTimeObj.format("h:mma")}
+                        {startTimeObj.format("dddd, MMMM D")} at {startTimeObj.format("h:mma")}‐{endTimeObj.format("h:mma")}
                     </h4>
                     {content}
                 </a>
             </ul>
         </div>
     )
+
 }
