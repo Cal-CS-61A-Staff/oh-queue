@@ -1,4 +1,4 @@
-function ConfirmedAppointmentCard({ appointment, signup, locations, assignments, onClick })  {
+function ConfirmedAppointmentCard({ appointment, signup, locations, assignments })  {
     const startTimeObj = moment.utc(appointment.start_time);
     const endTimeObj = moment.utc(appointment.start_time).add(appointment.duration, "seconds");
 
@@ -17,20 +17,29 @@ function ConfirmedAppointmentCard({ appointment, signup, locations, assignments,
 
     const [modalOpen, setModalOpen] = React.useState(false);
 
+    const history = ReactRouterDOM.useHistory();
+
     const handleClick = (e) => {
         e.preventDefault();
-        if (onClick) {
-            onClick()
+        if (appointment.status === "active") {
+            history.push("/appointments/" + appointment.id);
         } else {
             setModalOpen(true);
         }
     };
 
+    const style = {};
+
+    if (appointment.status === "active") {
+        style.borderLeft = "5px solid #337ab7";
+    }
+
     return (
         <React.Fragment>
-            <div className="panel panel-default" onClick={handleClick}>
+            <div className="panel panel-default" onClick={handleClick} style={style}>
                 <ul className="list-group">
                     <a href="#" className="list-group-item">
+                        {appointment.status === "active" && <span className="badge badge-primary">In Progress</span>}
                         <h4 className="list-group-item-heading">
                             {startTimeObj.format("dddd, MMMM D")} at {startTimeObj.format("h:mma")}-{endTimeObj.format("h:mma")}
                         </h4>

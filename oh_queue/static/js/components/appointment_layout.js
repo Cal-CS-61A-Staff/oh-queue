@@ -1,3 +1,5 @@
+const { Link } = ReactRouterDOM;
+
 function AppointmentLayout({ state, match, loadAppointment }) {
     const appointmentID = +match.params.id;
     if (!getAppointment(state, appointmentID)) {
@@ -37,64 +39,66 @@ function AppointmentLayout({ state, match, loadAppointment }) {
 
     if (appointment.status === "resolved") {
         actionButton = (
-            <button className="btn btn-default appointment-btn" onClick={handleStaffSignup}>
-                Return to queue
-            </button>
+            <Link to="/">
+                <AppointmentLayoutButton color="default" onClick={() => null}>
+                    Return to Queue
+                </AppointmentLayoutButton>
+            </Link>
         );
     } else if (!appointment.helper) {
         actionButton = (
-            <button className="btn btn-success appointment-btn" onClick={handleStaffSignup}>
+            <AppointmentLayoutButton color="success" onClick={handleStaffSignup}>
                 Sign up to help section
-            </button>
+            </AppointmentLayoutButton>
         );
     } else if (appointment.helper.id !== state.currentUser.id) {
         actionButton = (
             <div>
-                <button className="btn btn-warning appointment-btn" onClick={handleStaffSignup}>
+                <AppointmentLayoutButton color="warning" onClick={handleStaffSignup}>
                     Reassign Appointment
-                </button>
-                <button className="btn btn-danger appointment-btn" onClick={handleStaffUnassign}>
+                </AppointmentLayoutButton>
+                <AppointmentLayoutButton color="danger" onClick={handleStaffUnassign}>
                     Unassign Appointment
-                </button>
+                </AppointmentLayoutButton>
             </div>
         );
     } else if (appointment.status === "pending") {
         actionButton = (
             <div>
-                <button className="btn btn-primary appointment-btn" onClick={updateAppointment("active")}>
+                <AppointmentLayoutButton color="primary" onClick={updateAppointment("active")}>
                     Start Appointment
-                </button>
-                <button className="btn btn-danger appointment-btn" onClick={handleStaffUnassign}>
+                </AppointmentLayoutButton>
+                <AppointmentLayoutButton color="danger" onClick={handleStaffUnassign}>
                     Unassign Appointment
-                </button>
+                </AppointmentLayoutButton>
             </div>
         );
     } else if (attendanceDone) {
         actionButton = (
             <div>
-                <button className="btn btn-danger appointment-btn" onClick={updateAppointment("resolved")}>
+                <AppointmentLayoutButton color="danger" onClick={updateAppointment("resolved")}>
                     End Appointment
-                </button>
-                <button className="btn appointment-btn" onClick={updateAppointment("pending")}>
+                </AppointmentLayoutButton>
+                <AppointmentLayoutButton color="default" onClick={updateAppointment("pending")}>
                     Requeue Appointment
-                </button>
+                </AppointmentLayoutButton>
             </div>
         );
     } else {
         actionButton = (
             <div>
                 <span
-                    className="d-inline-block appointment-btn"
-                    tabIndex="0" data-toggle="tooltip" data-placement="bottom"
+                    className="d-inline-block btn-block"
+                    tabIndex="0" data-toggle="tooltip" data-placement="top"
                     title="You must record attendance before ending appointments.">
-                    <button className="btn btn-danger" disabled
+                    <button className="btn btn-danger btn-lg btn-block" disabled
                             style={{ pointerEvents: 'none' }}>
                         End Appointment
                     </button>
                 </span>
-                <button className="btn btn-default appointment-btn" onClick={updateAppointment("pending")}>
+                <AppointmentLayoutButton color="default" onClick={updateAppointment("pending")}>
                     Requeue Appointment
-                </button>
+                </AppointmentLayoutButton>
             </div>
         );
     }
@@ -113,9 +117,20 @@ function AppointmentLayout({ state, match, loadAppointment }) {
                         {" "}
                         {state.locations[appointment.location_id].name}
                     </small>
-                    {actionButton}
+                    <p className="ticket-view-text text-center"> {appointment.status[0].toUpperCase() + appointment.status.slice(1)} </p>
+                    <hr/>
+                    {state.currentUser.isStaff && (
+                        <div className="row">
+                            <div className="col-xs-12 col-md-6 col-md-offset-3">
+                                <div className="well">
+                                    {actionButton}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </h2>
-                {!attendanceDone && <div className="alert alert-danger" role="alert">
+                {state.currentUser.isStaff && !attendanceDone &&
+                <div className="alert alert-danger" role="alert">
                     Remember to record attendance!
                 </div>}
 
@@ -124,6 +139,7 @@ function AppointmentLayout({ state, match, loadAppointment }) {
                 <div className="card-holder">
                     {appointment.signups.map(signup => (
                         <AppointmentStudentCard
+                            isStaff={state.currentUser.isStaff}
                             status={appointment.status}
                             signup={signup}
                             assignments={state.assignments}
@@ -141,4 +157,13 @@ function AppointmentLayout({ state, match, loadAppointment }) {
             </div>
         </div>
     )
+}
+
+function AppointmentLayoutButton({ color, children, onClick }) {
+    return (
+        <button className={`btn btn-${color} btn-lg btn-block`}
+                onClick={onClick}>
+            {children}
+        </button>
+    );
 }

@@ -786,7 +786,7 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
     flex-grow: 1;
 }
 
-.panel .list-group a {
+.confirmed-appointment-container .list-group a {
     height: 100%;
     overflow-y: hidden;
 }
@@ -800,13 +800,13 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
     background-color: #dc3545;
 }
 
-h4.list-group-item-heading.list-group-item-heading {
-    color: #337ab7;
+.badge-primary {
+    color: #fff;
+    background-color: #337ab7;;;
 }
 
-.appointment-btn {
-    display: inline-block;
-    margin: 10px 10px 10px 10px;
+h4.list-group-item-heading.list-group-item-heading {
+    color: #337ab7;
 }
 
 h3.panel-title::before {
@@ -820,4 +820,8 @@ h3.panel-title::before {
 
 .panel.panel-default {
     border-top: 1px solid #ddd;;
+}
+
+.tooltip+.btn-block {
+    margin-top: 5px;
 }

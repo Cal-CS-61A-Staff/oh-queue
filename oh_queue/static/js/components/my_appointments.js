@@ -1,10 +1,4 @@
 function MyAppointments({ state }) {
-    const history = ReactRouterDOM.useHistory();
-
-    const redirect = (id) => {
-        history.push("/appointments/" + id);
-    };
-
     const studentContent = getMySignups(state)
         .filter(({ appointment }) => isSoon(appointment.start_time))
         .map(({ appointment, signup }) => {
@@ -29,7 +23,6 @@ function MyAppointments({ state }) {
                 <StaffUpcomingAppointmentCard
                     appointment={appointment}
                     locations={state.locations}
-                    onClick={() => redirect(appointment.id)}
                 />
             )
         });

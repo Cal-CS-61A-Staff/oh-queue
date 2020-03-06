@@ -646,7 +646,7 @@ def assign_appointment(data):
         AppointmentSignup.appointment_id == data["appointment_id"], AppointmentSignup.user_id == user_id
     ).first()
 
-    old_attendance = old_signup.attendance_status
+    old_attendance = old_signup.attendance_status if old_signup else AttendanceStatus.unknown
 
     if old_signup:
         db.session.delete(old_signup)

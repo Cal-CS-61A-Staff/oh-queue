@@ -337,7 +337,6 @@ function getMyAppointmentsStaff(state: State) {
 }
 
 function getAppointment(state: State, appointment_id: number) : Appointment {
-    console.log(state.appointments);
     return state.appointments.find(({ id }) => id === appointment_id);
 }
 

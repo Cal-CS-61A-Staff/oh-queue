@@ -1,4 +1,4 @@
-function AppointmentStudentCard({ status, signup, assignments }) {
+function AppointmentStudentCard({ status, signup, assignments, isStaff }) {
     const assignmentName = signup.assignment_id && assignments[signup.assignment_id].name;
     const questionName = signup.question ? " Question " + signup.question : "";
 
@@ -30,7 +30,7 @@ function AppointmentStudentCard({ status, signup, assignments }) {
                 {question}
                 {description}
             </ul>
-            {status === "active" && (
+            {isStaff && status === "active" && (
                 <div className="panel-footer attendance-buttons">
                     <AttendanceButton color="primary" signup={signup} status="present" />
                     <AttendanceButton color="warning" signup={signup} status="excused" />

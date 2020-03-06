@@ -1,4 +1,4 @@
-function StaffUpcomingAppointmentCard({ appointment, locations, onClick })  {
+function StaffUpcomingAppointmentCard({ appointment, locations })  {
     const startTimeObj = moment.utc(appointment.start_time);
     const endTimeObj = moment.utc(appointment.start_time).add(appointment.duration, "seconds");
 
@@ -11,15 +11,21 @@ function StaffUpcomingAppointmentCard({ appointment, locations, onClick })  {
         </React.Fragment>
     );
 
+    const history = ReactRouterDOM.useHistory();
+
     const handleClick = (e) => {
         e.preventDefault();
-        onClick();
+        history.push("/appointments/" + appointment.id);
     };
 
     const style = {};
 
     if (!appointment.helper) {
-        style.borderLeft = "2px solid red";
+        style.borderLeft = "5px solid red";
+    }
+
+    if (appointment.status === "active") {
+        style.borderLeft = "5px solid #337ab7";
     }
 
     return (
@@ -27,6 +33,7 @@ function StaffUpcomingAppointmentCard({ appointment, locations, onClick })  {
             <ul className="list-group">
                 <a href="#" className="list-group-item">
                     {!appointment.helper && <span className="badge badge-danger">No helper assigned!</span>}
+                    {appointment.status === "active" && <span className="badge badge-primary">In Progress</span>}
                     <h4 className="list-group-item-heading">
                         {startTimeObj.format("dddd, MMMM D")} at {startTimeObj.format("h:mma")}‐{endTimeObj.format("h:mma")}
                     </h4>
