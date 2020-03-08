@@ -48,7 +48,7 @@ class ConfigEntry(db.Model):
     """Represents persistent server-side configuration entries"""
     __tablename__ = 'config_entries'
     id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String(255))
+    key = db.Column(db.String(255), nullable=False)
     value = db.Column(db.Text(), nullable=False)
     public = db.Column(db.Boolean, default=False)
 
