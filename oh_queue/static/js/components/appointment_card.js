@@ -1,6 +1,6 @@
 const calcSpareCapacity = appointment => Math.max(0, appointment.capacity - appointment.signups.length);
 
-function AppointmentCard({ currentUser, locations, appointment, assignments, onStudentSignup }) {
+function AppointmentCard({ currentUser, locations, appointment, assignments, compact, onStudentSignup }) {
     let panelColor = "panel-default";
     let canAdd = true;
 
@@ -42,45 +42,51 @@ function AppointmentCard({ currentUser, locations, appointment, assignments, onS
 
     return (
         <div className={panelClass}>
-            <AppointmentCardHeader appointment={appointment} locations={locations}/>
+            <AppointmentCardHeader
+                appointment={appointment}
+                locations={locations}
+                compact={compact}
+            />
             <ul className="list-group">
-                <AppointmentCardHelperRow
+                {(!compact || currentUser.isStaff) && <AppointmentCardHelperRow
                     appointment={appointment}
                     currentUser={currentUser}
                     onStaffSignup={handleStaffSignup}
                     onStaffUnassign={handleStaffUnassign}
-                />
-                <AppointmentCardStudentList
+                />}
+                {<AppointmentCardStudentList
                     appointment={appointment}
                     currentUser={currentUser}
                     assignments={assignments}
+                    compact={compact}
                     onStudentSignup={handleStudentSignup}
-                />
-                <AppointmentCardPostList
+                />}
+                {(!compact || !currentUser.isStaff) && <AppointmentCardPostList
                     appointment={appointment}
                     currentUser={currentUser}
                     canAdd={canAdd}
+                    compact={compact}
                     onStudentSignup={handleStudentSignup}
-                />
+                />}
             </ul>
         </div>
     )
 }
 
-function AppointmentCardHeader({ appointment, locations }) {
+function AppointmentCardHeader({ appointment, locations, compact}) {
     const startTimeObj = moment.utc(appointment.start_time);
     const endTimeObj = moment.utc(appointment.start_time).add(appointment.duration, "seconds");
 
     const spareCapacity = calcSpareCapacity(appointment);
 
+    let title = startTimeObj.format("h:mma") + '-' + endTimeObj.format("h:mma") + " in " + locations[appointment.location_id].name;
+    if (!compact) {
+        title += ` (${spareCapacity} slot${spareCapacity === 1 ? "" : "s"} left)`;
+    }
+
     return (
         <div className="panel-heading">
-            <h3 className="panel-title">
-                {startTimeObj.format("h:mma")}-{endTimeObj.format("h:mma")}
-                {" in "}
-                {locations[appointment.location_id].name}
-                {" "}
-                ({spareCapacity} slot{spareCapacity === 1 ? "" : "s"} left)</h3>
+            <h3 className="panel-title">{title}</h3>
         </div>
     );
 }
@@ -88,7 +94,7 @@ function AppointmentCardHeader({ appointment, locations }) {
 function AppointmentCardHelperRow({ appointment, currentUser, onStaffSignup, onStaffUnassign }) {
     return (
         <Slot>
-            {appointment.helper ? `Helper assigned: ${appointment.helper.name}` : "No helper assigned yet."}
+            {appointment.helper ? `Helper: ${appointment.helper.name}` : "No helper assigned yet."}
             {currentUser.isStaff &&
             (appointment.helper ?
                 <button className="btn btn-danger btn-take-over btn-xs"
@@ -100,10 +106,10 @@ function AppointmentCardHelperRow({ appointment, currentUser, onStaffSignup, onS
     )
 }
 
-function AppointmentCardStudentList({ appointment, assignments, currentUser, onStudentSignup }) {
+function AppointmentCardStudentList({ appointment, assignments, currentUser, compact, onStudentSignup }) {
     return (
         appointment.signups.map(signup =>
-            <Slot
+            (signup.user && currentUser.id === signup.user.id || !compact) && <Slot
                 link={signup.user && (signup.user.id === currentUser.id || currentUser.isStaff)}
                 badgeText={signup.assignment_id && assignments[signup.assignment_id].name}
                 onClick={e => onStudentSignup(e, signup)}
@@ -119,7 +125,7 @@ function AppointmentCardStudentList({ appointment, assignments, currentUser, onS
     )
 }
 
-function AppointmentCardPostList({ appointment, currentUser, onStudentSignup, canAdd }) {
+function AppointmentCardPostList({ appointment, currentUser, onStudentSignup, compact, canAdd }) {
     const spareCapacity = calcSpareCapacity(appointment);
     return (
         <React.Fragment>
@@ -133,7 +139,7 @@ function AppointmentCardPostList({ appointment, currentUser, onStudentSignup, ca
                     Add yourself to the section
                 </Slot>
             )}
-            {Array(Math.max(spareCapacity - (canAdd || currentUser.isStaff), 0)).fill().map(() => (
+            {!compact && Array(Math.max(spareCapacity - (canAdd || currentUser.isStaff), 0)).fill().map(() => (
                 <Slot className="slot-disabled">Extra Slot</Slot>
             ))}
         </React.Fragment>

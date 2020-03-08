@@ -41,6 +41,8 @@ function FutureSlots({ state }) {
         }
     }
 
+    const [compact, setCompact] = React.useState(false);
+
     return (
         <React.Fragment>
             {currentUser && !currentUser.isStaff && (
@@ -54,10 +56,11 @@ function FutureSlots({ state }) {
             <div className="container">
                 <Messages messages={messages}/>
                 <FilterControls state={state} />
+                <CompactToggle compact={compact} onCompactChange={setCompact} />
                 {Array.from(days.entries()).map(([day, dayAppointments]) =>
                     <div>
                         <h3> {day} </h3>
-                        <div className="card-holder">
+                        <div className={"card-holder " + (compact ? "compact-card-holder" : "")}>
                             {dayAppointments.map(appointment => {
                                     return (
                                         <AppointmentCard
@@ -66,6 +69,7 @@ function FutureSlots({ state }) {
                                             currentUser={currentUser}
                                             assignments={assignments}
                                             onStudentSignup={handleAddClick}
+                                            compact={compact}
                                         />
                                     )
                                 }
@@ -85,4 +89,29 @@ function FutureSlots({ state }) {
             />
         </React.Fragment>
     );
+}
+
+function CompactToggle({ compact, onCompactChange }) {
+    const initializeToggle = (toggle) => {
+        if (!toggle) return;
+        $(toggle).bootstrapToggle();
+        $(toggle).change(() => handleClick(toggle));
+    };
+
+    const handleClick = (toggle) => {
+        onCompactChange(toggle.checked);
+    };
+
+    return (
+        <input
+            ref={initializeToggle}
+            type="checkbox"
+            defaultChecked={compact}
+            data-off={'Regular'}
+            data-on={'Compact'}
+            data-size="mini"
+            data-toggle="toggle"
+            onClick={handleClick}
+        />
+    )
 }
