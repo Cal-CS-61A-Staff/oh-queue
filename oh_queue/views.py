@@ -7,7 +7,7 @@ import time
 
 from flask import render_template, url_for
 from flask_login import current_user
-from flask_socketio import emit
+from flask_socketio import emit, join_room, leave_room
 
 from oh_queue import app, db, socketio
 from oh_queue.course_config import get_course, format_coursecode
@@ -82,7 +82,7 @@ def emit_event(ticket, event_type):
     socketio.emit('event', {
         'type': event_type.name,
         'ticket': ticket_json(ticket),
-    })
+    }, room=get_course())
 
 def emit_state(attrs, broadcast=False):
     state = {}
@@ -103,7 +103,7 @@ def emit_state(attrs, broadcast=False):
     if not broadcast and 'current_user' in attrs:
         state['current_user'] = student_json(current_user)
     if broadcast:
-        socketio.emit('state', state)
+        socketio.emit('state', state, room=get_course())
     else:
         emit('state', state)
 
@@ -115,7 +115,7 @@ def emit_presence(data):
         Ticket.course == get_course(),
     ).all()}
     out["staff"] = len(data["staff"] | active_staff)
-    socketio.emit('presence', out)
+    socketio.emit('presence', out, room=get_course())
 
 user_presence = collections.defaultdict(set) # An in memory map of presence.
 
@@ -169,7 +169,6 @@ def init_config():
 @app.route('/<path:path>')
 def index(*args, **kwargs):
     check = db.session.query(ConfigEntry).filter_by(course=get_course()).first()
-    print(check)
     if not check:
         init_config()
     return render_template('index.html', course_name=format_coursecode(get_course()))
@@ -250,6 +249,8 @@ def connect():
     else:
         user_presence['students'].add(current_user.email)
 
+    join_room(get_course())
+
     emit_state(['tickets', 'assignments', 'locations', 'current_user', 'config'])
 
     emit_presence(user_presence)
@@ -264,6 +265,9 @@ def disconnect():
     else:
         if current_user.email in user_presence['students']:
             user_presence['students'].remove(current_user.email)
+
+    leave_room(get_course())
+
     emit_presence(user_presence)
 
 @socketio.on('refresh')
