@@ -231,7 +231,7 @@ def has_ticket_access(f):
         ticket_id = data.get('id')
         if not ticket_id:
             return socket_error('Invalid ticket ID')
-        ticket = Ticket.query.get(ticket_id)
+        ticket = Ticket.query.filter_by(id=ticket_id, course=get_course()).one_or_none()
         if not ticket:
             return socket_error('Invalid ticket ID')
         if not (current_user.is_staff or ticket.user.id == current_user.id):
@@ -560,7 +560,7 @@ def unassign(ticket_ids):
 def load_ticket(ticket_id):
     if not ticket_id:
         return socket_error('Invalid ticket ID')
-    ticket = Ticket.query.get(ticket_id)
+    ticket = Ticket.query.filter_by(course=get_course(), id=ticket_id).one_or_none()
     if ticket:
         return ticket_json(ticket)
 
@@ -570,7 +570,7 @@ def update_ticket(data, ticket):
     if 'description' in data:
         ticket.description = data['description']
     if 'location_id' in data:
-        ticket.location = Location.query.get(data['location_id'])
+        ticket.location = Location.query.filter_by(course=get_course(), id=data['location_id']).one_or_none()
     emit_event(ticket, TicketEventType.update)
     db.session.commit()
     return ticket_json(ticket)
@@ -590,7 +590,7 @@ def add_assignment(data):
 @socketio.on('update_assignment')
 @is_staff
 def update_assignment(data):
-    assignment = Assignment.query.get(data['id'])
+    assignment = Assignment.query.filter_by(course=get_course(), id=data['id']).one()
     if 'name' in data:
         assignment.name = data['name']
     if 'visible' in data:
