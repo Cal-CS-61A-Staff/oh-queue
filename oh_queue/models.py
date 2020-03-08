@@ -59,7 +59,7 @@ class Assignment(db.Model):
     __tablename__ = 'assignment'
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, default=db.func.now())
-    name = db.Column(db.String(255), nullable=False, unique=True)
+    name = db.Column(db.String(255), nullable=False)
     visible = db.Column(db.Boolean, default=False)
 
     course = db.Column(db.String(255), nullable=False)
@@ -69,7 +69,7 @@ class Location(db.Model):
     __tablename__ = 'location'
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, default=db.func.now())
-    name = db.Column(db.String(255), nullable=False, unique=True)
+    name = db.Column(db.String(255), nullable=False)
     visible = db.Column(db.Boolean, default=False)
 
     course = db.Column(db.String(255), nullable=False)
