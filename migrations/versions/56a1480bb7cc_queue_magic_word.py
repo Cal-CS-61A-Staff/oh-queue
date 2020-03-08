@@ -25,24 +25,7 @@ from oh_queue.models import ConfigEntry
 #     public = sa.Column(sa.Boolean, default=False)
 
 def upgrade():
-    # Get alembic DB bind
-    connection = op.get_bind()
-    session = orm.Session(bind=connection)
-
-    # Seed default config values
-    session.add(ConfigEntry(key='queue_magic_word_mode', value='none', public=True))
-    session.add(ConfigEntry(key='queue_magic_word_data', value='', public=False))
-
-    session.commit()
+    pass
 
 def downgrade():
-    # Get alembic DB bind
-    connection = op.get_bind()
-    session = orm.Session(bind=connection)
-
-    # Delete config values
-    query = session.query(ConfigEntry)
-    query.filter(ConfigEntry.key == 'queue_magic_word_mode').delete(synchronize_session=False)
-    query.filter(ConfigEntry.key == 'queue_magic_word_data').delete(synchronize_session=False)
-
-    session.commit()
+    pass

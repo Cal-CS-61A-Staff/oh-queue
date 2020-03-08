@@ -18,22 +18,7 @@ from oh_queue.models import *
 
 
 def upgrade():
-    # Get alembic DB bind
-    connection = op.get_bind()
-    session = orm.Session(bind=connection)
-
-    # Seed default config values
-    session.add(ConfigEntry(key='ticket_prompt', value='', public=True))
-
-    session.commit()
+    pass
 
 def downgrade():
-    # Get alembic DB bind
-    connection = op.get_bind()
-    session = orm.Session(bind=connection)
-
-    # Delete config values
-    query = session.query(ConfigEntry)
-    query.filter(ConfigEntry.key == 'ticket_prompt').delete(synchronize_session=False)
-
-    session.commit()
+    pass

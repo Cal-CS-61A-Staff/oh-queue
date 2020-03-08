@@ -31,8 +31,6 @@ def upgrade():
     # Create new tables
     ConfigEntry.__table__.create(connection)
     # Seed default config values
-    session.add(ConfigEntry(key='is_queue_open', value='true', public=True))
-    session.add(ConfigEntry(key='welcome', value='Welcome to the OH queue!', public=True))
 
     session.commit()
 
