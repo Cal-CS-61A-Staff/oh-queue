@@ -35,58 +35,59 @@ function AppointmentLayout({ state, match, loadAppointment }) {
 
     const attendanceDone = appointment.signups.every(({ attendance_status }) => attendance_status !== "unknown");
 
-    let actionButton;
+    let actionButton = null;
 
-    if (appointment.status === "resolved") {
-        actionButton = (
-            <Link to="/">
-                <AppointmentLayoutButton color="default" onClick={() => null}>
-                    Return to Queue
+    if (state.currentUser.isStaff) {
+        if (appointment.status === "resolved") {
+            actionButton = (
+                <Link to="/">
+                    <AppointmentLayoutButton color="default" onClick={() => null}>
+                        Return to Queue
+                    </AppointmentLayoutButton>
+                </Link>
+            );
+        } else if (!appointment.helper) {
+            actionButton = (
+                <AppointmentLayoutButton color="success" onClick={handleStaffSignup}>
+                    Sign up to help section
                 </AppointmentLayoutButton>
-            </Link>
-        );
-    } else if (!appointment.helper) {
-        actionButton = (
-            <AppointmentLayoutButton color="success" onClick={handleStaffSignup}>
-                Sign up to help section
-            </AppointmentLayoutButton>
-        );
-    } else if (appointment.helper.id !== state.currentUser.id) {
-        actionButton = (
-            <div>
-                <AppointmentLayoutButton color="warning" onClick={handleStaffSignup}>
-                    Reassign Appointment
-                </AppointmentLayoutButton>
-                <AppointmentLayoutButton color="danger" onClick={handleStaffUnassign}>
-                    Unassign Appointment
-                </AppointmentLayoutButton>
-            </div>
-        );
-    } else if (appointment.status === "pending") {
-        actionButton = (
-            <div>
-                <AppointmentLayoutButton color="primary" onClick={updateAppointment("active")}>
-                    Start Appointment
-                </AppointmentLayoutButton>
-                <AppointmentLayoutButton color="danger" onClick={handleStaffUnassign}>
-                    Unassign Appointment
-                </AppointmentLayoutButton>
-            </div>
-        );
-    } else if (attendanceDone) {
-        actionButton = (
-            <div>
-                <AppointmentLayoutButton color="danger" onClick={updateAppointment("resolved")}>
-                    End Appointment
-                </AppointmentLayoutButton>
-                <AppointmentLayoutButton color="default" onClick={updateAppointment("pending")}>
-                    Requeue Appointment
-                </AppointmentLayoutButton>
-            </div>
-        );
-    } else {
-        actionButton = (
-            <div>
+            );
+        } else if (appointment.helper.id !== state.currentUser.id) {
+            actionButton = (
+                <div>
+                    <AppointmentLayoutButton color="warning" onClick={handleStaffSignup}>
+                        Reassign Appointment
+                    </AppointmentLayoutButton>
+                    <AppointmentLayoutButton color="danger" onClick={handleStaffUnassign}>
+                        Unassign Appointment
+                    </AppointmentLayoutButton>
+                </div>
+            );
+        } else if (appointment.status === "pending") {
+            actionButton = (
+                <div>
+                    <AppointmentLayoutButton color="primary" onClick={updateAppointment("active")}>
+                        Start Appointment
+                    </AppointmentLayoutButton>
+                    <AppointmentLayoutButton color="danger" onClick={handleStaffUnassign}>
+                        Unassign Appointment
+                    </AppointmentLayoutButton>
+                </div>
+            );
+        } else if (attendanceDone) {
+            actionButton = (
+                <div>
+                    <AppointmentLayoutButton color="danger" onClick={updateAppointment("resolved")}>
+                        End Appointment
+                    </AppointmentLayoutButton>
+                    <AppointmentLayoutButton color="default" onClick={updateAppointment("pending")}>
+                        Requeue Appointment
+                    </AppointmentLayoutButton>
+                </div>
+            );
+        } else {
+            actionButton = (
+                <div>
                 <span
                     className="d-inline-block btn-block"
                     tabIndex="0" data-toggle="tooltip" data-placement="top"
@@ -96,11 +97,41 @@ function AppointmentLayout({ state, match, loadAppointment }) {
                         End Appointment
                     </button>
                 </span>
-                <AppointmentLayoutButton color="default" onClick={updateAppointment("pending")}>
-                    Requeue Appointment
-                </AppointmentLayoutButton>
-            </div>
+                    <AppointmentLayoutButton color="default" onClick={updateAppointment("pending")}>
+                        Requeue Appointment
+                    </AppointmentLayoutButton>
+                </div>
+            );
+        }
+    }
+
+    let onlineButtons = null;
+    if (state.locations[appointment.location_id].name === "Online" && appointment.status === "active") {
+        /*
+
+        makeButton('Join Call', 'success',
+              () => window.open(ticket.call_url || ticket.helper.call_url, "_blank"))
+          );
+         */
+        const callButton = appointment.helper.call_url && (
+            <AppointmentLayoutButton color="success" onClick={() => window.open(appointment.helper.call_url, "_blank")}>
+                Join Call
+            </AppointmentLayoutButton>
         );
+        const docButton = appointment.helper.doc_url && (
+            <AppointmentLayoutButton color="info" onClick={() => window.open(appointment.helper.doc_url, "_blank")}>
+                Open Shared Document
+            </AppointmentLayoutButton>
+        );
+        if (callButton || docButton) {
+            onlineButtons = (
+                <React.Fragment>
+                    {callButton}
+                    {docButton}
+                    {actionButton && <hr />}
+                </React.Fragment>
+            )
+        }
     }
 
     return (
@@ -119,10 +150,11 @@ function AppointmentLayout({ state, match, loadAppointment }) {
                     </small>
                     <p className="ticket-view-text text-center"> {appointment.status[0].toUpperCase() + appointment.status.slice(1)} </p>
                     <hr/>
-                    {state.currentUser.isStaff && (
+                    {(onlineButtons || actionButton) && (
                         <div className="row">
                             <div className="col-xs-12 col-md-6 col-md-offset-3">
                                 <div className="well">
+                                    {onlineButtons}
                                     {actionButton}
                                 </div>
                             </div>

@@ -11,6 +11,8 @@ type User = {
   name: string,
   shortName: string,
   isStaff: boolean,
+  call_url: ?string,
+  doc_url: ?string,
 };
 
 type Ticket = {

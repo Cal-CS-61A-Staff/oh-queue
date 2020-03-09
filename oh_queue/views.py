@@ -854,54 +854,56 @@ def upload_appointments(data):
     sheet_url = data["sheetUrl"]
     sheet_name = data["sheetName"]
 
-    data = requests.post("https://auth.apps.cs61a.org/google/read_spreadsheet", json={
-        "url": sheet_url,
-        "sheet_name": sheet_name,
-        "client_name": app.config["AUTH_KEY"],
-        "secret": app.config["AUTH_SECRET"],
-    }).json()
-    #
-    # # db.session.query(Appointment).join(Appointment.children).group_by(Appointment).having(func.count(AppointmentSignup.id) > 0)
-    #
-    locations = {}
+    try:
+        data = requests.post("https://auth.apps.cs61a.org/google/read_spreadsheet", json={
+            "url": sheet_url,
+            "sheet_name": sheet_name,
+            "client_name": app.config["AUTH_KEY"],
+            "secret": app.config["AUTH_SECRET"],
+        }).json()
+        #
+        # # db.session.query(Appointment).join(Appointment.children).group_by(Appointment).having(func.count(AppointmentSignup.id) > 0)
+        #
+        locations = {}
 
-    def get_location(name):
-        if name not in locations:
-            locations[name] = Location.query.filter_by(name=name, course=get_course()).one()
-        return locations[name]
+        def get_location(name):
+            if name not in locations:
+                locations[name] = Location.query.filter_by(name=name, course=get_course()).one()
+            return locations[name]
 
-    helpers = {}
+        helpers = {}
 
-    def get_helper(email, name):
-        if email not in helpers:
-            helper = User.query.filter_by(email=email).one_or_none()
-            if not helper:
-                helper = User(name=name, email=email, is_staff=True, course=get_course())
-                db.session.add(helper)
-                db.session.commit()
-            helpers[email] = helper
-        return helpers[email]
+        def get_helper(email, name):
+            if email not in helpers:
+                helper = User.query.filter_by(email=email, course=get_course()).one_or_none()
+                if not helper:
+                    helper = User(name=name, email=email, is_staff=True, course=get_course())
+                    db.session.add(helper)
+                    db.session.commit()
+                helpers[email] = helper
+            return helpers[email]
 
+        header = data[0]
+        for row in data[1:]:
+            start_date_raw = row[header.index("Day")]
+            start_time_raw = row[header.index("Start Time")]
+            start_time = datetime.datetime.strptime(start_date_raw + " " + start_time_raw, "%B %d %I:%M %p")
+            start_time = start_time.replace(year=datetime.datetime.now().year)
 
-    header = data[0]
-    for row in data[1:]:
-        start_date_raw = row[header.index("Day")]
-        start_time_raw = row[header.index("Start Time")]
-        start_time = datetime.datetime.strptime(start_date_raw + " " + start_time_raw, "%B %d %I:%M %p")
-        start_time = start_time.replace(year=datetime.datetime.now().year)
+            appointment = Appointment(
+                start_time=start_time,
+                duration=datetime.timedelta(minutes=int(row[header.index("Duration (mins)")])),
+                capacity=int(row[header.index("Capacity")]),
+                location=get_location(row[header.index("Location")]),
+                status=AppointmentStatus.pending,
+                helper=get_helper(row[header.index("Email")], row[header.index("Name")]),
+                course=get_course(),
+            )
+            db.session.add(appointment)
 
-        appointment = Appointment(
-            start_time=start_time,
-            duration=datetime.timedelta(minutes=int(row[header.index("Duration (mins)")])),
-            capacity=int(row[header.index("Capacity")]),
-            location=get_location(row[header.index("Location")]),
-            status=AppointmentStatus.pending,
-            helper=get_helper(row[header.index("Email")], row[header.index("Name")]),
-            course=get_course(),
-        )
-        db.session.add(appointment)
-
-    db.session.commit()
+        db.session.commit()
+    except Exception as e:
+        return socket_error("Internal Error:" + str(e))
 
 
 @socketio.on("update_staff_online_setup")
