@@ -28,7 +28,6 @@ def record_params(setup_state):
         access_token_method='POST',
         access_token_url=server_url + '/oauth/token',
         authorize_url=server_url + '/oauth/authorize',)
-    auth.course_offering = app.config.get('COURSE_OFFERING')
     auth.debug = app.config.get('DEBUG')
 
     @auth.ok_auth.tokengetter
@@ -54,12 +53,14 @@ def authorize_user(user):
 
 def user_from_email(name, email, is_staff):
     """Get a User with the given email, or create one."""
-    user = User.query.filter_by(email=email).one_or_none()
+    from oh_queue.course_config import get_course
+    user = User.query.filter_by(email=email, course=get_course()).one_or_none()
     if not user:
-        user = User(name=name, email=email, is_staff=is_staff)
+        user = User(name=name, email=email, course=get_course(), is_staff=is_staff)
     else:
         user.name = name
         user.is_staff = is_staff
+        user.course = get_course()
     db.session.add(user)
     db.session.commit()
     return user
@@ -78,6 +79,7 @@ def try_login():
 
 @auth.route('/login/authorized')
 def authorized():
+    from oh_queue.course_config import get_endpoint
     message = request.args.get('error')
     if message:
         message = 'Ok OAuth error: %s' % (message)
@@ -101,7 +103,7 @@ def authorized():
         last, first = name.split(', ')
         name = first + ' ' + last
     is_staff = False
-    offering = auth.course_offering
+    offering = get_endpoint()
     for p in info['participations']:
         if p['course']['offering'] == offering and p['role'] != 'student':
             is_staff = True

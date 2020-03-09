@@ -34,6 +34,8 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(255), nullable=False)
     is_staff = db.Column(db.Boolean, default=False)
 
+    course = db.Column(db.String(255), nullable=False)
+
     @property
     def short_name(self):
         first_name = self.name.split()[0]
@@ -44,25 +46,33 @@ class User(db.Model, UserMixin):
 class ConfigEntry(db.Model):
     """Represents persistent server-side configuration entries"""
     __tablename__ = 'config_entries'
-    key = db.Column(db.String(255), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(255), nullable=False)
     value = db.Column(db.Text(), nullable=False)
     public = db.Column(db.Boolean, default=False)
+
+    course = db.Column(db.String(255), nullable=False)
 
 class Assignment(db.Model):
     """Represents a ticket's assignment."""
     __tablename__ = 'assignment'
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, default=db.func.now())
-    name = db.Column(db.String(255), nullable=False, unique=True)
+    name = db.Column(db.String(255), nullable=False)
     visible = db.Column(db.Boolean, default=False)
+
+    course = db.Column(db.String(255), nullable=False)
 
 class Location(db.Model):
     """Represents a ticket's location."""
     __tablename__ = 'location'
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, default=db.func.now())
-    name = db.Column(db.String(255), nullable=False, unique=True)
+    name = db.Column(db.String(255), nullable=False)
     visible = db.Column(db.Boolean, default=False)
+
+    course = db.Column(db.String(255), nullable=False)
+
 
 TicketStatus = enum.Enum('TicketStatus', 'pending assigned resolved deleted juggled rerequested')
 
@@ -96,11 +106,15 @@ class Ticket(db.Model):
     assignment = db.relationship(Assignment, foreign_keys=[assignment_id])
     location = db.relationship(Location, foreign_keys=[location_id])
 
+    course = db.Column(db.String(255), nullable=False)
+
     @classmethod
     def for_user(cls, user):
         if user and user.is_authenticated:
+            from oh_queue.course_config import get_course
             return cls.query.filter(
               cls.user_id == user.id,
+              cls.course == get_course(),
               cls.status.in_([TicketStatus.pending, TicketStatus.assigned]),
             ).one_or_none()
 
@@ -128,6 +142,8 @@ class TicketEvent(db.Model):
     event_type = db.Column(EnumType(TicketEventType), nullable=False)
     ticket_id = db.Column(db.ForeignKey('ticket.id'), nullable=False)
     user_id = db.Column(db.ForeignKey('user.id'), nullable=False)
+
+    course = db.Column(db.String(255), nullable=False)
 
     ticket = db.relationship(Ticket)
     user = db.relationship(User)
