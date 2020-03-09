@@ -7,6 +7,8 @@ Create Date: 2020-03-08 20:15:02.275445
 """
 
 # revision identifiers, used by Alembic.
+from sqlalchemy import orm
+
 revision = 'ee50ab5f3371'
 down_revision = '7857a34ef101'
 
@@ -53,6 +55,16 @@ def upgrade():
     op.create_index(op.f('ix_appointment_signup_assignment_id'), 'appointment_signup', ['assignment_id'], unique=False)
     op.create_index(op.f('ix_appointment_signup_user_id'), 'appointment_signup', ['user_id'], unique=False)
     # ### end Alembic commands ###
+
+    # Get alembic DB bind
+    connection = op.get_bind()
+    session = orm.Session(bind=connection)
+
+    for course in session.query(ConfigEntry.course).distinct():
+        session.add(ConfigEntry(key='appointments_open', value='false', public=True, course=course[0]))
+
+    session.commit()
+
 
 
 def downgrade():
