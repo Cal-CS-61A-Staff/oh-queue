@@ -708,7 +708,7 @@ def assign_appointment(data):
     user_id = current_user.id
 
     if current_user.is_staff:
-        user = User.query.filter(User.email == data["email"], course=get_course()).first()
+        user = User.query.filter(User.email == data["email"], course=get_course()).one_or_none()
         if not user:
             return socket_unauthorized()
         user_id = user.id
@@ -717,7 +717,7 @@ def assign_appointment(data):
         AppointmentSignup.appointment_id == data["appointment_id"],
         AppointmentSignup.user_id == user_id,
         course=get_course(),
-    ).first()
+    ).one_or_none()
 
     old_attendance = old_signup.attendance_status if old_signup else AttendanceStatus.unknown
 
@@ -728,7 +728,7 @@ def assign_appointment(data):
     appointment = Appointment.query.filter(
         Appointment.id == data["appointment_id"],
         course=get_course(),
-    ).first()  # type = Appointment
+    ).one()  # type = Appointment
 
     if len(appointment.signups) >= appointment.capacity and not current_user.is_staff and not old_signup:
         return socket_unauthorized()
@@ -750,8 +750,8 @@ def assign_appointment(data):
 @socketio.on("unassign_appointment")
 @logged_in
 def unassign_appointment(signup_id):
-    old_signup = AppointmentSignup.query.filter(
-        AppointmentSignup.id == signup_id,
+    old_signup = AppointmentSignup.query.filter_by(
+        id=signup_id,
         course=get_course(),
     ).first()
 
@@ -769,7 +769,7 @@ def unassign_appointment(signup_id):
 def load_appointment(appointment_id):
     if not appointment_id:
         return socket_error('Invalid appointment ID')
-    appointment = Appointment.query.get(appointment_id)
+    appointment = Appointment.query.filter_by(id=appointment_id, course=get_course()).one()
     if appointment:
         return appointments_json(appointment)
 
@@ -779,7 +779,7 @@ def load_appointment(appointment_id):
 def set_appointment_status(data):
     appointment_id = data["appointment"]
     status = data["status"]
-    Appointment.query.get(appointment_id).status = AppointmentStatus[status]
+    Appointment.query.filter_by(id=appointment_id, course=get_course()).one().status = AppointmentStatus[status]
     db.session.commit()
 
     emit_state(['appointments'], broadcast=True)
@@ -791,7 +791,7 @@ def mark_attendance(data):
     signup_id = data["signup_id"]
     attendance_status = data["status"]
 
-    AppointmentSignup.query.get(signup_id).attendance_status = AttendanceStatus[attendance_status]
+    AppointmentSignup.query.filter_by(id=signup_id, course=get_course()).one().attendance_status = AttendanceStatus[attendance_status]
     db.session.commit()
 
     emit_state(['appointments'], broadcast=True)

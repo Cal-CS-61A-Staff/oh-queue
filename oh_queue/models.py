@@ -170,6 +170,8 @@ class Appointment(db.Model):
 
     status = db.Column(EnumType(AppointmentStatus), nullable=False, index=True)
 
+    course = db.Column(db.String(255), nullable=False)
+
 
 AttendanceStatus = enum.Enum('AttendanceStatus', 'unknown present excused absent')
 
@@ -191,3 +193,5 @@ class AppointmentSignup(db.Model):
     description = db.Column(db.Text)
 
     attendance_status = db.Column(EnumType(AttendanceStatus), nullable=False, default=AttendanceStatus.unknown)
+
+    course = db.Column(db.String(255), nullable=False)
