@@ -104,7 +104,7 @@ def signup_json(signup: AppointmentSignup):
     return {
         "id": signup.id,
         "assignment_id": signup.assignment_id,
-        "user": user_json(signup.user),
+        "user": user_json(signup.user), # TODO: This should be private!
         "question": signup.question,
         "description": signup.description,
         "attendance_status": signup.attendance_status.name,
@@ -122,6 +122,13 @@ def emit_event(ticket, event_type):
     socketio.emit('event', {
         'type': event_type.name,
         'ticket': ticket_json(ticket),
+    }, room=get_course())
+
+def emit_appointment_event(appointment, event_type):
+    # TODO: log to db
+    socketio.emit("appointment_event", {
+        "type": event_type,
+        "appointment": appointments_json(appointment),
     }, room=get_course())
 
 def emit_state(attrs, broadcast=False):
@@ -734,23 +741,26 @@ def update_config(data):
 @socketio.on("assign_staff_appointment")
 @is_staff
 def assign_staff_appointment(appointment_id):
-    Appointment.query.filter(
+    appointment = Appointment.query.filter(
         Appointment.id == appointment_id,
         Appointment.course == get_course(),
-    ).first().helper_id = current_user.id
+    ).one()
+    appointment.helper_id = current_user.id
     db.session.commit()
-    emit_state(['appointments'], broadcast=True)
+    emit_appointment_event(appointment, "staff_unassigned")
 
 
 @socketio.on("unassign_staff_appointment")
 @is_staff
 def unassign_staff_appointment(appointment_id):
-    Appointment.query.filter(
+    appointment = Appointment.query.filter(
         Appointment.id == appointment_id,
         Appointment.course == get_course(),
-    ).first().helper_id = None
+    ).one()
+    appointment.helper_id = None
     db.session.commit()
-    emit_state(['appointments'], broadcast=True)
+
+    emit_appointment_event(appointment, "staff_unassigned")
 
 
 @socketio.on("assign_appointment")
@@ -795,7 +805,8 @@ def assign_appointment(data):
     )
     db.session.add(signup)
     db.session.commit()
-    emit_state(['appointments'], broadcast=True)
+
+    emit_appointment_event(appointment, "student_assigned")
 
 
 @socketio.on("unassign_appointment")
@@ -806,13 +817,15 @@ def unassign_appointment(signup_id):
         course=get_course(),
     ).first()
 
+    appointment = old_signup.appointment
+
     if not current_user.is_staff and (not old_signup or old_signup.user_id != current_user.id):
         return socket_unauthorized()
 
     db.session.delete(old_signup)
     db.session.commit()
 
-    emit_state(['appointments'], broadcast=True)
+    emit_appointment_event(appointment, "student_unassigned")
 
 
 @socketio.on('load_appointment')
@@ -830,10 +843,11 @@ def load_appointment(appointment_id):
 def set_appointment_status(data):
     appointment_id = data["appointment"]
     status = data["status"]
-    Appointment.query.filter_by(id=appointment_id, course=get_course()).one().status = AppointmentStatus[status]
+    appointment = Appointment.query.filter_by(id=appointment_id, course=get_course()).one()
+    appointment.status = AppointmentStatus[status]
     db.session.commit()
 
-    emit_state(['appointments'], broadcast=True)
+    emit_appointment_event(appointment, "status_change")
 
 
 @socketio.on("mark_attendance")
@@ -842,10 +856,11 @@ def mark_attendance(data):
     signup_id = data["signup_id"]
     attendance_status = data["status"]
 
-    AppointmentSignup.query.filter_by(id=signup_id, course=get_course()).one().attendance_status = AttendanceStatus[attendance_status]
+    signup = AppointmentSignup.query.filter_by(id=signup_id, course=get_course()).one()
+    signup.attendance_status = AttendanceStatus[attendance_status]
     db.session.commit()
 
-    emit_state(['appointments'], broadcast=True)
+    emit_appointment_event(signup.appointment, "attendance_marked")
 
 
 @socketio.on("upload_appointments")
@@ -904,6 +919,8 @@ def upload_appointments(data):
         db.session.commit()
     except Exception as e:
         return socket_error("Internal Error:" + str(e))
+    emit_state(['appointments'], broadcast=True)
+
 
 
 @socketio.on("update_staff_online_setup")

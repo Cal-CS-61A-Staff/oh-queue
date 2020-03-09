@@ -30,6 +30,7 @@ class App extends React.Component {
     socket.on('state', (data) => this.updateState(data));
     socket.on('event', (data) => this.updateTicket(data));
     socket.on('presence', (data) => this.updatePresence(data));
+    socket.on('appointment_event', (data) => this.updateAppointment(data));
 
     this.loadTicket = this.loadTicket.bind(this);
     this.loadAppointment = this.loadAppointment.bind(this);
@@ -92,6 +93,13 @@ class App extends React.Component {
 
   shouldNotify(ticket, type) {
     return (isStaff(this.state) && type === 'create');
+  }
+
+  updateAppointment({ appointment, type }) {
+      setAppointment(this.state, appointment, () => {
+          this.router.history.push("/appointments/" + appointment.id);
+      });
+      this.refresh();
   }
 
   updateTicket(data) {

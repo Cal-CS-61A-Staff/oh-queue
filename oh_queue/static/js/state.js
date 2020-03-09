@@ -348,14 +348,15 @@ function getAppointment(state: State, appointment_id: number) : Appointment {
     return state.appointments.find(({ id }) => id === appointment_id);
 }
 
-function setAppointment(state: State, appointment: Appointment): void {
+function setAppointment(state: State, appointment: Appointment, redirect): void {
   const oldAppointment = getAppointment(state, appointment.id);
-  if (appointmentIsAssignedToMe(state, appointment)) {
+  if (appointmentIncludesMe(state, appointment)) {
     if (oldAppointment) {
       if (oldAppointment.status === "pending" && appointment.status === "active") {
-        notifyUser("Your name is being called",
-                   appointment.helper.name + " is looking for you in "+ state.locations[appointment.location_id].name,
+        notifyUser("Your appointment has started",
+                   appointment.helper.name + " is waiting for you in "+ state.locations[appointment.location_id].name,
                    appointment.id + '.appointment.assign');
+        redirect();
       } else if (oldAppointment.status === 'assigned' && appointment.status !== 'assigned') {
         cancelNotification(appointment.id + '.appointment.assign');
       }
@@ -368,7 +369,7 @@ function setAppointment(state: State, appointment: Appointment): void {
   state.appointments.sort(appointmentTimeComparator);
 }
 
-function appointmentIsAssignedToMe(state: State, appointment: Appointment) {
+function appointmentIncludesMe(state: State, appointment: Appointment) {
     for (const signup of appointment.signups) {
         if (signup.user && signup.user.id === state.currentUser.id) {
             return true;
