@@ -78,7 +78,7 @@ let PresenceIndicator = ({state}) => {
         <ReactMarkdown source={welcomeMessage} />
       </div>
 
-        {state.config.online_active === "true" &&
+        {state.config.online_active === "true" && state.currentUser && state.currentUser.isStaff &&
         [state.config.students_set_online_link, state.config.students_set_online_doc].includes("false") && (
           <div className="alert alert-danger alert-dismissable fade in" role="alert">
             <button type="button" className="close" aria-label="Close" data-dismiss="alert">
