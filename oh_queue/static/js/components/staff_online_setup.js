@@ -33,23 +33,19 @@ function StaffOnlineSetup({ state }) {
           <div className="container">
               <br />
               <form id="staff-online-setup-form">
-                  {!JSON.parse(state.config.students_set_online_link) && (
-                      <div className="form-group">
+                  <div className="form-group">
                       <label htmlFor="staff-call-link">Your Default Video Call Link</label>
                       <input type="text" className="form-control" id="staff-call-link"
                              name="staff-call-link" placeholder="meet.google.com/xyz"
                              defaultValue={state.currentUser.call_url}
                       />
                   </div>
-                  )}
-                  {!JSON.parse(state.config.students_set_online_doc) && (
-                      <div className="form-group">
-                          <label htmlFor="staff-doc-link">Your Default Shared Document Link</label>
-                          <input type="text" className="form-control" id="staff-doc-link"
-                                 name="staff-doc-link" placeholder="docs.google.com/xyz"
-                                 defaultValue={state.currentUser.doc_url} />
-                      </div>
-                  )}
+                  <div className="form-group">
+                      <label htmlFor="staff-doc-link">Your Default Shared Document Link</label>
+                      <input type="text" className="form-control" id="staff-doc-link"
+                             name="staff-doc-link" placeholder="docs.google.com/xyz"
+                             defaultValue={state.currentUser.doc_url} />
+                  </div>
                   <button id="submitBtn" type="submit" className="btn btn-default" onClick={submit}>Submit</button>
               </form>
           </div>
