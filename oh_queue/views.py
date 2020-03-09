@@ -693,6 +693,8 @@ def update_assignment(data):
 @is_staff
 def add_location(data):
     name = data['name']
+    if name == "Online":
+        return
     location = Location(name=name, course=get_course())
     db.session.add(location)
     db.session.commit()
@@ -709,6 +711,8 @@ def update_location(data):
         location.name = data['name']
     if 'visible' in data:
         location.visible = data['visible']
+    if location.name == "Online":
+        return
     db.session.commit()
 
     emit_state(['locations'], broadcast=True)
