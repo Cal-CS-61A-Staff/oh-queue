@@ -15,6 +15,7 @@ def get_course(domain=None):
         return "ok"
     if not domain:
         domain = request.headers["HOST"]
+    print(DOMAIN_COURSES, domain)
     if domain not in DOMAIN_COURSES:
         DOMAIN_COURSES[domain] = requests.post("https://auth.apps.cs61a.org/domains/get_course", json={
             "domain": domain
