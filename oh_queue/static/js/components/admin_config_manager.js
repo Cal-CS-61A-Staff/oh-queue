@@ -7,7 +7,6 @@ class AdminConfigManager extends React.Component {
             loaded: false,
             isQueueOpen: false,
             descriptionRequired: false,
-            appointmentsOpen: false,
             welcome: '',
             ticketPrompt: '',
             queueMagicWordMode: 'none',
@@ -43,7 +42,6 @@ class AdminConfigManager extends React.Component {
         this.setState({
             loaded: true,
             isQueueOpen: config.is_queue_open === 'true',
-            appointmentsOpen: config.appointments_open === 'true',
             descriptionRequired: config.description_required === 'true',
             welcome: config.welcome || '',
             ticketPrompt: config.ticket_prompt || '',
@@ -261,7 +259,7 @@ class AdminConfigManager extends React.Component {
                                            type="submit">Save</button>);
 
         return (
-            <div className="container">
+            <React.Fragment>
                 <div className="table-responsive">
                     <table className="table table-hover">
                         <thead>
@@ -278,16 +276,6 @@ class AdminConfigManager extends React.Component {
                                     offText: 'Closed',
                                     onText: 'Open',
                                     value: this.state.isQueueOpen
-                                })}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Should students be able to make appointments?</td>
-                            <td className="col-md-1">
-                                {this.renderToggle('appointments_open', {
-                                    offText: 'No',
-                                    onText: 'Yes',
-                                    value: this.state.appointmentsOpen
                                 })}
                             </td>
                         </tr>
@@ -387,7 +375,7 @@ class AdminConfigManager extends React.Component {
                         </div>
                     </div>
                 </form>
-            </div>
+            </React.Fragment>
         );
     }
 }

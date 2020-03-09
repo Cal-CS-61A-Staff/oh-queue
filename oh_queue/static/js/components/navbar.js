@@ -14,8 +14,9 @@ let Navbar = ({ state, mode }) => {
                         <span className="icon-bar"></span>
                         <span className="icon-bar"></span>
                     </button>
-                    <Link className="navbar-brand"
-                          to={"/"}><strong>{window.courseName} |</strong>{" " + mode[0].toUpperCase() + mode.slice(1)}</Link>
+                    <Link className="navbar-brand" to={"/" + (mode === "queue" ? "" : mode)}>
+                        <strong>{window.courseName} |</strong>{" " + mode[0].toUpperCase() + mode.slice(1)}
+                    </Link>
                 </div>
                 <div className="collapse navbar-collapse" id="navbar-collapse-section">
                     <ul className="nav navbar-nav navbar-right">
@@ -23,11 +24,14 @@ let Navbar = ({ state, mode }) => {
                         {!!myTicket &&
                         <li><Link to={`/tickets/${myTicket.id}/`}>My Request</Link></li>}
 
-                        {currentUser && currentUser.isStaff &&
-                        <li><Link to="/admin">Admin</Link></li>}
+                        {currentUser &&
+                        <li><Link to="/">Queue</Link></li>}
 
                         {currentUser && JSON.parse(state.config.appointments_open) &&
                         <li><Link to="/appointments">Appointments</Link></li>}
+
+                        {currentUser && currentUser.isStaff &&
+                        <li><Link to="/admin">Admin</Link></li>}
 
                         {currentUser ?
                             <li className="dropdown">
