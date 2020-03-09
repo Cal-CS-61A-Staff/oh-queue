@@ -38,6 +38,7 @@ let Navbar = ({ state, mode }) => {
                                 <a href="#" className="dropdown-toggle" data-toggle="dropdown"
                                    role="button">{currentUser.name} <span className="caret"></span></a>
                                 <ul className="dropdown-menu">
+                                    {state.config.online_active}
                                     <li><a href="/logout">Log out</a></li>
                                 </ul>
                             </li>
