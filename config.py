@@ -20,13 +20,13 @@ DATABASE_CONNECT_OPTIONS = {}
 
 LOCAL_TIMEZONE = os.getenv('TIMEZONE', 'US/Pacific')
 
+AUTH_KEY = os.getenv("AUTH_KEY")
+AUTH_SECRET = os.getenv("AUTH_SECRET")
+
 OK_KEY = os.getenv('OK_KEY', 'local-dev-email')
 OK_SECRET = os.getenv('OK_SECRET', 'KH0mvknMUWT5w3U7zvz6wsUQZoy6UmQ')
 
 OK_SERVER_URL = os.getenv('OK_DEPLOYMENT', 'https://okpy.org')
-
-COURSE_OFFERING = os.getenv('COURSE_OFFERING', 'ok/test/su16')
-COURSE_NAME = os.getenv('COURSE_NAME', 'OK')
 
 HOST = os.getenv('HOST', '127.0.0.1')
 PORT = int(os.getenv('PORT', '5000'))

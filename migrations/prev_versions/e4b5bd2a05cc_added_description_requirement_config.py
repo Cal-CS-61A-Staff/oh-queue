@@ -19,9 +19,6 @@ def upgrade():
     connection = op.get_bind()
     session = orm.Session(bind=connection)
 
-    # Seed default config value
-    session.add(ConfigEntry(key='description_required', value='false', public=True))
-
     session.commit()
 
 
@@ -29,9 +26,5 @@ def downgrade():
     # Get alembic DB bind
     connection = op.get_bind()
     session = orm.Session(bind=connection)
-
-    # Delete config values
-    query = session.query(ConfigEntry)
-    query.filter(ConfigEntry.key == 'description_required').delete(synchronize_session=False)
 
     session.commit()

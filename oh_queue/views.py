@@ -1,15 +1,16 @@
 import datetime
 import functools
 import collections
-import pytz
+
 import random
 import time
 
 from flask import render_template, url_for
 from flask_login import current_user
-from flask_socketio import emit
+from flask_socketio import emit, join_room, leave_room
 
 from oh_queue import app, db, socketio
+from oh_queue.course_config import get_course, format_coursecode
 from oh_queue.models import Assignment, ConfigEntry, Location, Ticket, TicketEvent, TicketEventType, TicketStatus, \
     active_statuses
 
@@ -64,7 +65,7 @@ def location_json(location):
 
 def config_json():
     config = {}
-    for config_entry in ConfigEntry.query.all():
+    for config_entry in ConfigEntry.query.filter_by(course=get_course()).all():
         if config_entry.public:
             config[config_entry.key] = config_entry.value
     return config
@@ -74,49 +75,103 @@ def emit_event(ticket, event_type):
         event_type=event_type,
         ticket=ticket,
         user=current_user,
+        course=get_course(),
     )
     db.session.add(ticket_event)
     db.session.commit()
     socketio.emit('event', {
         'type': event_type.name,
         'ticket': ticket_json(ticket),
-    })
+    }, room=get_course())
 
 def emit_state(attrs, broadcast=False):
     state = {}
     if 'tickets' in attrs:
         tickets = Ticket.query.filter(
-            Ticket.status.in_(active_statuses)
+            Ticket.status.in_(active_statuses),
+            Ticket.course == get_course(),
         ).all()
         state['tickets'] = [ticket_json(ticket) for ticket in tickets]
     if 'assignments' in attrs:
-        assignments = Assignment.query.all()
+        assignments = Assignment.query.filter_by(course=get_course()).all()
         state['assignments'] = [assignment_json(assignment) for assignment in assignments]
     if 'locations' in attrs:
-        locations = Location.query.all()
+        locations = Location.query.filter_by(course=get_course()).all()
         state['locations'] = [location_json(location) for location in locations]
     if 'config' in attrs:
         state['config'] = config_json()
     if not broadcast and 'current_user' in attrs:
         state['current_user'] = student_json(current_user)
     if broadcast:
-        socketio.emit('state', state)
+        socketio.emit('state', state, room=get_course())
     else:
         emit('state', state)
 
 def emit_presence(data):
     out = {k: len(v) for k,v in data.items()}
-    active_staff = {t.helper.email for t in Ticket.query.filter(Ticket.status.in_(active_statuses), Ticket.helper != None).all()}
+    active_staff = {t.helper.email for t in Ticket.query.filter(
+        Ticket.status.in_(active_statuses),
+        Ticket.helper != None,
+        Ticket.course == get_course(),
+    ).all()}
     out["staff"] = len(data["staff"] | active_staff)
-    socketio.emit('presence', out)
+    socketio.emit('presence', out, room=get_course())
 
 user_presence = collections.defaultdict(set) # An in memory map of presence.
+
+def init_config():
+    db.session.add(ConfigEntry(
+        key='welcome',
+        value='Welcome to the OH Queue!',
+        public=True,
+        course=get_course(),
+    ))
+    db.session.add(ConfigEntry(
+        key='is_queue_open',
+        value='true',
+        public=True,
+        course=get_course(),
+    ))
+    db.session.add(ConfigEntry(
+        key='description_required',
+        value='false',
+        public=True,
+        course=get_course(),
+    ))
+    db.session.add(ConfigEntry(
+        key='queue_magic_word_mode',
+        value='none',
+        public=True,
+        course=get_course(),
+    ))
+    db.session.add(ConfigEntry(
+        key='queue_magic_word_data',
+        value='',
+        public=False,
+        course=get_course(),
+    ))
+    db.session.add(ConfigEntry(
+        key='juggling_delay',
+        value='5',
+        public=True,
+        course=get_course(),
+    ))
+    db.session.add(ConfigEntry(
+        key='ticket_prompt',
+        value='',
+        public=True,
+        course=get_course(),
+    ))
+    db.session.commit()
 
 # We run a React app, so serve index.html on all routes
 @app.route('/')
 @app.route('/<path:path>')
 def index(*args, **kwargs):
-    return render_template('index.html')
+    check = db.session.query(ConfigEntry).filter_by(course=get_course()).first()
+    if not check:
+        init_config()
+    return render_template('index.html', course_name=format_coursecode(get_course()))
 
 @app.route('/error')
 def error(*args, **kwargs):
@@ -154,7 +209,7 @@ def socket_unauthorized():
 def logged_in(f):
     @functools.wraps(f)
     def wrapper(*args, **kwds):
-        if not current_user.is_authenticated:
+        if not current_user.is_authenticated and current_user.course == get_course():
             return socket_unauthorized()
         return f(*args, **kwds)
     return wrapper
@@ -162,7 +217,7 @@ def logged_in(f):
 def is_staff(f):
     @functools.wraps(f)
     def wrapper(*args, **kwds):
-        if not (current_user.is_authenticated and current_user.is_staff):
+        if not (current_user.is_authenticated and current_user.is_staff and current_user.course == get_course()):
             return socket_unauthorized()
         return f(*args, **kwds)
     return wrapper
@@ -176,7 +231,7 @@ def has_ticket_access(f):
         ticket_id = data.get('id')
         if not ticket_id:
             return socket_error('Invalid ticket ID')
-        ticket = Ticket.query.get(ticket_id)
+        ticket = Ticket.query.filter_by(id=ticket_id, course=get_course()).one_or_none()
         if not ticket:
             return socket_error('Invalid ticket ID')
         if not (current_user.is_staff or ticket.user.id == current_user.id):
@@ -194,6 +249,8 @@ def connect():
     else:
         user_presence['students'].add(current_user.email)
 
+    join_room(get_course())
+
     emit_state(['tickets', 'assignments', 'locations', 'current_user', 'config'])
 
     emit_presence(user_presence)
@@ -208,23 +265,26 @@ def disconnect():
     else:
         if current_user.email in user_presence['students']:
             user_presence['students'].remove(current_user.email)
+
+    leave_room(get_course())
+
     emit_presence(user_presence)
 
 @socketio.on('refresh')
 def refresh(ticket_ids):
-    tickets = Ticket.query.filter(Ticket.id.in_(ticket_ids)).all()
+    tickets = Ticket.query.filter(Ticket.id.in_(ticket_ids), Ticket.course == get_course()).all()
     return {
         'tickets': [ticket_json(ticket) for ticket in tickets],
     }
 
 def get_magic_word(mode=None, data=None, time_offset=0):
     if mode is None:
-        mode = ConfigEntry.query.get('queue_magic_word_mode').value
+        mode = ConfigEntry.query.filter_by(course=get_course(), key='queue_magic_word_mode').one().value
     if mode == 'none':
         return None
 
     if data is None:
-        data = ConfigEntry.query.get('queue_magic_word_data').value
+        data = ConfigEntry.query.filter_by(course=get_course(), key='queue_magic_word_data').one().value
     if mode == 'text':
         return data
     if mode == 'timed_numeric':
@@ -245,10 +305,10 @@ def get_magic_word(mode=None, data=None, time_offset=0):
     raise Exception('Unrecognized queue magic word mode')
 
 def check_magic_word(magic_word):
-    mode = ConfigEntry.query.get('queue_magic_word_mode').value
+    mode = ConfigEntry.query.filter_by(course=get_course(), key='queue_magic_word_mode').one().value
     if mode == 'none':
         return True
-    data = ConfigEntry.query.get('queue_magic_word_data').value
+    data = ConfigEntry.query.filter_by(course=get_course(), key='queue_magic_word_data').one().value
     if mode == 'timed_numeric':
         # Allow for temporal leeway from lagging clients/humans
         for offset in (0, -1, 1):
@@ -270,7 +330,7 @@ def create(form):
     """Stores a new ticket to the persistent database, and emits it to all
     connected clients.
     """
-    is_closed = ConfigEntry.query.get('is_queue_open')
+    is_closed = ConfigEntry.query.filter_by(course=get_course(), key='is_queue_open').one()
     if is_closed.value != 'true':
         return socket_error(
             'The queue is closed',
@@ -299,20 +359,13 @@ def create(form):
             category='warning',
         )
 
-    description_required = ConfigEntry.query.get('description_required')
-    if description is None and descriptionRequired:
-        return socket_error(
-            'You must fill out all the fields',
-            category='warning',
-        )
-
-    assignment = Assignment.query.get(assignment_id)
+    assignment = Assignment.query.filter_by(course=get_course(), id=assignment_id).one_or_none()
     if not assignment:
         return socket_error(
             'Unknown assignment (id: {})'.format(assignment_id),
             category='warning',
         )
-    location = Location.query.get(location_id)
+    location = Location.query.filter_by(course=get_course(), id=location_id).one_or_none()
     if not location:
         return socket_error(
             'Unknown location (id: {})'.format(location_id),
@@ -324,7 +377,8 @@ def create(form):
         assignment=assignment,
         location=location,
         question=question,
-        description=description
+        description=description,
+        course=get_course(),
     )
 
     db.session.add(ticket)
@@ -334,7 +388,7 @@ def create(form):
     return socket_redirect(ticket_id=ticket.id)
 
 def get_tickets(ticket_ids):
-    return Ticket.query.filter(Ticket.id.in_(ticket_ids)).all()
+    return Ticket.query.filter(Ticket.id.in_(ticket_ids), Ticket.course == get_course()).all()
 
 def get_next_ticket(location=None):
     """Return the user's first assigned but unresolved ticket.
@@ -346,12 +400,18 @@ def get_next_ticket(location=None):
     """
     ticket = Ticket.query.filter(
         Ticket.helper_id == current_user.id,
-        Ticket.status == TicketStatus.assigned).first()
+        Ticket.status == TicketStatus.assigned,
+        Ticket.course == get_course(),
+    ).first()
     if not ticket:
-        ticket = Ticket.query.filter(Ticket.status == TicketStatus.rerequested).filter(Ticket.helper_id == current_user.id)
+        ticket = Ticket.query.filter(
+            Ticket.status == TicketStatus.rerequested,
+            Ticket.helper_id == current_user.id,
+            Ticket.course == get_course(),
+        )
         ticket = ticket.first()
     if not ticket:
-        ticket = Ticket.query.filter(Ticket.status == TicketStatus.pending)
+        ticket = Ticket.query.filter(Ticket.status == TicketStatus.pending, Ticket.course == get_course())
         if location:
             ticket = ticket.filter(Ticket.location == location)
         ticket = ticket.first()
@@ -410,7 +470,9 @@ def juggle(data):
     for ticket in tickets:
         ticket.status = TicketStatus.juggled
         ticket.hold_time = datetime.datetime.utcnow()
-        ticket.rerequest_threshold = ticket.hold_time + datetime.timedelta(minutes=int(ConfigEntry.query.get("juggling_delay").value))
+        ticket.rerequest_threshold = ticket.hold_time + datetime.timedelta(minutes=int(
+            ConfigEntry.query.filter_by(course=get_course(), key="juggling_delay").value)
+        )
         location = ticket.location
         emit_event(ticket, TicketEventType.juggle)
     db.session.commit()
@@ -498,7 +560,7 @@ def unassign(ticket_ids):
 def load_ticket(ticket_id):
     if not ticket_id:
         return socket_error('Invalid ticket ID')
-    ticket = Ticket.query.get(ticket_id)
+    ticket = Ticket.query.filter_by(course=get_course(), id=ticket_id).one_or_none()
     if ticket:
         return ticket_json(ticket)
 
@@ -508,7 +570,7 @@ def update_ticket(data, ticket):
     if 'description' in data:
         ticket.description = data['description']
     if 'location_id' in data:
-        ticket.location = Location.query.get(data['location_id'])
+        ticket.location = Location.query.filter_by(course=get_course(), id=data['location_id']).one_or_none()
     emit_event(ticket, TicketEventType.update)
     db.session.commit()
     return ticket_json(ticket)
@@ -517,7 +579,7 @@ def update_ticket(data, ticket):
 @is_staff
 def add_assignment(data):
     name = data['name']
-    assignment = Assignment(name=name)
+    assignment = Assignment(name=name, course=get_course())
     db.session.add(assignment)
     db.session.commit()
 
@@ -528,7 +590,7 @@ def add_assignment(data):
 @socketio.on('update_assignment')
 @is_staff
 def update_assignment(data):
-    assignment = Assignment.query.get(data['id'])
+    assignment = Assignment.query.filter_by(course=get_course(), id=data['id']).one()
     if 'name' in data:
         assignment.name = data['name']
     if 'visible' in data:
@@ -542,7 +604,7 @@ def update_assignment(data):
 @is_staff
 def add_location(data):
     name = data['name']
-    location = Location(name=name)
+    location = Location(name=name, course=get_course())
     db.session.add(location)
     db.session.commit()
 
@@ -553,7 +615,7 @@ def add_location(data):
 @socketio.on('update_location')
 @is_staff
 def update_location(data):
-    location = Location.query.get(data['id'])
+    location = Location.query.filter_by(id=data['id'], course=get_course()).one()
     if 'name' in data:
         location.name = data['name']
     if 'visible' in data:
@@ -578,12 +640,9 @@ def update_config(data):
         # Validate new magic word config
         get_magic_word(values[keys.index('queue_magic_word_mode')], values[keys.index('queue_magic_word_data')])
     for key, value in zip(keys, values):
-        entry = ConfigEntry.query.get(key)
+        entry = ConfigEntry.query.filter_by(key=key, course=get_course()).one()
         entry.value = value
     db.session.commit()
-    print("potato")
 
-
-    if entry.public:
-        emit_state(['config'], broadcast=True)
+    emit_state(['config'], broadcast=True)
     return config_json()
