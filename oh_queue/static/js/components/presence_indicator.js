@@ -78,6 +78,21 @@ let PresenceIndicator = ({state}) => {
         <ReactMarkdown source={welcomeMessage} />
       </div>
 
+        {state.config.online_active === "true" &&
+        [state.config.students_set_online_link, state.config.students_set_online_doc].includes("false") && (
+          <div className="alert alert-danger alert-dismissable fade in" role="alert">
+            <button type="button" className="close" aria-label="Close" data-dismiss="alert">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4>Configure Online Queue Settings</h4>
+            <h5>
+                Go to <Link to="/online_setup">Online Setup</Link> to configure your settings for
+                video calls and shared documents, otherwise you will not be able to interact with
+                students on the Online Queue.
+            </h5>
+          </div>
+        )}
+
       <div className={`alert alert-${color} alert-dismissable fade in`} role="alert">
         <button type="button" className="close" aria-label="Close" data-dismiss="alert">
             <span aria-hidden="true">&times;</span>

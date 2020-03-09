@@ -199,6 +199,7 @@ class App extends React.Component {
           <Switch>
             <Route exact path="/" render={(props) => (<Home state={state} {...props} />)} />
             <Route exact path="/appointments" render={(props) => (<Appointments state={state} {...props} />)} />
+            <Route exact path="/online_setup" render={(props) => (<StaffOnlineSetup state={state} {...props} />)} />
             <Route path="/admin" render={(props) => (<AdminLayout state={state} {...props} />)} />
             <Route path="/error" render={(props) => (<ErrorView state={state} {...props} />)} />
             <Route path="/presence" render={(props) => (<PresenceIndicator state={state} {...props} />)} />

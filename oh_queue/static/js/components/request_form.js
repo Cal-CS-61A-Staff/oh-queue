@@ -79,8 +79,6 @@ let RequestForm = (props) => {
 
     const showOnlineInput = locationID && state.locations[locationID].name;
 
-    console.log(state);
-
     return (
         <div>
             <form id="request-form">
@@ -104,7 +102,7 @@ let RequestForm = (props) => {
                             <React.Fragment>
                                 {JSON.parse(state.config.students_set_online_link) && (
                                     <div className="form-group form-group-lg">
-                                        <label for="call-link">Video Call Link</label>
+                                        <label htmlFor="call-link">Video Call Link</label>
                                         <input className="form-control" type="text" id="call-link"
                                                name="call-link" title="Video Call Link" placeholder="meet.google.com/xyz" required
                                                disabled={disabled && !appointments}
@@ -113,7 +111,7 @@ let RequestForm = (props) => {
                                 )}
                                 {JSON.parse(state.config.students_set_online_doc) && (
                                     <div className="form-group form-group-lg">
-                                        <label for="doc-link">Shared Document Link (optional)</label>
+                                        <label htmlFor="doc-link">Shared Document Link (optional)</label>
                                         <input className="form-control" type="text" id="doc-link"
                                                name="doc-link" title="Shared Doc Link" placeholder="docs.google.com/xyz" required
                                                disabled={disabled && !appointments}

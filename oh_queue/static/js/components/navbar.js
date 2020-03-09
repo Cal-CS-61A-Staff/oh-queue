@@ -4,6 +4,9 @@ let Navbar = ({ state, mode }) => {
     var myTicket = getMyTicket(state);
     var { Link } = ReactRouterDOM;
 
+    const words = mode.split("_");
+    const title = words.map(word => word[0].toUpperCase() + word.slice(1)).join(" ");
+
     return (
         <nav className="navbar navbar-default navbar-fixed-top">
             <div className="container">
@@ -15,7 +18,7 @@ let Navbar = ({ state, mode }) => {
                         <span className="icon-bar"></span>
                     </button>
                     <Link className="navbar-brand" to={"/" + (mode === "queue" ? "" : mode)}>
-                        <strong>{window.courseName} |</strong>{" " + mode[0].toUpperCase() + mode.slice(1)}
+                        <strong>{window.courseName} |</strong>{" " + title}
                     </Link>
                 </div>
                 <div className="collapse navbar-collapse" id="navbar-collapse-section">
@@ -36,9 +39,11 @@ let Navbar = ({ state, mode }) => {
                         {currentUser ?
                             <li className="dropdown">
                                 <a href="#" className="dropdown-toggle" data-toggle="dropdown"
-                                   role="button">{currentUser.name} <span className="caret"></span></a>
+                                   role="button">{currentUser.name} <span className="caret"/></a>
                                 <ul className="dropdown-menu">
-                                    {state.config.online_active}
+                                    {state.config.online_active && currentUser.isStaff && (
+                                        <li><Link to="/online_setup">Online Setup</Link></li>
+                                    )}
                                     <li><a href="/logout">Log out</a></li>
                                 </ul>
                             </li>

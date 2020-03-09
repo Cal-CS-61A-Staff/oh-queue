@@ -23,6 +23,8 @@ def user_json(user):
         'name': user.name,
         'shortName': user.short_name,
         'isStaff': user.is_staff,
+        'call_url': user.call_url,
+        'doc_url': user.doc_url,
     }
 
 def student_json(user):
@@ -840,3 +842,15 @@ def mark_attendance(data):
 
     emit_state(['appointments'], broadcast=True)
 
+
+@socketio.on("update_staff_online_setup")
+@is_staff
+def update_staff_online_setup(data):
+    current_user.call_url = urljoin("https://", data["staff-call-link"])
+    current_user.doc_url = urljoin("https://", data["staff-doc-link"])
+    db.session.add(current_user)
+
+    db.session.commit()
+
+    emit_state(['current_user'])
+    emit_state(['tickets', 'appointments'], broadcast=True)

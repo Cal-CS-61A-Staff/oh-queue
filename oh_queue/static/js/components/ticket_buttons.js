@@ -120,11 +120,15 @@ class TicketButtons extends React.Component {
       }
     }
     if (ticket.status === 'assigned') {
-      if (ticket.call_url) {
-          onlineButtons.push(makeButton('Join Call', 'success', () => window.open(ticket.call_url, "_blank")));
+      if (ticket.call_url || ticket.helper.call_url) {
+          onlineButtons.push(makeButton('Join Call', 'success',
+              () => window.open(ticket.call_url || ticket.helper.call_url, "_blank"))
+          );
       }
-      if (ticket.doc_url) {
-          onlineButtons.push(makeButton('Open Shared Document', 'info', () => window.open(ticket.doc_url, "_blank")));
+      if (ticket.doc_url || ticket.helper.doc_url) {
+          onlineButtons.push(makeButton('Open Shared Document', 'info',
+              () => window.open(ticket.doc_url || ticket.helper.doc_url, "_blank"))
+          );
       }
 
       bottomButtons.push(makeButton('Resolve', 'default', this.resolve));
