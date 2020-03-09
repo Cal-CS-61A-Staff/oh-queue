@@ -74,6 +74,9 @@ def get_online_location():
         online_location = Location(name="Online", visible=True, course=get_course())
         db.session.add(online_location)
         db.session.commit()
+    elif not online_location.visible:
+        online_location.visible = True
+        db.session.commit()
     return online_location
 
 def config_json():
