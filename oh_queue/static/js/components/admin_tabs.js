@@ -1,4 +1,8 @@
 function AdminTabs({ currentTab }) {
+    if (currentTab === "admin") {
+        currentTab = "general";
+    }
+
     const links = ["general", "appointments", "assignments", "locations", "online"];
 
     const body = links.map((link, index) => (
