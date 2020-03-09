@@ -27,6 +27,8 @@ type Ticket = {
   question: string,
   description: ?string,
   helper: ?User,
+  call_url: string,
+  doc_url: string,
 };
 
 type TicketAssignment = {
@@ -169,8 +171,12 @@ function ticketQuestion(state: State, ticket: Ticket): string {
 function ticketStatus(state: State, ticket: Ticket): string {
   if (ticket.status === 'assigned' && ticket.helper) {
     return 'Being helped by ' + (isTicketHelper(state, ticket) ? 'you' : ticket.helper.name);
-  } else if (ticket.status === 'resolved' && ticket.helper) {
-    return 'Resolved by ' + ticket.helper.name;
+  } else if (ticket.status === 'resolved') {
+      if (ticket.helper) {
+          return 'Resolved by ' + ticket.helper.name;
+      } else {
+          return "Resolved";
+      }
   } else if (ticket.status === 'deleted') {
     return 'Deleted';
   } else if (ticket.status === "juggled") {

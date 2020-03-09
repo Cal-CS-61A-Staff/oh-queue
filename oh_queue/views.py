@@ -4,6 +4,7 @@ import collections
 
 import random
 import time
+from urllib.parse import urljoin
 
 from flask import render_template, url_for
 from flask_login import current_user
@@ -47,6 +48,8 @@ def ticket_json(ticket):
         'description': ticket.description,
         'question': ticket.question,
         'helper': ticket.helper and user_json(ticket.helper),
+        'call_url': ticket.call_url,
+        'doc_url': ticket.doc_url,
     }
 
 def assignment_json(assignment):
@@ -62,6 +65,14 @@ def location_json(location):
         'name': location.name,
         'visible': location.visible
     }
+
+def get_online_location():
+    online_location = Location.query.filter_by(course=get_course(), name="Online").one_or_none()
+    if online_location is None:
+        online_location = Location(name="Online", visible=True, course=get_course())
+        db.session.add(online_location)
+        db.session.commit()
+    return online_location
 
 def config_json():
     config = {}
@@ -118,8 +129,10 @@ def emit_state(attrs, broadcast=False):
         assignments = Assignment.query.filter_by(course=get_course()).all()
         state['assignments'] = [assignment_json(assignment) for assignment in assignments]
     if 'locations' in attrs:
-        locations = Location.query.filter_by(course=get_course()).all()
+        locations = Location.query.filter(Location.course == get_course(), Location.name != "Online").all()
         state['locations'] = [location_json(location) for location in locations]
+        if ConfigEntry.query.filter_by(key="online_active", course=get_course()).one().value == "true":
+            state["locations"].append(location_json(get_online_location()))
     if 'config' in attrs:
         state['config'] = config_json()
     if 'appointments' in attrs:
@@ -198,6 +211,24 @@ def init_config():
         public=True,
         course=get_course(),
     ))
+    db.session.add(ConfigEntry(
+        key='online_active',
+        value='false',
+        public=True,
+        course=get_course(),
+    ))
+    db.session.add(ConfigEntry(
+        key='students_set_online_link',
+        value='false',
+        public=True,
+        course=get_course(),
+    ))
+    db.session.add(ConfigEntry(
+        key='students_set_online_doc',
+        value='false',
+        public=True,
+        course=get_course(),
+    ))
     db.session.commit()
 
 # We run a React app, so serve index.html on all routes
@@ -209,13 +240,6 @@ def index(*args, **kwargs):
         init_config()
     return render_template('index.html', course_name=format_coursecode(get_course()))
 
-@app.route('/error')
-def error(*args, **kwargs):
-    return render_template('index.html')
-
-@app.route('/tickets/<int:ticket_id>')
-def ticket(*args, **kwargs):
-    return render_template('index.html')
 
 def socket_error(message, category='danger', ticket_id=None):
     redirect = url_for('index')
@@ -388,6 +412,16 @@ def create(form):
     location_id = form.get('location_id')
     question = form.get('question')
     description = form.get('description')
+
+    call_link = form.get('call-link', '')
+    doc_link = form.get('doc-link', '')
+
+    if call_link:
+        call_link = urljoin("https://", call_link)
+
+    if doc_link:
+        doc_link = urljoin("https://", doc_link)
+
     # Create a new ticket and add it to persistent storage
     if assignment_id is None or location_id is None or not question:
         return socket_error(
@@ -407,6 +441,7 @@ def create(form):
             'Unknown location (id: {})'.format(location_id),
             category='warning',
         )
+
     ticket = Ticket(
         status=TicketStatus.pending,
         user=current_user,
@@ -415,6 +450,8 @@ def create(form):
         question=question,
         description=description,
         course=get_course(),
+        call_url=call_link,
+        doc_url=doc_link,
     )
 
     db.session.add(ticket)
@@ -507,7 +544,7 @@ def juggle(data):
         ticket.status = TicketStatus.juggled
         ticket.hold_time = datetime.datetime.utcnow()
         ticket.rerequest_threshold = ticket.hold_time + datetime.timedelta(minutes=int(
-            ConfigEntry.query.filter_by(course=get_course(), key="juggling_delay").value)
+            ConfigEntry.query.filter_by(course=get_course(), key="juggling_delay").one().value)
         )
         location = ticket.location
         emit_event(ticket, TicketEventType.juggle)
@@ -682,7 +719,8 @@ def update_config(data):
         entry.value = value
     db.session.commit()
 
-    emit_state(['config'], broadcast=True)
+    emit_state(['config', 'locations'], broadcast=True)
+
     return config_json()
 
 

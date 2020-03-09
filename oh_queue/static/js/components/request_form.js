@@ -71,6 +71,16 @@ let RequestForm = (props) => {
         );
     }
 
+    const [locationID, setLocationID] = React.useState(null);
+
+    const handleLocationChange = (e) => {
+        setLocationID(e.target.value);
+    };
+
+    const showOnlineInput = locationID && state.locations[locationID].name;
+
+    console.log(state);
+
     return (
         <div>
             <form id="request-form">
@@ -90,6 +100,28 @@ let RequestForm = (props) => {
                                        disabled={disabled && !appointments}/>
                             </div>
                         </div>
+                        {showOnlineInput && (JSON.parse(state.config.students_set_online_link) || JSON.parse(state.config.students_set_online_doc)) && (
+                            <React.Fragment>
+                                {JSON.parse(state.config.students_set_online_link) && (
+                                    <div className="form-group form-group-lg">
+                                        <label for="call-link">Video Call Link</label>
+                                        <input className="form-control" type="text" id="call-link"
+                                               name="call-link" title="Video Call Link" placeholder="meet.google.com/xyz" required
+                                               disabled={disabled && !appointments}
+                                        />
+                                    </div>
+                                )}
+                                {JSON.parse(state.config.students_set_online_doc) && (
+                                    <div className="form-group form-group-lg">
+                                        <label for="doc-link">Shared Document Link (optional)</label>
+                                        <input className="form-control" type="text" id="doc-link"
+                                               name="doc-link" title="Shared Doc Link" placeholder="docs.google.com/xyz" required
+                                               disabled={disabled && !appointments}
+                                        />
+                                    </div>
+                                )}
+                            </React.Fragment>
+                        )}
                         <div className="form-group form-group-lg">
                             <div className="input-group">
                                 <SelectPicker options={filteredLocations}
@@ -97,6 +129,7 @@ let RequestForm = (props) => {
                                               data-live-search="true" data-size="8" data-width="60%"
                                               data-style="btn-lg btn-default" id="location_id"
                                               name="location_id" title="Location" required
+                                              onChange={handleLocationChange}
                                               disabled={disabled}/>
                                 <div className="input-group-btn form-right pull-left">
                                     <button className="btn btn-lg btn-default" onClick={show}

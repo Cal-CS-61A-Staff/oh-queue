@@ -36,6 +36,9 @@ class User(db.Model, UserMixin):
 
     course = db.Column(db.String(255), nullable=False)
 
+    call_url = db.Column(db.String(255))
+    doc_url = db.Column(db.String(255))
+
     @property
     def short_name(self):
         first_name = self.name.split()[0]
@@ -107,6 +110,9 @@ class Ticket(db.Model):
     location = db.relationship(Location, foreign_keys=[location_id])
 
     course = db.Column(db.String(255), nullable=False)
+
+    call_url = db.Column(db.String(255))
+    doc_url = db.Column(db.String(255))
 
     @classmethod
     def for_user(cls, user):

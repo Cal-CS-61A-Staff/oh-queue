@@ -1,18 +1,16 @@
 function AdminTabs({ currentTab }) {
+    const links = ["general", "appointments", "assignments", "locations", "online"];
+
+    const body = links.map((link, index) => (
+            <li role="presentation" className={currentTab === link ? "active" : ""}>
+                <Link to={index ? "/admin/" + link : "/admin"}>{link[0].toUpperCase() + link.slice(1)}</Link>
+            </li>
+        )
+    );
+
     return (
         <ul className="nav nav-tabs">
-            <li role="presentation" className={currentTab === "admin" ? "active" : ""}>
-                <Link to={"/admin"}>General</Link>
-            </li>
-            <li role="presentation" className={currentTab === "appointments" ? "active" : ""}>
-                <Link to={"/admin/appointments"}>Appointments</Link>
-            </li>
-            <li role="presentation" className={currentTab === "assignments" ? "active" : ""}>
-                <Link to={"/admin/assignments"}>Assignments</Link>
-            </li>
-            <li role="presentation" className={currentTab === "locations" ? "active" : ""}>
-                <Link to={"/admin/locations"}>Locations</Link>
-            </li>
+            {body}
         </ul>
     );
 }

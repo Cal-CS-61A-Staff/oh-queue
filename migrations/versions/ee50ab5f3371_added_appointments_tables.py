@@ -61,7 +61,7 @@ def upgrade():
     session = orm.Session(bind=connection)
 
     for course in session.query(ConfigEntry.course).distinct():
-        session.add(ConfigEntry(key='appointments_open', value='false', public=True, course=course[0]))
+        session.add(ConfigEntry(key='online_active', value='false', public=True, course=course[0]))
 
     session.commit()
 
