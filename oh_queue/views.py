@@ -165,7 +165,7 @@ def emit_presence(data):
     out["staff"] = len(data["staff"] | active_staff)
     socketio.emit('presence', out, room=get_course())
 
-user_presence = collections.defaultdict(set) # An in memory map of presence.
+user_presence = collections.defaultdict(lambda: collections.defaultdict(set)) # An in memory map of presence.
 
 def init_config():
     db.session.add(ConfigEntry(
@@ -310,30 +310,30 @@ def connect():
     if not current_user.is_authenticated:
         pass
     elif current_user.is_staff:
-        user_presence['staff'].add(current_user.email)
+        user_presence[get_course()]['staff'].add(current_user.email)
     else:
-        user_presence['students'].add(current_user.email)
+        user_presence[get_course()]['students'].add(current_user.email)
 
     join_room(get_course())
 
     emit_state(['tickets', 'assignments', 'locations', 'current_user', 'config', 'appointments'])
 
-    emit_presence(user_presence)
+    emit_presence(user_presence[get_course()])
 
 @socketio.on('disconnect')
 def disconnect():
     if not current_user.is_authenticated:
         pass
     elif current_user.is_staff:
-        if current_user.email in user_presence['staff']:
-            user_presence['staff'].remove(current_user.email)
+        if current_user.email in user_presence[get_course()]['staff']:
+            user_presence[get_course()]['staff'].remove(current_user.email)
     else:
-        if current_user.email in user_presence['students']:
-            user_presence['students'].remove(current_user.email)
+        if current_user.email in user_presence[get_course()]['students']:
+            user_presence[get_course()]['students'].remove(current_user.email)
 
     leave_room(get_course())
 
-    emit_presence(user_presence)
+    emit_presence(user_presence[get_course()])
 
 @socketio.on('refresh')
 def refresh(ticket_ids):
