@@ -6,9 +6,11 @@ import random
 import time
 from urllib.parse import urljoin
 
+import requests
 from flask import render_template, url_for
 from flask_login import current_user
 from flask_socketio import emit, join_room, leave_room
+from sqlalchemy import func
 
 from oh_queue import app, db, socketio
 from oh_queue.course_config import get_course, format_coursecode
@@ -734,7 +736,7 @@ def update_config(data):
 def assign_staff_appointment(appointment_id):
     Appointment.query.filter(
         Appointment.id == appointment_id,
-        course=get_course(),
+        Appointment.course == get_course(),
     ).first().helper_id = current_user.id
     db.session.commit()
     emit_state(['appointments'], broadcast=True)
@@ -745,7 +747,7 @@ def assign_staff_appointment(appointment_id):
 def unassign_staff_appointment(appointment_id):
     Appointment.query.filter(
         Appointment.id == appointment_id,
-        course=get_course(),
+        Appointment.course == get_course(),
     ).first().helper_id = None
     db.session.commit()
     emit_state(['appointments'], broadcast=True)
@@ -757,14 +759,14 @@ def assign_appointment(data):
     user_id = current_user.id
 
     if current_user.is_staff:
-        user = User.query.filter(User.email == data["email"], course=get_course()).one_or_none()
+        user = User.query.filter_by(email=data["email"], course=get_course()).one_or_none()
         if not user:
             return socket_unauthorized()
         user_id = user.id
 
-    old_signup = AppointmentSignup.query.filter(
-        AppointmentSignup.appointment_id == data["appointment_id"],
-        AppointmentSignup.user_id == user_id,
+    old_signup = AppointmentSignup.query.filter_by(
+        appointment_id=data["appointment_id"],
+        user_id=user_id,
         course=get_course(),
     ).one_or_none()
 
@@ -774,8 +776,8 @@ def assign_appointment(data):
         db.session.delete(old_signup)
         db.session.commit()
 
-    appointment = Appointment.query.filter(
-        Appointment.id == data["appointment_id"],
+    appointment = Appointment.query.filter_by(
+        id=data["appointment_id"],
         course=get_course(),
     ).one()  # type = Appointment
 
@@ -844,6 +846,62 @@ def mark_attendance(data):
     db.session.commit()
 
     emit_state(['appointments'], broadcast=True)
+
+
+@socketio.on("upload_appointments")
+@is_staff
+def upload_appointments(data):
+    sheet_url = data["sheetUrl"]
+    sheet_name = data["sheetName"]
+
+    data = requests.post("https://auth.apps.cs61a.org/google/read_spreadsheet", json={
+        "url": sheet_url,
+        "sheet_name": sheet_name,
+        "client_name": app.config["AUTH_KEY"],
+        "secret": app.config["AUTH_SECRET"],
+    }).json()
+    #
+    # # db.session.query(Appointment).join(Appointment.children).group_by(Appointment).having(func.count(AppointmentSignup.id) > 0)
+    #
+    locations = {}
+
+    def get_location(name):
+        if name not in locations:
+            locations[name] = Location.query.filter_by(name=name, course=get_course()).one()
+        return locations[name]
+
+    helpers = {}
+
+    def get_helper(email, name):
+        if email not in helpers:
+            helper = User.query.filter_by(email=email).one_or_none()
+            if not helper:
+                helper = User(name=name, email=email, is_staff=True, course=get_course())
+                db.session.add(helper)
+                db.session.commit()
+            helpers[email] = helper
+        return helpers[email]
+
+
+    header = data[0]
+    for row in data[1:]:
+        start_date_raw = row[header.index("Day")]
+        start_time_raw = row[header.index("Start Time")]
+        start_time = datetime.datetime.strptime(start_date_raw + " " + start_time_raw, "%B %d %I:%M %p")
+        start_time = start_time.replace(year=datetime.datetime.now().year)
+
+        appointment = Appointment(
+            start_time=start_time,
+            duration=datetime.timedelta(minutes=int(row[header.index("Duration (mins)")])),
+            capacity=int(row[header.index("Capacity")]),
+            location=get_location(row[header.index("Location")]),
+            status=AppointmentStatus.pending,
+            helper=get_helper(row[header.index("Email")], row[header.index("Name")]),
+            course=get_course(),
+        )
+        db.session.add(appointment)
+
+    db.session.commit()
 
 
 @socketio.on("update_staff_online_setup")

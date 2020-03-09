@@ -834,3 +834,23 @@ h4.list-group-item-heading::before {
 .tooltip+.btn-block {
     margin-top: 5px;
 }
+
+.appointment-input {
+    display: flex;
+}
+
+#url-selector {
+    flex-basis: 400px;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+#sheet-selector {
+    flex-basis: 100px;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.appointment-input .input-group-btn {
+    width: unset;
+}

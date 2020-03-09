@@ -41,7 +41,7 @@ function FutureSlots({ state }) {
         }
     }
 
-    const [compact, setCompact] = React.useState(false);
+    const [compact, setCompact] = React.useState(true);
 
     return (
         <React.Fragment>
@@ -55,7 +55,7 @@ function FutureSlots({ state }) {
             {(!currentUser || currentUser.isStaff) && <br />}
             <div className="container">
                 <Messages messages={messages}/>
-                <FilterControls state={state} />
+                {/*<FilterControls state={state} />*/}
                 <FancyToggle checked={compact} onChange={setCompact} offText="Regular" onText="Compact" />
                 {Array.from(days.entries()).map(([day, dayAppointments]) =>
                     <div>
