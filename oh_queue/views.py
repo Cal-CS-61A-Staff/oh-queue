@@ -849,8 +849,8 @@ def mark_attendance(data):
 @socketio.on("update_staff_online_setup")
 @is_staff
 def update_staff_online_setup(data):
-    current_user.call_url = urljoin("https://", data["staff-call-link"])
-    current_user.doc_url = urljoin("https://", data["staff-doc-link"])
+    current_user.call_url = data["staff-call-link"] and urljoin("https://", data["staff-call-link"])
+    current_user.doc_url = data["staff-doc-link"] and urljoin("https://", data["staff-doc-link"])
     db.session.add(current_user)
 
     db.session.commit()
