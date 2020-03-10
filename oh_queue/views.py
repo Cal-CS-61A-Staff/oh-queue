@@ -885,6 +885,16 @@ def toggle_visibility(appointment_id):
     emit_appointment_event(appointment, "visibility_toggled")
 
 
+@socketio.on("delete_appointment")
+@is_staff
+def delete_appointment(appointment_id):
+    appointment = Appointment.query.filter_by(id=appointment_id, course=get_course()).one()
+    db.session.delete(appointment)
+    db.session.commit()
+
+    emit_state(["appointments"])
+
+
 @socketio.on("upload_appointments")
 @is_staff
 def upload_appointments(data):

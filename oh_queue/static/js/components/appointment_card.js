@@ -39,8 +39,12 @@ function AppointmentCard({ currentUser, locations, appointment, assignments, com
         onStudentSignup(appointment.id, signup);
     };
 
-    const toggleVisibility = (appointment) => {
+    const toggleVisibility = () => {
         app.makeRequest("toggle_visibility", appointment.id)
+    };
+
+    const deleteAppointment = () => {
+        app.makeRequest("delete_appointment", appointment.id)
     };
 
     return (
@@ -50,6 +54,7 @@ function AppointmentCard({ currentUser, locations, appointment, assignments, com
                 locations={locations}
                 compact={compact}
                 onVisibilityToggle={toggleVisibility}
+                onDeleteClick={deleteAppointment}
             />
             <ul className="list-group">
                 {(!compact || currentUser.isStaff) && (
@@ -79,7 +84,7 @@ function AppointmentCard({ currentUser, locations, appointment, assignments, com
     )
 }
 
-function AppointmentCardHeader({ appointment, locations, compact, onVisibilityToggle }) {
+function AppointmentCardHeader({ appointment, locations, compact, onVisibilityToggle, onDeleteClick }) {
     const startTimeObj = moment.utc(appointment.start_time);
     const endTimeObj = moment.utc(appointment.start_time).add(appointment.duration, "seconds");
 
@@ -95,10 +100,10 @@ function AppointmentCardHeader({ appointment, locations, compact, onVisibilityTo
     return (
         <div className="panel-heading">
             <div className="btn-group" role="group" style={{float: "right"}}>
-                <button type="button" className="btn btn-xs btn-default" onClick={() => onVisibilityToggle(appointment)} >
+                <button type="button" className="btn btn-xs btn-default" onClick={onVisibilityToggle}>
                     <span className={visibilityClass} aria-hidden="true"/>
                 </button>
-                <button type="button" className="btn btn-danger btn-xs btn-default">
+                <button type="button" className="btn btn-danger btn-xs btn-default" onClick={onDeleteClick}>
                     <span className="glyphicon glyphicon-trash" aria-hidden="true"/>
                 </button>
             </div>
