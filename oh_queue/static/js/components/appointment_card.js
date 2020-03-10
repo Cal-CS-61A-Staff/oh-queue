@@ -53,6 +53,7 @@ function AppointmentCard({ currentUser, locations, appointment, assignments, com
                 appointment={appointment}
                 locations={locations}
                 compact={compact}
+                isStaff={currentUser && currentUser.isStaff}
                 onVisibilityToggle={toggleVisibility}
                 onDeleteClick={deleteAppointment}
             />
@@ -84,7 +85,7 @@ function AppointmentCard({ currentUser, locations, appointment, assignments, com
     )
 }
 
-function AppointmentCardHeader({ appointment, locations, compact, onVisibilityToggle, onDeleteClick }) {
+function AppointmentCardHeader({ appointment, locations, compact, isStaff, onVisibilityToggle, onDeleteClick }) {
     const startTimeObj = moment.utc(appointment.start_time);
     const endTimeObj = moment.utc(appointment.start_time).add(appointment.duration, "seconds");
 
@@ -100,12 +101,12 @@ function AppointmentCardHeader({ appointment, locations, compact, onVisibilityTo
     return (
         <div className="panel-heading">
             <div className="btn-group" role="group" style={{float: "right"}}>
-                <button type="button" className="btn btn-xs btn-default" onClick={onVisibilityToggle}>
+                {isStaff && <button type="button" className="btn btn-xs btn-default" onClick={onVisibilityToggle}>
                     <span className={visibilityClass} aria-hidden="true"/>
-                </button>
-                <button type="button" className="btn btn-danger btn-xs btn-default" onClick={onDeleteClick}>
+                </button>}
+                {isStaff && <button type="button" className="btn btn-danger btn-xs btn-default" onClick={onDeleteClick}>
                     <span className="glyphicon glyphicon-trash" aria-hidden="true"/>
-                </button>
+                </button>}
             </div>
             <h3 className="panel-title">{title}</h3>
         </div>

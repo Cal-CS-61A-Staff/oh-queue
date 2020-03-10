@@ -32,6 +32,10 @@ function StaffOnlineSetup({ state }) {
           <OfflineIndicator offline={state.offline && state.loaded}/>
           <div className="container">
               <br />
+              <p>
+                  Consider using <a href="https://meet.google.com">Google Meet</a> to host video calls,
+                  and <a href="https://demo.firepad.io">Firepad</a> for a collaborative document.
+              </p>
               <form id="staff-online-setup-form">
                   <div className="form-group">
                       <label htmlFor="staff-call-link">Your Default Video Call Link</label>
