@@ -2,10 +2,14 @@ function FutureSlots({ state }) {
     const { assignments, appointments, locations, currentUser, messages } = state;
     const filteredAssignments = Object.values(assignments).filter(assignment => assignment.visible).sort((a, b) => a.name.localeCompare(b.name));
 
-    const activeAppointments = appointments.filter(({ status }) => status !== "resolved");
+    const hiddenTypes = (currentUser && currentUser.isStaff) ? ["resolved"] : ["resolved", "hidden"];
+    const currentAppointments = appointments.filter(({ status }) => !hiddenTypes.includes(status));
 
     const days = new Map();
-    for (const appointment of activeAppointments) {
+    for (const appointment of currentAppointments) {
+        if (appointment.status === "active") {
+            continue;
+        }
         const date = moment(appointment.start_time).format('dddd, MMMM D');
         if (!days.has(date)) {
             days.set(date, []);
@@ -33,7 +37,7 @@ function FutureSlots({ state }) {
     };
 
     const mySignups = [];
-    for (const appointment of activeAppointments) {
+    for (const appointment of currentAppointments) {
         for (const signup of appointment.signups) {
             if (signup.user && signup.user.id === currentUser.id) {
                 mySignups.push({ appointment, signup });

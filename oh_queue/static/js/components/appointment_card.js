@@ -32,12 +32,15 @@ function AppointmentCard({ currentUser, locations, appointment, assignments, com
 
     const handleStaffUnassign = () => {
         app.makeRequest('unassign_staff_appointment', appointment.id)
-        // TODO: handle race conditions between students
     };
 
     const handleStudentSignup = (e, signup) => {
         e.preventDefault();
         onStudentSignup(appointment.id, signup);
+    };
+
+    const toggleVisibility = (appointment) => {
+        app.makeRequest("toggle_visibility", appointment.id)
     };
 
     return (
@@ -46,14 +49,17 @@ function AppointmentCard({ currentUser, locations, appointment, assignments, com
                 appointment={appointment}
                 locations={locations}
                 compact={compact}
+                onVisibilityToggle={toggleVisibility}
             />
             <ul className="list-group">
-                {(!compact || currentUser.isStaff) && <AppointmentCardHelperRow
-                    appointment={appointment}
-                    currentUser={currentUser}
-                    onStaffSignup={handleStaffSignup}
-                    onStaffUnassign={handleStaffUnassign}
-                />}
+                {(!compact || currentUser.isStaff) && (
+                    <AppointmentCardHelperRow
+                        appointment={appointment}
+                        currentUser={currentUser}
+                        onStaffSignup={handleStaffSignup}
+                        onStaffUnassign={handleStaffUnassign}
+                    />
+                )}
                 {<AppointmentCardStudentList
                     appointment={appointment}
                     currentUser={currentUser}
@@ -73,7 +79,7 @@ function AppointmentCard({ currentUser, locations, appointment, assignments, com
     )
 }
 
-function AppointmentCardHeader({ appointment, locations, compact}) {
+function AppointmentCardHeader({ appointment, locations, compact, onVisibilityToggle }) {
     const startTimeObj = moment.utc(appointment.start_time);
     const endTimeObj = moment.utc(appointment.start_time).add(appointment.duration, "seconds");
 
@@ -84,8 +90,18 @@ function AppointmentCardHeader({ appointment, locations, compact}) {
         title += ` (${spareCapacity} slot${spareCapacity === 1 ? "" : "s"} left)`;
     }
 
+    const visibilityClass = appointment.status === "hidden" ? "glyphicon glyphicon-play" : "glyphicon glyphicon-pause";
+
     return (
         <div className="panel-heading">
+            <div className="btn-group" role="group" style={{float: "right"}}>
+                <button type="button" className="btn btn-xs btn-default" onClick={() => onVisibilityToggle(appointment)} >
+                    <span className={visibilityClass} aria-hidden="true"/>
+                </button>
+                <button type="button" className="btn btn-danger btn-xs btn-default">
+                    <span className="glyphicon glyphicon-trash" aria-hidden="true"/>
+                </button>
+            </div>
             <h3 className="panel-title">{title}</h3>
         </div>
     );

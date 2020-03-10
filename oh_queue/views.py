@@ -154,7 +154,7 @@ def emit_state(attrs, broadcast=False):
             Appointment.start_time > datetime.datetime.utcnow() - datetime.timedelta(hours=10),
             Appointment.status != AppointmentStatus.resolved,
             Appointment.course == get_course(),
-        ).all()
+        ).order_by(Appointment.id).all()
         state['appointments'] = [appointments_json(appointment) for appointment in appointments]
 
     if not broadcast and 'current_user' in attrs:
@@ -775,7 +775,7 @@ def assign_appointment(data):
     if current_user.is_staff:
         user = User.query.filter_by(email=data["email"], course=get_course()).one_or_none()
         if not user:
-            return socket_unauthorized()
+            return socket_error("Email could not be found")
         user_id = user.id
 
     old_signup = AppointmentSignup.query.filter_by(
@@ -799,7 +799,7 @@ def assign_appointment(data):
         return socket_error("Appointment is at full capacity")
 
     if appointment.status != AppointmentStatus.pending:
-        return socket_error("Appointment has already started")
+        return socket_error("Appointment is not pending")
 
     signup = AppointmentSignup(
         appointment_id=data["appointment_id"],
@@ -868,6 +868,21 @@ def mark_attendance(data):
     db.session.commit()
 
     emit_appointment_event(signup.appointment, "attendance_marked")
+
+
+@socketio.on("toggle_visibility")
+@is_staff
+def toggle_visibility(appointment_id):
+    appointment = Appointment.query.filter_by(id=appointment_id, course=get_course()).one()
+    if appointment.status == AppointmentStatus.hidden:
+        appointment.status = AppointmentStatus.pending
+    elif appointment.status == AppointmentStatus.pending:
+        appointment.status = AppointmentStatus.hidden
+    else:
+        return socket_error("Cannot show/hide appointment that is in progress / completed")
+    db.session.commit()
+
+    emit_appointment_event(appointment, "visibility_toggled")
 
 
 @socketio.on("upload_appointments")

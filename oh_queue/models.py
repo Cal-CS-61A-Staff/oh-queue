@@ -155,7 +155,7 @@ class TicketEvent(db.Model):
     user = db.relationship(User)
 
 
-AppointmentStatus = enum.Enum('AppointmentStatus', 'pending active resolved')
+AppointmentStatus = enum.Enum('AppointmentStatus', 'pending active resolved hidden')
 
 
 class Appointment(db.Model):
