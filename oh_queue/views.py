@@ -796,7 +796,7 @@ def assign_appointment(data):
     ).one()  # type = Appointment
 
     if len(appointment.signups) >= appointment.capacity and not current_user.is_staff and not old_signup:
-        return socket_unauthorized()
+        return socket_error("Appointment slot full")
 
     signup = AppointmentSignup(
         appointment_id=data["appointment_id"],
@@ -924,7 +924,6 @@ def upload_appointments(data):
     except Exception as e:
         return socket_error("Internal Error:" + str(e))
     emit_state(['appointments'], broadcast=True)
-
 
 
 @socketio.on("update_staff_online_setup")
