@@ -1,6 +1,6 @@
 function MyAppointments({ state }) {
     const studentContent = getMySignups(state)
-        .filter(({ appointment }) => isSoon(appointment.start_time))
+        .filter(({ appointment }) => appointment.status === "active" || isSoon(appointment.start_time))
         .map(({ appointment, signup }) => {
             const handleClick = appointment.status !== "pending" && (() => redirect(appointment.id));
             return (

@@ -796,7 +796,10 @@ def assign_appointment(data):
     ).one()  # type = Appointment
 
     if len(appointment.signups) >= appointment.capacity and not current_user.is_staff and not old_signup:
-        return socket_error("Appointment slot full")
+        return socket_error("Appointment is at full capacity")
+
+    if appointment.status != AppointmentStatus.pending:
+        return socket_error("Appointment has already started")
 
     signup = AppointmentSignup(
         appointment_id=data["appointment_id"],
