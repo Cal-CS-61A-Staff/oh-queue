@@ -34,7 +34,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(255), nullable=False)
     is_staff = db.Column(db.Boolean, default=False)
 
-    course = db.Column(db.String(255), nullable=False)
+    course = db.Column(db.String(255), nullable=False, index=True)
 
     call_url = db.Column(db.String(255))
     doc_url = db.Column(db.String(255))
@@ -54,7 +54,7 @@ class ConfigEntry(db.Model):
     value = db.Column(db.Text(), nullable=False)
     public = db.Column(db.Boolean, default=False)
 
-    course = db.Column(db.String(255), nullable=False)
+    course = db.Column(db.String(255), nullable=False, index=True)
 
 class Assignment(db.Model):
     """Represents a ticket's assignment."""
@@ -64,7 +64,7 @@ class Assignment(db.Model):
     name = db.Column(db.String(255), nullable=False)
     visible = db.Column(db.Boolean, default=False)
 
-    course = db.Column(db.String(255), nullable=False)
+    course = db.Column(db.String(255), nullable=False, index=True)
 
 class Location(db.Model):
     """Represents a ticket's location."""
@@ -74,7 +74,7 @@ class Location(db.Model):
     name = db.Column(db.String(255), nullable=False)
     visible = db.Column(db.Boolean, default=False)
 
-    course = db.Column(db.String(255), nullable=False)
+    course = db.Column(db.String(255), nullable=False, index=True)
 
 
 TicketStatus = enum.Enum('TicketStatus', 'pending assigned resolved deleted juggled rerequested')
@@ -109,7 +109,7 @@ class Ticket(db.Model):
     assignment = db.relationship(Assignment, foreign_keys=[assignment_id])
     location = db.relationship(Location, foreign_keys=[location_id])
 
-    course = db.Column(db.String(255), nullable=False)
+    course = db.Column(db.String(255), nullable=False, index=True)
 
     call_url = db.Column(db.String(255))
     doc_url = db.Column(db.String(255))
@@ -149,7 +149,7 @@ class TicketEvent(db.Model):
     ticket_id = db.Column(db.ForeignKey('ticket.id'), nullable=False)
     user_id = db.Column(db.ForeignKey('user.id'), nullable=False)
 
-    course = db.Column(db.String(255), nullable=False)
+    course = db.Column(db.String(255), nullable=False, index=True)
 
     ticket = db.relationship(Ticket)
     user = db.relationship(User)
@@ -176,7 +176,7 @@ class Appointment(db.Model):
 
     status = db.Column(EnumType(AppointmentStatus), nullable=False, index=True)
 
-    course = db.Column(db.String(255), nullable=False)
+    course = db.Column(db.String(255), nullable=False, index=True)
 
 
 AttendanceStatus = enum.Enum('AttendanceStatus', 'unknown present excused absent')
@@ -200,4 +200,4 @@ class AppointmentSignup(db.Model):
 
     attendance_status = db.Column(EnumType(AttendanceStatus), nullable=False, default=AttendanceStatus.unknown)
 
-    course = db.Column(db.String(255), nullable=False)
+    course = db.Column(db.String(255), nullable=False, index=True)
