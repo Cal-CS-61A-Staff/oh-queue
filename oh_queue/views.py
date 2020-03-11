@@ -245,6 +245,18 @@ def init_config():
         public=True,
         course=get_course(),
     ))
+    db.session.add(ConfigEntry(
+        key='daily_appointment_limit',
+        value='2',
+        public=True,
+        course=get_course(),
+    ))
+    db.session.add(ConfigEntry(
+        key='weekly_appointment_limit',
+        value='5',
+        public=True,
+        course=get_course(),
+    ))
     db.session.commit()
 
 # We run a React app, so serve index.html on all routes
@@ -780,6 +792,31 @@ def assign_appointment(data):
             return socket_error("Email could not be found")
         user_id = user.id
 
+    appointment = Appointment.query.filter_by(
+        id=data["appointment_id"],
+        course=get_course(),
+    ).one()  # type = Appointment
+
+    if not current_user.is_staff:
+        daily_threshold = int(ConfigEntry.query.filter_by(key="daily_appointment_limit", course=get_course()).one().value)
+        weekly_threshold = int(ConfigEntry.query.filter_by(key="weekly_appointment_limit", course=get_course()).one().value)
+
+        start = appointment.start_time.replace(hour=0, minute=0, second=0, microsecond=0)
+        week_start = start - datetime.timedelta(days=appointment.start_time.weekday())
+        week_end = start + datetime.timedelta(days=7)
+        num_this_week = AppointmentSignup.query.join(AppointmentSignup.appointment).filter(
+            week_start < Appointment.start_time, Appointment.start_time < week_end
+        ).count()
+        if num_this_week > weekly_threshold:
+            return socket_error("You have already signed up for {} OH slots this week".format(weekly_threshold))
+
+        day_end = start + datetime.timedelta(days=1)
+        num_today = AppointmentSignup.query.join(AppointmentSignup.appointment).filter(
+            start < Appointment.start_time, Appointment.start_time < day_end
+        ).count()
+        if num_today > daily_threshold:
+            return socket_error("You have already signed up for {} OH slots for the same day".format(daily_threshold))
+
     old_signup = AppointmentSignup.query.filter_by(
         appointment_id=data["appointment_id"],
         user_id=user_id,
@@ -791,11 +828,6 @@ def assign_appointment(data):
     if old_signup:
         db.session.delete(old_signup)
         db.session.commit()
-
-    appointment = Appointment.query.filter_by(
-        id=data["appointment_id"],
-        course=get_course(),
-    ).one()  # type = Appointment
 
     if len(appointment.signups) >= appointment.capacity and not current_user.is_staff and not old_signup:
         return socket_error("Appointment is at full capacity")
@@ -828,7 +860,7 @@ def unassign_appointment(signup_id):
 
     appointment = old_signup.appointment
 
-    if not current_user.is_staff and (not old_signup or old_signup.user_id != current_user.id):
+    if not current_user.is_staff and (not old_signup or old_signup.user_id != current_user.id) or appointment.status != AppointmentStatus.pending:
         return socket_unauthorized()
 
     db.session.delete(old_signup)
@@ -910,9 +942,7 @@ def upload_appointments(data):
             "client_name": app.config["AUTH_KEY"],
             "secret": app.config["AUTH_SECRET"],
         }).json()
-        #
-        # # db.session.query(Appointment).join(Appointment.children).group_by(Appointment).having(func.count(AppointmentSignup.id) > 0)
-        #
+
         locations = {}
 
         def get_location(name):

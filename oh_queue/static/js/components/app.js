@@ -65,6 +65,9 @@ class App extends React.Component {
     }
     if (data.hasOwnProperty('config')) {
       this.state.config = data.config;
+      for (const key of ["daily_appointment_limit", "weekly_appointment_limit"]) {
+          this.state.config[key] = JSON.parse(this.state.config[key]);
+      }
     }
     if (data.hasOwnProperty('current_user')) {
       this.state.currentUser = data.current_user;

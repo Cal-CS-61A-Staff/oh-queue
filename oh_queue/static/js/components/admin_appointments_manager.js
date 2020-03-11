@@ -32,14 +32,40 @@ function AdminAppointmentsManager({ state }) {
                         />
                     </td>
                 </tr>
+                <tr>
+                    <td>
+                        <p>
+                            How many appointments should a student be able to make daily?
+                        </p>
+                    </td>
+                    <td className="col-md-3">
+                        <ConfigLinkedNumeric
+                            config={state.config}
+                            configKey="daily_appointment_limit"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>
+                            How many appointments should a student be able to make weekly?
+                        </p>
+                    </td>
+                    <td className="col-md-3">
+                        <ConfigLinkedNumeric
+                            config={state.config}
+                            configKey="weekly_appointment_limit"
+                        />
+                    </td>
+                </tr>
             </AdminOptionsManager>
             <form>
                 <div className="input-group appointment-input">
                     <input id="url-selector" type="text" className="form-control" placeholder="Link to a spreadsheet containing appointments" required value={sheetUrl} onChange={handleSheetUrlChange} />
                     <input id="sheet-selector" className="form-control form-right" type="text" name="question" title="Sheet name" placeholder="Sheet name" required value={sheetName} onChange={handleSheetNameChange}/>
                       <span className="input-group-btn">
-                        <button className="btn btn-default" type="button" onClick={submit}>
-                            {isLoading ? <span className="spinner-loading"/> : "Update"}
+                        <button className={"btn btn-default " + (isLoading ? "is-loading" : "")} type="button" onClick={submit}>
+                            Update
                         </button>
                       </span>
                 </div>

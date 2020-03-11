@@ -6,10 +6,15 @@ function FutureSlots({ state }) {
 
     const currentAppointments = appointments.filter(({ status }) => !hiddenTypes.includes(status));
 
+    const [compact, setCompact] = React.useState(true);
+    const [hideFull, setHideFull] = React.useState(false);
 
     const days = new Map();
     for (const appointment of currentAppointments) {
         if (appointment.status === "active") {
+            continue;
+        }
+        if (hideFull && appointment.signups.length >= appointment.capacity) {
             continue;
         }
         const date = moment(appointment.start_time).format('dddd, MMMM D');
@@ -47,8 +52,6 @@ function FutureSlots({ state }) {
         }
     }
 
-    const [compact, setCompact] = React.useState(true);
-
     return (
         <React.Fragment>
             {currentUser && !currentUser.isStaff && (
@@ -68,7 +71,26 @@ function FutureSlots({ state }) {
             <div className="container">
                 <Messages messages={messages}/>
                 {/*<FilterControls state={state} />*/}
+                <div className="alert alert-warning alert-dismissable fade in" role="alert">
+                    <button type="button" className="close" aria-label="Close" data-dismiss="alert">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4>Appointment Limits</h4>
+                    <h5>
+                        You cannot enroll in more than
+                        {" "}
+                        {state.config.daily_appointment_limit}
+                        {" "}
+                        appointments per day, or more than
+                        {" "}
+                        {state.config.weekly_appointment_limit}
+                        {" "}
+                        per week.
+                    </h5>
+                  </div>
                 <FancyToggle checked={compact} onChange={setCompact} offText="Regular" onText="Compact" />
+                {" "}
+                <FancyToggle checked={hideFull} onChange={setHideFull} offText="Show All" onText="Hide Full" />
                 {Array.from(days.entries()).map(([day, dayAppointments]) =>
                     <div>
                         <h3> {day} </h3>
