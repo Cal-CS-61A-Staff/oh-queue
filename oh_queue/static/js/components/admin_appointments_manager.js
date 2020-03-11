@@ -2,6 +2,8 @@ function AdminAppointmentsManager({ state }) {
     const [sheetUrl, setSheetUrl] = React.useState("");
     const [sheetName, setSheetName] = React.useState("");
 
+    const [isLoading, setIsLoading] = React.useState(false);
+
     const handleSheetUrlChange = (e) => {
         setSheetUrl(e.target.value);
     };
@@ -10,9 +12,10 @@ function AdminAppointmentsManager({ state }) {
     };
 
     const submit = () => {
+        setIsLoading(true);
         app.makeRequest("upload_appointments", {
             sheetUrl, sheetName,
-        }, true);
+        }, false, () => {setIsLoading(false)});
     };
 
     return (
@@ -35,9 +38,14 @@ function AdminAppointmentsManager({ state }) {
                     <input id="url-selector" type="text" className="form-control" placeholder="Link to a spreadsheet containing appointments" required value={sheetUrl} onChange={handleSheetUrlChange} />
                     <input id="sheet-selector" className="form-control form-right" type="text" name="question" title="Sheet name" placeholder="Sheet name" required value={sheetName} onChange={handleSheetNameChange}/>
                       <span className="input-group-btn">
-                        <button className="btn btn-default" type="button" onClick={submit}>Update</button>
+                        <button className="btn btn-default" type="button" onClick={submit}>
+                            {isLoading ? <span className="spinner-loading"/> : "Update"}
+                        </button>
                       </span>
                 </div>
+                <small>
+                    You must share this spreadsheet with the 61A service account <a href="mailto:secure-links@ok-server.iam.gserviceaccount.com">secure-links@ok-server.iam.gserviceaccount.com</a>.
+                </small>
             </form>
         </React.Fragment>
     );

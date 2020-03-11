@@ -11,6 +11,7 @@ class AdminLayout extends React.Component {
         <OfflineIndicator offline={state.offline && state.loaded}/>
         <br />
         <div className="container">
+          <Messages messages={state.messages}/>
           <AdminTabs currentTab={pathname.split("/")[pathname.split("/").length - 1]}/>
           <Switch location={location}>
               <Route exact path={`${match.path}`}

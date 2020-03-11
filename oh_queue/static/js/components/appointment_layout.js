@@ -1,6 +1,6 @@
 const { Link } = ReactRouterDOM;
 
-function AppointmentLayout({ state, match, loadAppointment }) {
+function AppointmentLayout({ state, match, loadAppointment, socket }) {
     const appointmentID = +match.params.id;
     if (!getAppointment(state, appointmentID)) {
         loadAppointment(appointmentID);
@@ -178,6 +178,11 @@ function AppointmentLayout({ state, match, loadAppointment }) {
                         />
                     ))}
                 </div>
+
+                {state.locations[appointment.location_id].name === "Online" && (
+                    <ChatBox currentUser={state.currentUser} socket={socket} id={appointment.id} isAppointment/>
+                )}
+
                 {state.config.ticket_prompt &&
                 <div className="row">
                     <div className="col-xs-12 col-md-6 col-md-offset-3 text-center">

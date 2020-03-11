@@ -855,15 +855,49 @@ h4.list-group-item-heading::before {
     width: unset;
 }
 
-.chat-bubble {
+.chat-bubble, .my-chat-bubble {
     margin-bottom: 10px;
-    display: block;
-    clear: both;
 }
 
-.chat-bubble > div {
+.my-chat-bubble {
+    text-align: right;
+}
+
+.chat-icon {
+    width: 30px;
+    height: 30px;
+    background: #b9b8b8;
+    border-radius: 50%;
     display: inline-block;
+    padding: 5px;
+    color: white;
+    text-align: center;
+}
+
+.my-chat-bubble .chat-text {
+    background: rgb(0, 153, 255);
+    color: white;
+}
+
+.none {
+    visibility: hidden;
+}
+
+.chat-text {
+    display: inline-block;
+    max-width: calc(100% - 50px);
     padding: 5px 10px 5px 10px;
+    margin-left: 5px;
+    margin-right: 5px;
     border-radius: 2em;
     background: #f1f0f0;
+}
+
+.chat-history {
+    max-height: 450px;
+    overflow-y: auto;
+}
+
+.chat-input {
+    border-radius: 2em;
 }

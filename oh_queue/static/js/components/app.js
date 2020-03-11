@@ -211,8 +211,8 @@ class App extends React.Component {
             <Route path="/admin" render={(props) => (<AdminLayout state={state} {...props} />)} />
             <Route path="/error" render={(props) => (<ErrorView state={state} {...props} />)} />
             <Route path="/presence" render={(props) => (<PresenceIndicator state={state} {...props} />)} />
-            <Route path="/tickets/:id" render={(props) => (<TicketLayout state={state} loadTicket={this.loadTicket} {...props} />)} />
-            <Route path="/appointments/:id" render={(props) => (<AppointmentLayout state={state} loadAppointment={this.loadAppointment} {...props} />)} />
+            <Route path="/tickets/:id" render={(props) => (<TicketLayout state={state} socket={this.socket} loadTicket={this.loadTicket} {...props} />)} />
+            <Route path="/appointments/:id" render={(props) => (<AppointmentLayout state={state} socket={this.socket} loadAppointment={this.loadAppointment} {...props} />)} />
             <Route render={(props) => (<ErrorView state={state} {...props} message="Page Not Found" />)} />
           </Switch>
         </div>

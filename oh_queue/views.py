@@ -173,6 +173,9 @@ def emit_presence(data):
     out["staff"] = len(data["staff"] | active_staff)
     socketio.emit('presence', out, room=get_course())
 
+def emit_message(message):
+    socketio.emit('chat_message', message, room=get_course())
+
 user_presence = collections.defaultdict(lambda: collections.defaultdict(set)) # An in memory map of presence.
 
 def init_config():
@@ -964,3 +967,28 @@ def update_staff_online_setup(data):
 
     emit_state(['current_user'])
     emit_state(['tickets', 'appointments'], broadcast=True)
+
+
+@socketio.on("send_chat_message")
+@logged_in
+def send_chat_message(data):
+    is_appointment = data.get("isAppointment")
+    event_id = data["id"]
+
+    data["sender"] = user_json(current_user)
+
+    if is_appointment:
+        appointment = Appointment.query.filter_by(course=get_course(), id=event_id).one()
+        if not current_user.is_staff:
+            for signup in appointment.signups:
+                if signup.user.id == current_user.id:
+                    break
+            else:
+                return socket_unauthorized()
+        emit_message(data)
+
+    else:
+        ticket = Ticket.query.filter_by(course=get_course(), id=event_id).one()
+        if not current_user.is_staff and ticket.user_id != current_user.id:
+            return socket_unauthorized()
+        emit_message(data)

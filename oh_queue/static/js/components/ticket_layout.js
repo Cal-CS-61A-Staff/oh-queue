@@ -56,14 +56,22 @@ class TicketLayout extends React.Component {
             </div>
           </div>
           <TicketButtons state={state} ticket={ticket}/>
-            {state.config.ticket_prompt &&
-            <div className="row">
+          {location.name === "Online" && (
+              <div className="row">
                 <div className="col-xs-12 col-md-6 col-md-offset-3">
-                    <hr/>
-                    <ReactMarkdown source={state.config.ticket_prompt}/>
+                  <hr />
+                      <ChatBox currentUser={state.currentUser} socket={this.props.socket} id={id}/>
                 </div>
-            </div>
-            }
+              </div>
+          )}
+          {state.config.ticket_prompt &&
+          <div className="row">
+              <div className="col-xs-12 col-md-6 col-md-offset-3">
+                  <hr/>
+                  <ReactMarkdown source={state.config.ticket_prompt}/>
+              </div>
+          </div>
+          }
         </div>
       </div>
     );

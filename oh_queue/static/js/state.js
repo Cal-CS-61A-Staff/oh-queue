@@ -349,6 +349,9 @@ function getAppointment(state: State, appointment_id: number) : Appointment {
 }
 
 function setAppointment(state: State, appointment: Appointment, redirect): void {
+  if (!appointment.id) {
+      return
+  }
   const oldAppointment = getAppointment(state, appointment.id);
   if (appointmentIncludesMe(state, appointment)) {
     if (oldAppointment) {
@@ -370,6 +373,9 @@ function setAppointment(state: State, appointment: Appointment, redirect): void 
 }
 
 function appointmentIncludesMe(state: State, appointment: Appointment) {
+    if (!appointment.signups) {
+        return false;
+    }
     for (const signup of appointment.signups) {
         if (signup.user && signup.user.id === state.currentUser.id) {
             return true;

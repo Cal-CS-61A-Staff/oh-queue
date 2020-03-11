@@ -3,7 +3,9 @@ function FutureSlots({ state }) {
     const filteredAssignments = Object.values(assignments).filter(assignment => assignment.visible).sort((a, b) => a.name.localeCompare(b.name));
 
     const hiddenTypes = (currentUser && currentUser.isStaff) ? ["resolved"] : ["resolved", "hidden"];
+
     const currentAppointments = appointments.filter(({ status }) => !hiddenTypes.includes(status));
+
 
     const days = new Map();
     for (const appointment of currentAppointments) {
