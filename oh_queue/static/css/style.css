@@ -854,3 +854,16 @@ h4.list-group-item-heading::before {
 .appointment-input .input-group-btn {
     width: unset;
 }
+
+.chat-bubble {
+    margin-bottom: 10px;
+    display: block;
+    clear: both;
+}
+
+.chat-bubble > div {
+    display: inline-block;
+    padding: 5px 10px 5px 10px;
+    border-radius: 2em;
+    background: #f1f0f0;
+}

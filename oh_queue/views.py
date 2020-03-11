@@ -151,7 +151,6 @@ def emit_state(attrs, broadcast=False):
         state['config'] = config_json()
     if 'appointments' in attrs:
         appointments = Appointment.query.filter(
-            Appointment.start_time > datetime.datetime.utcnow() - datetime.timedelta(hours=10),
             Appointment.status != AppointmentStatus.resolved,
             Appointment.course == get_course(),
         ).order_by(Appointment.id).all()
