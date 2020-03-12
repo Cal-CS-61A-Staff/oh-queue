@@ -805,14 +805,16 @@ def assign_appointment(data):
         week_start = start - datetime.timedelta(days=appointment.start_time.weekday())
         week_end = start + datetime.timedelta(days=7)
         num_this_week = AppointmentSignup.query.join(AppointmentSignup.appointment).filter(
-            week_start < Appointment.start_time, Appointment.start_time < week_end, AppointmentSignup.user_id == current_user.id
+            week_start < Appointment.start_time, Appointment.start_time < week_end,
+            AppointmentSignup.user_id == current_user.id, AppointmentSignup.attendance_status != AttendanceStatus.excused,
         ).count()
         if num_this_week > weekly_threshold:
             return socket_error("You have already signed up for {} OH slots this week".format(weekly_threshold))
 
         day_end = start + datetime.timedelta(days=1)
         num_today = AppointmentSignup.query.join(AppointmentSignup.appointment).filter(
-            start < Appointment.start_time, Appointment.start_time < day_end, AppointmentSignup.user_id == current_user.id
+            start < Appointment.start_time, Appointment.start_time < day_end,
+            AppointmentSignup.user_id == current_user.id, AppointmentSignup.attendance_status != AttendanceStatus.excused,
         ).count()
         if num_today > daily_threshold:
             return socket_error("You have already signed up for {} OH slots for the same day".format(daily_threshold))
