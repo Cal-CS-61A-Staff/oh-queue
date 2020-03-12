@@ -870,7 +870,6 @@ def unassign_appointment(signup_id):
 
 
 @socketio.on('load_appointment')
-@is_staff
 def load_appointment(appointment_id):
     if not appointment_id:
         return socket_error('Invalid appointment ID')
