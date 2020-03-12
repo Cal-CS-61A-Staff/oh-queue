@@ -144,10 +144,12 @@ class App extends React.Component {
   }
 
   loadAppointment(id) {
-    this.socket.emit('load_appointment', id, (appointment) => {
-        setAppointment(this.state, appointment);
-        this.refresh();
-    });
+    if (isStaff(this.state)) {
+        this.socket.emit('load_appointment', id, (appointment) => {
+            setAppointment(this.state, appointment);
+            this.refresh();
+        });
+    }
   }
 
   toggleFilter() {
