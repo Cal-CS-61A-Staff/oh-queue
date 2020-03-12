@@ -19,6 +19,7 @@ def get_course(domain=None):
         DOMAIN_COURSES[domain] = requests.post("https://auth.apps.cs61a.org/domains/get_course", json={
             "domain": domain
         }).json()
+    print(DOMAIN_COURSES)
     return DOMAIN_COURSES[domain]
 
 
