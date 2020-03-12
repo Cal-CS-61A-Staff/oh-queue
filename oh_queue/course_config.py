@@ -11,9 +11,8 @@ COURSE_ENDPOINTS = {}
 
 
 def get_course(domain=None):
-    # if app.config["ENV"] != "prod":
-    #     return "ok"
-    print(app.config)
+    if app.config["ENV"] != "prod":
+        return "ok"
     if not domain:
         domain = request.headers["HOST"]
     if domain not in DOMAIN_COURSES:
@@ -25,8 +24,8 @@ def get_course(domain=None):
 
 
 def get_endpoint(course=None):
-    # if app.config["ENV"] != "prod":
-    #     return "ok/test/su16"
+    if app.config["ENV"] != "prod":
+        return "ok/test/su16"
     if not course:
         course = get_course()
     if course not in COURSE_ENDPOINTS:
