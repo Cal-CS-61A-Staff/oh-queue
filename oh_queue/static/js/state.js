@@ -337,7 +337,7 @@ function getMyAppointmentsStaff(state: State) {
     }
     const myAppointments = [];
     for (const appointment of state.appointments) {
-        if (!appointment.helper || appointment.helper.id === state.currentUser.id) {
+        if ((!appointment.helper && appointment.status === "pending") || (appointment.helper && appointment.helper.id === state.currentUser.id)) {
             myAppointments.push(appointment);
         }
     }
