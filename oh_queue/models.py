@@ -41,7 +41,7 @@ class User(db.Model, UserMixin):
 
     @property
     def short_name(self):
-        first_name = self.name.split()[0]
+        first_name = self.name.split()[0] if self.name.split() else ""
         if '@' in first_name:
             return first_name.rsplit('@')[0]
         return first_name
