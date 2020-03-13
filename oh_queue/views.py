@@ -367,7 +367,7 @@ def disconnect():
 
     leave_room(get_course())
 
-    # emit_presence(user_presence[get_course()])
+    emit_presence(user_presence[get_course()])
 
 @socketio.on('refresh')
 def refresh(ticket_ids):
