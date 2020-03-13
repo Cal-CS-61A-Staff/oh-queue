@@ -7,7 +7,7 @@ import time
 from urllib.parse import urljoin
 
 import requests
-from flask import render_template, url_for
+from flask import render_template, url_for, copy_current_request_context
 from flask_login import current_user
 from flask_socketio import emit, join_room, leave_room
 from sqlalchemy import func
@@ -132,7 +132,8 @@ def emit_appointment_event(appointment, event_type):
         "appointment": appointments_json(appointment),
     }, room=get_course())
 
-def emit_state(attrs, broadcast=False):
+def emit_state(attrs, broadcast=False, callback=None):
+    assert not (callback and broadcast), "Cannot have a callback when broadcasting!"
     state = {}
     if 'tickets' in attrs:
         tickets = Ticket.query.filter(
@@ -160,6 +161,8 @@ def emit_state(attrs, broadcast=False):
         state['current_user'] = student_json(current_user)
     if broadcast:
         socketio.emit('state', state, room=get_course())
+    elif callback:
+        emit('state', state, callback=copy_current_request_context(callback))
     else:
         emit('state', state)
 
@@ -345,9 +348,11 @@ def connect():
 
     join_room(get_course())
 
-    emit_state(['tickets', 'assignments', 'locations', 'current_user', 'config', 'appointments'])
+    emit_state(['tickets', 'assignments', 'locations', 'current_user', 'config'],
+               callback=lambda: emit_state(['appointments'])
+               )
 
-    # emit_presence(user_presence[get_course()])
+    emit_presence(user_presence[get_course()])
 
 @socketio.on('disconnect')
 def disconnect():
@@ -815,7 +820,7 @@ def assign_appointment(data):
             week_start < Appointment.start_time, Appointment.start_time < week_end,
             AppointmentSignup.user_id == current_user.id, AppointmentSignup.attendance_status != AttendanceStatus.excused,
         ).count()
-        if num_this_week > weekly_threshold:
+        if num_this_week >= weekly_threshold:
             return socket_error("You have already signed up for {} OH slots this week".format(weekly_threshold))
 
         day_end = start + datetime.timedelta(days=1)
@@ -823,14 +828,14 @@ def assign_appointment(data):
             start < Appointment.start_time, Appointment.start_time < day_end,
             AppointmentSignup.user_id == current_user.id, AppointmentSignup.attendance_status != AttendanceStatus.excused,
         ).count()
-        if num_today > daily_threshold:
+        if num_today >= daily_threshold:
             return socket_error("You have already signed up for {} OH slots for the same day".format(daily_threshold))
 
         num_pending = AppointmentSignup.query.join(AppointmentSignup.appointment).filter(
             Appointment.status == AppointmentStatus.pending,
             AppointmentSignup.user_id == current_user.id,
         ).count()
-        if num_pending > pending_threshold:
+        if num_pending >= pending_threshold:
             return socket_error("You have already signed up for {} OH slots that have not yet occurred.".format(pending_threshold))
 
     old_signup = AppointmentSignup.query.filter_by(

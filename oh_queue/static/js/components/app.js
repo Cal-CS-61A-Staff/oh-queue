@@ -27,7 +27,12 @@ class App extends React.Component {
       this.refreshTickets();
     });
     socket.on('disconnect', () => this.setOffline(true));
-    socket.on('state', (data) => this.updateState(data));
+    socket.on('state', (data, callback) => {
+        this.updateState(data);
+        if (callback) {
+            callback();
+        }
+    });
     socket.on('event', (data) => this.updateTicket(data));
     socket.on('presence', (data) => this.updatePresence(data));
     socket.on('appointment_event', (data) => this.updateAppointment(data));
@@ -65,7 +70,7 @@ class App extends React.Component {
     }
     if (data.hasOwnProperty('config')) {
       this.state.config = data.config;
-      for (const key of ["daily_appointment_limit", "weekly_appointment_limit"]) {
+      for (const key of ["daily_appointment_limit", "weekly_appointment_limit", "simul_appointment_limit"]) {
           this.state.config[key] = JSON.parse(this.state.config[key]);
       }
     }
