@@ -58,6 +58,19 @@ function AdminAppointmentsManager({ state }) {
                         />
                     </td>
                 </tr>
+                <tr>
+                    <td>
+                        <p>
+                            How many appointments should a student be have pending simultaneously?
+                        </p>
+                    </td>
+                    <td className="col-md-3">
+                        <ConfigLinkedNumeric
+                            config={state.config}
+                            configKey="simul_appointment_limit"
+                        />
+                    </td>
+                </tr>
             </AdminOptionsManager>
             <form>
                 <div className="input-group appointment-input">

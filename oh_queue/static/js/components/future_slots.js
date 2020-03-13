@@ -85,7 +85,11 @@ function FutureSlots({ state }) {
                         {" "}
                         {state.config.weekly_appointment_limit}
                         {" "}
-                        per week.
+                        per week. You also cannot be signed up for more than
+                        {" "}
+                        {state.config.simul_appointment_limit}
+                        {" "}
+                        appointments that have not yet occurred.
                     </h5>
                   </div>
                 <FancyToggle checked={compact} onChange={setCompact} offText="Regular" onText="Compact" />

@@ -72,12 +72,13 @@ def location_json(location):
 
 def get_online_location():
     online_location = Location.query.filter_by(course=get_course(), name="Online").one_or_none()
+    online_visible = ConfigEntry.query.filter_by(key="online_active", course=get_course()).one().value == "true"
     if online_location is None:
-        online_location = Location(name="Online", visible=True, course=get_course())
+        online_location = Location(name="Online", visible=online_visible, course=get_course())
         db.session.add(online_location)
         db.session.commit()
-    elif not online_location.visible:
-        online_location.visible = True
+    else:
+        online_location.visible = online_visible
         db.session.commit()
     return online_location
 
@@ -145,8 +146,7 @@ def emit_state(attrs, broadcast=False):
     if 'locations' in attrs:
         locations = Location.query.filter(Location.course == get_course(), Location.name != "Online").all()
         state['locations'] = [location_json(location) for location in locations]
-        if ConfigEntry.query.filter_by(key="online_active", course=get_course()).one().value == "true":
-            state["locations"].append(location_json(get_online_location()))
+        state["locations"].append(location_json(get_online_location()))
     if 'config' in attrs:
         state['config'] = config_json()
     if 'appointments' in attrs:
@@ -253,6 +253,12 @@ def init_config():
     ))
     db.session.add(ConfigEntry(
         key='weekly_appointment_limit',
+        value='5',
+        public=True,
+        course=get_course(),
+    ))
+    db.session.add(ConfigEntry(
+        key='simul_appointment_limit',
         value='5',
         public=True,
         course=get_course(),
@@ -800,6 +806,7 @@ def assign_appointment(data):
     if not current_user.is_staff:
         daily_threshold = int(ConfigEntry.query.filter_by(key="daily_appointment_limit", course=get_course()).one().value)
         weekly_threshold = int(ConfigEntry.query.filter_by(key="weekly_appointment_limit", course=get_course()).one().value)
+        pending_threshold = int(ConfigEntry.query.filter_by(key="simul_appointment_limit", course=get_course()).one().value)
 
         start = appointment.start_time.replace(hour=0, minute=0, second=0, microsecond=0)
         week_start = start - datetime.timedelta(days=appointment.start_time.weekday())
@@ -818,6 +825,13 @@ def assign_appointment(data):
         ).count()
         if num_today > daily_threshold:
             return socket_error("You have already signed up for {} OH slots for the same day".format(daily_threshold))
+
+        num_pending = AppointmentSignup.query.join(AppointmentSignup.appointment).filter(
+            Appointment.status == AppointmentStatus.pending,
+            AppointmentSignup.user_id == current_user.id,
+        ).count()
+        if num_pending > pending_threshold:
+            return socket_error("You have already signed up for {} OH slots that have not yet occurred.".format(pending_threshold))
 
     old_signup = AppointmentSignup.query.filter_by(
         appointment_id=data["appointment_id"],
@@ -872,6 +886,7 @@ def unassign_appointment(signup_id):
 
 
 @socketio.on('load_appointment')
+@is_staff
 def load_appointment(appointment_id):
     if not appointment_id:
         return socket_error('Invalid appointment ID')
