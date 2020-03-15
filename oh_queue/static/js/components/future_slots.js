@@ -6,8 +6,10 @@ function FutureSlots({ state }) {
 
     const currentAppointments = appointments.filter(({ status }) => !hiddenTypes.includes(status));
 
-    const [compact, setCompact] = React.useState(true);
+    const [compact, setCompact] = React.useState(false);
     const [hideFull, setHideFull] = React.useState(false);
+
+    React.useEffect(() => setCompact(currentUser && !currentUser.isStaff), [currentUser && currentUser.isStaff]);
 
     const days = new Map();
     for (const appointment of currentAppointments) {

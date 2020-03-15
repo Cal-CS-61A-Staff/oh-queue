@@ -130,19 +130,24 @@ function AppointmentCardHelperRow({ appointment, currentUser, onStaffSignup, onS
 
 function AppointmentCardStudentList({ appointment, assignments, currentUser, compact, onStudentSignup }) {
     return (
-        appointment.signups.map(signup =>
-            (signup.user && currentUser.id === signup.user.id || !compact) && <Slot
-                link={signup.user && (signup.user.id === currentUser.id || currentUser.isStaff)}
-                badgeText={signup.assignment_id && assignments[signup.assignment_id].name}
-                onClick={e => onStudentSignup(e, signup)}
-            >
-                {currentUser.isStaff ?
-                    signup.user.name :
-                    signup.user && currentUser.id === signup.user.id ?
-                        "You (click to edit)" :
-                        "Anonymous Student"
-                }
-            </Slot>
+        appointment.signups.map(signup => {
+            const assignmentText = signup.assignment_id && assignments[signup.assignment_id].name;
+            const questionText = (signup.question ? " " : "") + (parseInt(signup.question) ? "Q" : "") + signup.question;
+            return (signup.user && currentUser.id === signup.user.id || !compact) && (
+                <Slot
+                    link={signup.user && (signup.user.id === currentUser.id || currentUser.isStaff)}
+                    badgeText={assignmentText + questionText}
+                    onClick={e => onStudentSignup(e, signup)}
+                >
+                    {currentUser.isStaff ?
+                        signup.user.name :
+                        signup.user && currentUser.id === signup.user.id ?
+                            "You (click to edit)" :
+                            "Anonymous Student"
+                    }
+                </Slot>
+                );
+            }
         )
     )
 }
