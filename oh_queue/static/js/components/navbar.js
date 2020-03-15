@@ -1,52 +1,58 @@
 /* React Components */
-let Navbar = ({state}) => {
-  var {currentUser} = state;
-  var myTicket = getMyTicket(state);
-  var {Link} = ReactRouterDOM;
-  return (
-    <nav className="navbar navbar-default navbar-fixed-top">
-      <div className="container">
-        <div className="navbar-header">
-          <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
-            <span className="icon-bar"></span>
-            <span className="icon-bar"></span>
-            <span className="icon-bar"></span>
-          </button>
-          <Link className="navbar-brand" to="/"><strong>{ window.courseName } |</strong> Queue</Link>
-        </div>
-        <div className="collapse navbar-collapse" id="navbar-collapse-section">
-          <ul className="nav navbar-nav navbar-right">
+let Navbar = ({ state, mode }) => {
+    var { currentUser } = state;
+    var myTicket = getMyTicket(state);
+    var { Link } = ReactRouterDOM;
 
-            {(() => {
-              if (currentUser && currentUser.isStaff) {
-                return <li><Link to="/admin">Admin</Link></li>;
-              }
-            })()}
+    const words = mode.split("_");
+    const title = words.map(word => word[0].toUpperCase() + word.slice(1)).join(" ");
 
-            {(() => {
-              if (myTicket) {
-                return <li><Link to={`/tickets/${myTicket.id}/`}>My Request</Link></li>;
-              }
-            })()}
+    return (
+        <nav className="navbar navbar-default navbar-fixed-top">
+            <div className="container">
+                <div className="navbar-header">
+                    <button type="button" className="navbar-toggle collapsed" data-toggle="collapse"
+                            data-target="#navbar-collapse-section">
+                        <span className="icon-bar"></span>
+                        <span className="icon-bar"></span>
+                        <span className="icon-bar"></span>
+                    </button>
+                    <Link className="navbar-brand" to={"/" + (mode === "queue" ? "" : mode)}>
+                        <strong>{window.courseName} |</strong>{" " + title}
+                    </Link>
+                </div>
+                <div className="collapse navbar-collapse" id="navbar-collapse-section">
+                    <ul className="nav navbar-nav navbar-right">
 
-            {(() => {
-              if (currentUser) {
-                return (
-                  <li className="dropdown">
-                    <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button">{currentUser.name} <span className="caret"></span></a>
-                    <ul className="dropdown-menu">
-                      <li><a href="/logout">Log out</a></li>
+                        {!!myTicket &&
+                        <li><Link to={`/tickets/${myTicket.id}/`}>My Request</Link></li>}
+
+                        {currentUser &&
+                        <li><Link to="/">Queue</Link></li>}
+
+                        {currentUser && JSON.parse(state.config.appointments_open) &&
+                        <li><Link to="/appointments">Appointments</Link></li>}
+
+                        {currentUser && currentUser.isStaff &&
+                        <li><Link to="/admin">Admin</Link></li>}
+
+                        {currentUser ?
+                            <li className="dropdown">
+                                <a href="#" className="dropdown-toggle" data-toggle="dropdown"
+                                   role="button">{currentUser.name} <span className="caret"/></a>
+                                <ul className="dropdown-menu">
+                                    {state.config.online_active && currentUser.isStaff && (
+                                        <li><Link to="/online_setup">Online Setup</Link></li>
+                                    )}
+                                    <li><a href="/logout">Log out</a></li>
+                                </ul>
+                            </li>
+                            :
+                            <li><a href="/login/">Staff Login</a></li>
+                        }
                     </ul>
-                  </li>
-                )
-              } else {
-                return (<li><a href="/login/">Staff Login</a></li>)
-              }
-            })()}
-
-          </ul>
-        </div>
-      </div>
-    </nav>
-  );
+                </div>
+            </div>
+        </nav>
+    );
 }

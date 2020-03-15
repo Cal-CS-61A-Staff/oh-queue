@@ -231,6 +231,7 @@ hr {
     text-align: center;
     font-size: 15pt;
     font-weight: 500;
+    margin-bottom: 10px;
 }
 
 .ticket-independent {
@@ -704,4 +705,199 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
   }
+}
+
+.card-holder {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 10px;
+    justify-content: space-between;
+}
+
+.compact-card-holder {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.slot-add-button.slot-add-button {
+    color: #337ab7;
+}
+
+.slot-disabled {
+    color: gray;
+}
+
+.slots-form .form-right {
+    width: 40%;
+    border-left: none;
+}
+
+.panel-heading {
+    position: relative;
+}
+
+.panel-warning {
+    border-color: orange;
+}
+
+.panel-warning > .panel-heading {
+    color: white;
+    background-color: orange;
+    border-color: orange;
+}
+
+.panel-success {
+    border-color: #4cae4c;
+}
+
+.panel-success > .panel-heading {
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+
+
+.btn-take-over {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.appointment-header {
+    margin-top: 0;
+}
+
+.confirmed-appointment-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 10px;
+    justify-content: space-between;
+}
+
+.confirmed-appointment-container .panel {
+    height: 100%;
+}
+
+.confirmed-appointment-container .list-group {
+    height: 100%;
+}
+
+.panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.panel .list-group {
+    flex-grow: 1;
+}
+
+.confirmed-appointment-container .list-group a {
+    height: 100%;
+    overflow-y: hidden;
+}
+
+.attendance-buttons .btn {
+    margin-right: 10px;
+}
+
+.badge-danger {
+    color: #fff;
+    background-color: #dc3545;
+}
+
+.badge-primary {
+    color: #fff;
+    background-color: #337ab7;;;
+}
+
+h4.list-group-item-heading.list-group-item-heading {
+    color: #337ab7;
+}
+
+h3.panel-title::before {
+    height: 0;
+    margin-top: 0;
+}
+
+h4.list-group-item-heading::before {
+    height: 0;
+    margin-top: 0;
+}
+
+.panel {
+    border-top: none;
+}
+
+.panel.panel-default {
+    border-top: 1px solid #ddd;;
+}
+
+.tooltip+.btn-block {
+    margin-top: 5px;
+}
+
+.appointment-input {
+    display: flex;
+}
+
+#url-selector {
+    flex-basis: 400px;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+#sheet-selector {
+    flex-basis: 100px;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.appointment-input .input-group-btn {
+    width: unset;
+}
+
+.chat-bubble, .my-chat-bubble {
+    margin-bottom: 10px;
+}
+
+.my-chat-bubble {
+    text-align: right;
+}
+
+.chat-icon {
+    width: 30px;
+    height: 30px;
+    background: #b9b8b8;
+    border-radius: 50%;
+    display: inline-block;
+    padding: 5px;
+    color: white;
+    text-align: center;
+}
+
+.my-chat-bubble .chat-text {
+    background: rgb(0, 153, 255);
+    color: white;
+}
+
+.none {
+    visibility: hidden;
+}
+
+.chat-text {
+    display: inline-block;
+    max-width: calc(100% - 50px);
+    padding: 5px 10px 5px 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 2em;
+    background: #f1f0f0;
+}
+
+.chat-history {
+    max-height: 450px;
+    overflow-y: auto;
+}
+
+.chat-input {
+    border-radius: 2em;
 }

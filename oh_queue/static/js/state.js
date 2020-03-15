@@ -11,6 +11,8 @@ type User = {
   name: string,
   shortName: string,
   isStaff: boolean,
+  call_url: ?string,
+  doc_url: ?string,
 };
 
 type Ticket = {
@@ -27,6 +29,8 @@ type Ticket = {
   question: string,
   description: ?string,
   helper: ?User,
+  call_url: string,
+  doc_url: string,
 };
 
 type TicketAssignment = {
@@ -53,6 +57,28 @@ type Message = {
   visible: boolean,
 };
 
+type Appointment = {
+    id: number,
+    start_time: string, // datetime string
+    duration: number, // seconds
+    signups: Array<Signup>,
+    capacity: number,
+    location_id: number,
+    helper: ?User,
+    status: 'pending' | 'active' | 'resolved',
+}
+
+
+type Signup = {
+    id: number,
+    assignment_id: number,
+    user: ?User,
+    question: ?string,
+    description: ?string,
+    attendance_status: 'unknown' | 'present' | 'excused' | 'absent',
+}
+
+
 type State = {
   /* May be null if the user is not logged in. */
   currentUser: ?User,
@@ -62,6 +88,8 @@ type State = {
   offline: boolean,
   /* Ticket assignments */
   assignments: Map<number, TicketAssignment>,
+  /* Ticket locations */
+  appointments: Array<Appointment>,
   /* Ticket locations */
   locations: Map<number, TicketLocation>,
   /* Server configuration */
@@ -89,6 +117,7 @@ let initialState: State = {
   assignments: {},
   locations: {},
   config: {},
+  appointments: [],
   tickets: new Map(),
   loadingTickets: new Set(),
   filter: {
@@ -144,8 +173,12 @@ function ticketQuestion(state: State, ticket: Ticket): string {
 function ticketStatus(state: State, ticket: Ticket): string {
   if (ticket.status === 'assigned' && ticket.helper) {
     return 'Being helped by ' + (isTicketHelper(state, ticket) ? 'you' : ticket.helper.name);
-  } else if (ticket.status === 'resolved' && ticket.helper) {
-    return 'Resolved by ' + ticket.helper.name;
+  } else if (ticket.status === 'resolved') {
+      if (ticket.helper) {
+          return 'Resolved by ' + ticket.helper.name;
+      } else {
+          return "Resolved";
+      }
   } else if (ticket.status === 'deleted') {
     return 'Deleted';
   } else if (ticket.status === "juggled") {
@@ -275,4 +308,78 @@ function clearMessage(state: State, id: number): void {
   if (message) {
     message.visible = false;
   }
+}
+
+const appointmentTimeComparator = (a, b) => moment(a.start_time).isSame(moment(b.start_time)) ? b.id - a.id : moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1;
+
+function getMySignups(state: State) {
+    if (!state.currentUser) {
+        return [];
+    }
+    const mySignups = [];
+    for (const appointment of state.appointments) {
+        for (const signup of appointment.signups) {
+            if (signup.user && signup.user.id === state.currentUser.id) {
+                mySignups.push({ appointment, signup });
+            }
+        }
+    }
+    return mySignups;
+}
+
+function isSoon(timeString) {
+    return moment(timeString).isBefore(moment().add(2, "hours"));
+}
+
+function getMyAppointmentsStaff(state: State) {
+    if (!state.currentUser) {
+        return [];
+    }
+    const myAppointments = [];
+    for (const appointment of state.appointments) {
+        if ((!appointment.helper && appointment.status === "pending") || (appointment.helper && appointment.helper.id === state.currentUser.id)) {
+            myAppointments.push(appointment);
+        }
+    }
+    return myAppointments;
+}
+
+function getAppointment(state: State, appointment_id: number) : Appointment {
+    return state.appointments.find(({ id }) => id === appointment_id);
+}
+
+function setAppointment(state: State, appointment: Appointment, redirect): void {
+  if (!appointment.id) {
+      return
+  }
+  const oldAppointment = getAppointment(state, appointment.id);
+  if (appointmentIncludesMe(state, appointment)) {
+    if (oldAppointment) {
+      if (oldAppointment.status === "pending" && appointment.status === "active") {
+        notifyUser("Your appointment has started",
+                   appointment.helper.name + " is waiting for you in "+ state.locations[appointment.location_id].name,
+                   appointment.id + '.appointment.assign');
+        redirect();
+      } else if (oldAppointment.status === 'assigned' && appointment.status !== 'assigned') {
+        cancelNotification(appointment.id + '.appointment.assign');
+      }
+    }
+  }
+  if (oldAppointment) {
+      state.appointments.splice(state.appointments.indexOf(oldAppointment), 1);
+  }
+  state.appointments.push(appointment);
+  state.appointments.sort(appointmentTimeComparator);
+}
+
+function appointmentIncludesMe(state: State, appointment: Appointment) {
+    if (!appointment.signups) {
+        return false;
+    }
+    for (const signup of appointment.signups) {
+        if (signup.user && signup.user.id === state.currentUser.id) {
+            return true;
+        }
+    }
+    return false;
 }

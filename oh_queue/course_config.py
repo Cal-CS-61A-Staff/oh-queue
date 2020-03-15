@@ -19,6 +19,7 @@ def get_course(domain=None):
         DOMAIN_COURSES[domain] = requests.post("https://auth.apps.cs61a.org/domains/get_course", json={
             "domain": domain
         }).json()
+    print(DOMAIN_COURSES)
     return DOMAIN_COURSES[domain]
 
 
@@ -41,7 +42,7 @@ def is_admin(course=None):
         g.is_admin = requests.post("https://auth.apps.cs61a.org/admins/{}/is_admin".format(course), json={
             "email": current_user.email,
             "client_name": app.config["AUTH_KEY"],
-            "secret": app.config["AUTH_CLIENT_SECRET"],
+            "secret": app.config["AUTH_SECRET"],
         }).json()
     return g.is_admin
 

@@ -31,7 +31,7 @@ class TicketLayout extends React.Component {
 
     return (
       <div>
-        <Navbar state={state}/>
+        <Navbar state={state} mode="queue" />
         <div className="container">
           <Messages messages={state.messages}/>
           <div className="row ticket">
@@ -55,15 +55,23 @@ class TicketLayout extends React.Component {
               <UpdateLocationBox state={state} ticket={ticket}/>
             </div>
           </div>
-            {state.config.ticket_prompt &&
-            <div className="row">
-                <div className="col-xs-12 col-md-6 col-md-offset-3">
-                    <hr/>
-                    <ReactMarkdown source={state.config.ticket_prompt}/>
-                </div>
-            </div>
-            }
           <TicketButtons state={state} ticket={ticket}/>
+          {location.name === "Online" && (
+              <div className="row">
+                <div className="col-xs-12 col-md-6 col-md-offset-3">
+                  <hr />
+                      <ChatBox currentUser={state.currentUser} socket={this.props.socket} id={id}/>
+                </div>
+              </div>
+          )}
+          {state.config.ticket_prompt &&
+          <div className="row">
+              <div className="col-xs-12 col-md-6 col-md-offset-3">
+                  <hr/>
+                  <ReactMarkdown source={state.config.ticket_prompt}/>
+              </div>
+          </div>
+          }
         </div>
       </div>
     );

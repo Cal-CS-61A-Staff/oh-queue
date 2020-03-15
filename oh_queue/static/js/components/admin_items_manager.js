@@ -76,12 +76,15 @@ class AdminItemsManager extends React.Component {
       'has-error': isValidInput === false,
       'has-success': isValidInput === true
     });
+
+    const placeholder = this.props.itemName[0].toUpperCase() + this.props.itemName.slice(1).toLowerCase() + " Name";
+
     return (
       <tr key="new">
         <td className="col-md-1"></td>
         <td>
           <div className={formGroupClassNames}>
-            <input ref="newItemName" className={`form-control`} type="text" minlength="1" placeholder="Location Name" disabled={isLoading} onInput={this.validateItemInput} />
+            <input ref="newItemName" className={`form-control`} type="text" minlength="1" placeholder={placeholder} disabled={isLoading} onInput={this.validateItemInput} />
           </div>
         </td>
         <td className="col-md-1">

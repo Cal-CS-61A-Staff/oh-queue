@@ -12,7 +12,7 @@ class ErrorView extends React.Component {
 
     return (
       <div>
-        <Navbar state={state} />
+        <Navbar state={state} mode="error" />
         <div className="container error-view">
           <div className="row">
             <div className="col-xs-12">
