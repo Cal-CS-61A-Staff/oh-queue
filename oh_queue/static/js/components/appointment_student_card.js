@@ -22,9 +22,9 @@ function AppointmentStudentCard({ status, signup, assignments, isStaff }) {
     return (
         <div className={`panel panel-${color}`}>
             <div className="panel-heading">
-                <h3 className="panel-title">{
-                    status === "pending" ? "Start Appointment to View Name" : signup.user.name
-                }</h3>
+                <h3 className="panel-title">
+                    {signup.user.name}
+                </h3>
             </div>
             <ul className="list-group">
                 {question}
