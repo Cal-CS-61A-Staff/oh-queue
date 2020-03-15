@@ -9,6 +9,10 @@ Students request help on an assignment and question number from a location.
 
 This app uses [Ok](https://okpy.org) to manage access. Even if you aren't using Ok for assignments, you should create a course on Ok and enroll all of your staff, academic interns, and students with the appropriate roles.
 
+## For other courses
+
+This is a hosted app provided by 61A. To set it up for your own course, visit [Auth](https://auth.apps.cs61a.org) and add the desired domain under `Domains`. Make sure that the OKPy endpoint and course name are what you expect. Then contact 61A staff for your queue to be activated. If you want to move the queue to a new OKPy course, update the endpoint on Auth - the change should be reflected in the queue within an hour.
+
 ## Installation
 
 1. Clone this repo:
@@ -37,7 +41,6 @@ This app uses [Ok](https://okpy.org) to manage access. Even if you aren't using 
     ```
     ./manage.py db upgrade
     ```
-    If you get the error "TypeError: OAuthRemoteApp requires consumer key and secret", you need to set your OK_KEY and OK_SECRET environment variables.
 
 5. Run the server:
     ```
@@ -56,7 +59,7 @@ This app uses [Ok](https://okpy.org) to manage access. Even if you aren't using 
     dokku mysql:link db-name app-name
     dokku domains:set app-name <domain>
 
-    dokku config:set app-name OH_QUEUE_ENV=prod OK_KEY=<OK CLIENT> OK_SECRET=<OK SECRET> SECRET_KEY=<DB SECRET> COURSE_NAME="CS 61A" COURSE_OFFERING="cal/cs61a/fa16"
+    dokku config:set app-name OH_QUEUE_ENV=prod OK_KEY=<OK CLIENT> OK_SECRET=<OK SECRET> SECRET_KEY=<DB SECRET> AUTH_KEY=<AUTH_KEY> AUTH_SECRET=<AUTH_SECRET>
     dokku run app-name ./manage.py db upgrade
     dokku letsencrypt app-name
     # Change OK OAuth to support the domain
@@ -67,11 +70,3 @@ For `OK_KEY` and `OK_SECRET`, you'll need to create an Ok OAuth client [here](ht
 
     dokku clone app-name https://github.com/Cal-CS-61A-Staff/oh-queue
     dokku run app-name ./manage.py db upgrade
-
-### Configuration
-
-The following env variables can be set to customize the app:
-
-- `COURSE_NAME` - Name of course as displayed in the app
-- `LOCATIONS` - Comma-separated list of locations students can request help from
-- `ASSIGNMENTS` - Comma-separate list of assignments students can request help on
