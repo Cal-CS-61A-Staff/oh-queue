@@ -19,7 +19,7 @@ function FutureSlots({ state }) {
         if (hideFull && appointment.signups.length >= appointment.capacity) {
             continue;
         }
-        const date = moment(appointment.start_time).format('dddd, MMMM D');
+        const date = formatAppointmentDate(appointment);
         if (!days.has(date)) {
             days.set(date, []);
         }

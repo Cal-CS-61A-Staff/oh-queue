@@ -1,7 +1,4 @@
 function StaffUpcomingAppointmentCard({ appointment, locations })  {
-    const startTimeObj = moment.utc(appointment.start_time);
-    const endTimeObj = moment.utc(appointment.start_time).add(appointment.duration, "seconds");
-
     const possessive = appointment.helper ? "Your" : "This";
 
     const content = (
@@ -34,9 +31,12 @@ function StaffUpcomingAppointmentCard({ appointment, locations })  {
                 <a href="#" className="list-group-item">
                     {!appointment.helper && <span className="badge badge-danger">No helper assigned!</span>}
                     {appointment.status === "active" && <span className="badge badge-primary">In Progress</span>}
-                    <h4 className="list-group-item-heading">
-                        {startTimeObj.format("dddd, MMMM D")} at {startTimeObj.format("h:mma")}‐{endTimeObj.format("h:mma")}
+                    <h4 className="list-group-item-heading appointment-card-heading">
+                        {formatAppointmentDate(appointment)}
                     </h4>
+                    <div className="appointment-card-subheading">
+                        {formatAppointmentDuration(appointment)}
+                    </div>
                     {content}
                 </a>
             </ul>

@@ -1,7 +1,4 @@
 function ConfirmedAppointmentCard({ appointment, signup, locations, assignments })  {
-    const startTimeObj = moment.utc(appointment.start_time);
-    const endTimeObj = moment.utc(appointment.start_time).add(appointment.duration, "seconds");
-
     const assignmentName = signup.assignment_id && assignments[signup.assignment_id].name;
     const questionName = signup.question ? " Question " + signup.question : "";
 
@@ -41,7 +38,7 @@ function ConfirmedAppointmentCard({ appointment, signup, locations, assignments 
                     <a href="#" className="list-group-item">
                         {appointment.status === "active" && <span className="badge badge-primary">In Progress</span>}
                         <h4 className="list-group-item-heading">
-                            {startTimeObj.format("dddd, MMMM D")} at {startTimeObj.format("h:mma")}-{endTimeObj.format("h:mma")}
+                            {formatAppointmentDurationWithDate(appointment)}
                         </h4>
                         {content}
                     </a>

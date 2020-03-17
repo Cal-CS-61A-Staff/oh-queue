@@ -86,15 +86,18 @@ function AppointmentCard({ currentUser, locations, appointment, assignments, com
 }
 
 function AppointmentCardHeader({ appointment, locations, compact, isStaff, onVisibilityToggle, onDeleteClick }) {
-    const startTimeObj = moment.utc(appointment.start_time);
-    const endTimeObj = moment.utc(appointment.start_time).add(appointment.duration, "seconds");
-
     const spareCapacity = calcSpareCapacity(appointment);
 
-    let title = startTimeObj.format("h:mma") + '-' + endTimeObj.format("h:mma") + " in " + locations[appointment.location_id].name;
-    if (!compact) {
-        title += ` (${spareCapacity} slot${spareCapacity === 1 ? "" : "s"} left)`;
-    }
+    let subtitle = (
+        <React.Fragment>
+            {locations[appointment.location_id].name}
+            {" "}
+            &middot;
+            {" "}
+            {spareCapacity} slot
+            {spareCapacity === 1 ? "" : "s"} left
+        </React.Fragment>
+    );
 
     const visibilityClass = appointment.status === "hidden" ? "glyphicon glyphicon-play" : "glyphicon glyphicon-pause";
 
@@ -108,7 +111,8 @@ function AppointmentCardHeader({ appointment, locations, compact, isStaff, onVis
                     <span className="glyphicon glyphicon-trash" aria-hidden="true"/>
                 </button>}
             </div>
-            <h3 className="panel-title">{title}</h3>
+            <h3 className="panel-title">{formatAppointmentDuration(appointment)}</h3>
+            <small>{subtitle}</small>
         </div>
     );
 }

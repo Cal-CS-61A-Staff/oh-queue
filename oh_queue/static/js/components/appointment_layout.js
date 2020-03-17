@@ -8,9 +8,6 @@ function AppointmentLayout({ state, match, loadAppointment, socket }) {
     }
     const appointment = getAppointment(state, appointmentID);
 
-    const startTimeObj = moment.utc(appointment.start_time);
-    const endTimeObj = moment.utc(appointment.start_time).add(appointment.duration, "seconds");
-
     const title = appointment.helper ?
         `${appointment.helper.shortName}'s Section` : "Unassigned Section";
 
@@ -142,7 +139,7 @@ function AppointmentLayout({ state, match, loadAppointment, socket }) {
                 <h2 className="list-group-item-heading text-center">
                     {title}
                     <small className="clearfix">
-                        {startTimeObj.format("h:mma")}‐{endTimeObj.format("h:mma")}
+                        {formatAppointmentDuration(appointment)}
                         {" "}
                         &middot;
                         {" "}

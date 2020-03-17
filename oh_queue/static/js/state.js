@@ -130,6 +130,9 @@ let initialState: State = {
   nextMessageID: 1,
 }
 
+const referenceTimeZone = "America/Los_Angeles";
+const currTimeZone = moment.tz.guess();
+
 function ticketDisplayTime(ticket: Ticket): string {
   return moment.utc(ticket.created).local().format('h:mm A')
 }
@@ -327,8 +330,8 @@ function getMySignups(state: State) {
     return mySignups;
 }
 
-function isSoon(timeString) {
-    return moment(timeString).isBefore(moment().add(2, "hours"));
+function isSoon(appointment) {
+    return getAppointmentStartTime(appointment).isBefore(moment().add(2, "hours"));
 }
 
 function getMyAppointmentsStaff(state: State) {
@@ -382,4 +385,32 @@ function appointmentIncludesMe(state: State, appointment: Appointment) {
         }
     }
     return false;
+}
+
+function getAppointmentStartTime(appointment) {
+    return moment.tz(appointment.start_time, referenceTimeZone).tz(currTimeZone);
+}
+
+function getAppointmentEndTime(appointment) {
+    return getAppointmentStartTime(appointment).add(appointment.duration, "seconds");
+}
+
+function formatAppointmentDate(appointment) {
+    return getAppointmentStartTime(appointment).format("dddd, MMMM D");
+}
+
+function formatAppointmentDuration(appointment) {
+    if (currTimeZone === referenceTimeZone) {
+        return `${getAppointmentStartTime(appointment).format("h:mma")}‐${getAppointmentEndTime(appointment).format("h:mma")}`;
+    } else {
+        return `${getAppointmentStartTime(appointment).format("h:mma")}‐${getAppointmentEndTime(appointment).format("h:mma z")}`;
+    }
+}
+
+function formatAppointmentDurationWithDate(appointment) {
+    if (currTimeZone === referenceTimeZone) {
+        return `${getAppointmentStartTime(appointment).format("dddd, MMMM D")} at ${getAppointmentStartTime(appointment).format("h:mma")}‐${getAppointmentEndTime(appointment).format("h:mma")}`;
+    } else {
+        return `${getAppointmentStartTime(appointment).format("dddd, MMMM D")} at ${getAppointmentStartTime(appointment).format("h:mma")}‐${getAppointmentEndTime(appointment).format("h:mma z")}`;
+    }
 }

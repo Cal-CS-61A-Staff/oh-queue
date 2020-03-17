@@ -901,3 +901,12 @@ h4.list-group-item-heading::before {
 .chat-input {
     border-radius: 2em;
 }
+
+.appointment-card-heading {
+    margin-bottom: 0;
+}
+
+.appointment-card-subheading {
+    font-weight: bold;
+    margin-bottom: 5px;
+}

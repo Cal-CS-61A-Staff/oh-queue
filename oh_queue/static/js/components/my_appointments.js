@@ -1,6 +1,6 @@
 function MyAppointments({ state }) {
     const studentContent = getMySignups(state)
-        .filter(({ appointment }) => appointment.status === "active" || isSoon(appointment.start_time))
+        .filter(({ appointment }) => appointment.status === "active" || isSoon(appointment))
         .map(({ appointment, signup }) => {
             const handleClick = appointment.status !== "pending" && (() => redirect(appointment.id));
             return (
@@ -15,7 +15,7 @@ function MyAppointments({ state }) {
         });
 
     const staffContent = getMyAppointmentsStaff(state)
-        .filter(appointment => appointment.status === "active" || isSoon(appointment.start_time))
+        .filter(appointment => appointment.status === "active" || isSoon(appointment))
         .filter(({ status }) => status !== "resolved")
         .filter(({ signups }) => signups.length > 0)
         .sort((x, y) => (+!!y.helper - +!!x.helper) * 2 + appointmentTimeComparator(x, y))
