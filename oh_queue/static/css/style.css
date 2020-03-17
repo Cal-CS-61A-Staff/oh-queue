@@ -926,3 +926,7 @@ h4.list-group-item-heading::before {
         margin: 10px 0;
     }
 }
+
+.swal2-popup {
+    font-size: 16px !important;
+}
