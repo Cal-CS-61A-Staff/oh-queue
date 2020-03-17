@@ -38,7 +38,7 @@ class MagicWordDisplay extends React.Component {
               magicWord: magicWord
             });
           });
-        }, 1000)
+        }, 10000)
       });
     }
     this.setState({
