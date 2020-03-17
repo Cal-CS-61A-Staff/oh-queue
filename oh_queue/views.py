@@ -746,18 +746,15 @@ def update_location(data):
 @socketio.on('update_config')
 @is_staff
 def update_config(data):
-    keys = []
-    values = []
+    config = {}
     if 'keys' in data:
-        keys = data['keys']
-        values = data['values']
+        config = {k : v for k, v in zip(data["keys"], data["values"]) if v is not None}
     elif 'key' in data:
-        keys = [data['key']]
-        values = [data['value']]
-    if 'queue_magic_word_mode' in keys:
-        # Validate new magic word config
-        get_magic_word(values[keys.index('queue_magic_word_mode')], values[keys.index('queue_magic_word_data')])
-    for key, value in zip(keys, values):
+        config = {data['key'] : data['value']}
+    if 'queue_magic_word_mode' in config:
+        if config['queue_magic_word_mode'] == "timed_numeric":
+            config["queue_magic_word_data"] = format(random.randrange(2 ** 64), "x")+ ":60:0:9999"
+    for key, value in config.items():
         entry = ConfigEntry.query.filter_by(key=key, course=get_course()).one()
         entry.value = value
     db.session.commit()
