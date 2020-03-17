@@ -94,6 +94,7 @@ function FutureSlots({ state }) {
                         appointments that have not yet occurred.
                     </h5>
                   </div>
+                {(!currentUser || currentUser.isStaff) && <AppointmentButtons />}
                 <FancyToggle checked={compact} onChange={setCompact} offText="Regular" onText="Compact" />
                 {" "}
                 <FancyToggle checked={hideFull} onChange={setHideFull} offText="Show All" onText="Hide Full" />

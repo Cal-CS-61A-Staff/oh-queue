@@ -7,7 +7,9 @@ function AppointmentCard({ currentUser, locations, appointment, assignments, com
     const spareCapacity = calcSpareCapacity(appointment);
 
     if (currentUser.isStaff) {
-        if (appointment.helper && appointment.helper.id === currentUser.id) {
+        if (appointment.helper && appointment.status === "hidden") {
+            panelColor = "panel-danger";
+        } else if (appointment.helper && appointment.helper.id === currentUser.id) {
             panelColor = "panel-primary";
         } else if (currentUser.isStaff && !appointment.helper) {
             panelColor = "panel-warning";
@@ -85,7 +87,7 @@ function AppointmentCard({ currentUser, locations, appointment, assignments, com
     )
 }
 
-function AppointmentCardHeader({ appointment, locations, compact, isStaff, onVisibilityToggle, onDeleteClick }) {
+function AppointmentCardHeader({ appointment, locations, isStaff, onVisibilityToggle, onDeleteClick }) {
     const spareCapacity = calcSpareCapacity(appointment);
 
     let subtitle = (
@@ -96,6 +98,15 @@ function AppointmentCardHeader({ appointment, locations, compact, isStaff, onVis
             {" "}
             {spareCapacity} slot
             {spareCapacity === 1 ? "" : "s"} left
+        </React.Fragment>
+    );
+
+    let hiddenWarning = appointment.status === "hidden" && (
+        <React.Fragment>
+            {" "}
+            &middot;
+            {" "}
+            HIDDEN
         </React.Fragment>
     );
 
@@ -112,7 +123,7 @@ function AppointmentCardHeader({ appointment, locations, compact, isStaff, onVis
                 </button>}
             </div>
             <h3 className="panel-title">{formatAppointmentDuration(appointment)}</h3>
-            <small>{subtitle}</small>
+            <small>{subtitle}{hiddenWarning}</small>
         </div>
     );
 }

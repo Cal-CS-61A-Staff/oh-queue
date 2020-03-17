@@ -910,3 +910,19 @@ h4.list-group-item-heading::before {
     font-weight: bold;
     margin-bottom: 5px;
 }
+
+.appointment-buttons {
+    margin-bottom: 10px;
+}
+
+.appointment-buttons > .btn {
+    margin-right: 10px;
+}
+
+@media screen and (max-width: 991px){
+    .appointment-buttons > .btn {
+        width:100%;
+        display:block;
+        margin: 10px 0;
+    }
+}

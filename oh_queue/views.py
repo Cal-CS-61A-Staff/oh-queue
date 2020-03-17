@@ -6,6 +6,7 @@ import random
 import time
 from urllib.parse import urljoin
 
+import pytz
 import requests
 from flask import render_template, url_for, copy_current_request_context
 from flask_login import current_user
@@ -1045,3 +1046,42 @@ def send_chat_message(data):
         if not current_user.is_staff and ticket.user_id != current_user.id:
             return socket_unauthorized()
         emit_message(data)
+
+
+def get_current_time():
+    return pytz.utc.localize(datetime.datetime.utcnow()).astimezone(pytz.timezone("America/Los_Angeles")).replace(tzinfo=None)
+
+
+@socketio.on("bulk_appointment_action")
+@is_staff
+def bulk_appointment_action(action):
+    if action == "open_all_assigned":
+        Appointment.query.filter(Appointment.course == get_course(), Appointment.helper_id != None, Appointment.status == AppointmentStatus.hidden).update({Appointment.status: AppointmentStatus.pending})
+    elif action == "resolve_all_past":
+        appointments = (
+            Appointment.query
+            .filter(
+                Appointment.course == get_course(),
+                Appointment.helper_id != None,
+                Appointment.start_time < get_current_time(),
+                Appointment.status == AppointmentStatus.pending
+            )
+            .outerjoin(Appointment.signups)
+            .group_by(Appointment)
+            .having(func.count(AppointmentSignup.id) == 0).all()
+        )
+        (Appointment.query
+         .filter(Appointment.id.in_({x.id for x in appointments}))
+         .update({Appointment.status: AppointmentStatus.resolved}, synchronize_session=False)
+         )
+    elif action == "remove_all_unassigned":
+        appointments = (
+            Appointment.query
+            .filter(Appointment.course == get_course(), Appointment.helper_id == None)
+            .outerjoin(Appointment.signups)
+            .group_by(Appointment)
+            .having(func.count(AppointmentSignup.id) == 0).all()
+        )
+        Appointment.query.filter(Appointment.id.in_({x.id for x in appointments})).delete(False)
+    db.session.commit()
+    emit_state(['appointments'], broadcast=True)
