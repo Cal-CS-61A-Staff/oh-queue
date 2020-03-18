@@ -169,12 +169,13 @@ def emit_state(attrs, broadcast=False, callback=None):
 
 def emit_presence(data):
     out = {k: len(v) for k,v in data.items()}
-    active_staff = {t.helper.email for t in Ticket.query.filter(
+    active_staff = {(t.helper.email, t.helper.name) for t in Ticket.query.filter(
         Ticket.status.in_(active_statuses),
         Ticket.helper != None,
         Ticket.course == get_course(),
     ).all()}
     out["staff"] = len(data["staff"] | active_staff)
+    out["staff_list"] = list(data["staff"] | active_staff)
     socketio.emit('presence', out, room=get_course())
 
 def emit_message(message):
@@ -343,7 +344,7 @@ def connect():
     if not current_user.is_authenticated:
         pass
     elif current_user.is_staff:
-        user_presence[get_course()]['staff'].add(current_user.email)
+        user_presence[get_course()]['staff'].add((current_user.email, current_user.name))
     else:
         user_presence[get_course()]['students'].add(current_user.email)
 
@@ -360,11 +361,9 @@ def disconnect():
     if not current_user.is_authenticated:
         pass
     elif current_user.is_staff:
-        if current_user.email in user_presence[get_course()]['staff']:
-            user_presence[get_course()]['staff'].remove(current_user.email)
+        user_presence[get_course()]['staff'].discard((current_user.email, current_user.name))
     else:
-        if current_user.email in user_presence[get_course()]['students']:
-            user_presence[get_course()]['students'].remove(current_user.email)
+        user_presence[get_course()]['students'].discard(current_user.email)
 
     leave_room(get_course())
 

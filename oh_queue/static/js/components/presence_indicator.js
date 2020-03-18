@@ -100,6 +100,26 @@ let PresenceIndicator = ({state}) => {
         <h4>Estimated wait time: <font color={waitColor}><strong>{timeRange}</strong></font> minutes</h4>
         <h5>{ message }</h5>
         <MagicWordDisplay state={state} />
+        {presence && state.currentUser && state.currentUser.isStaff && (
+        <React.Fragment>
+            <p>
+              <a data-toggle="collapse" href="#collapseExample"
+                 role="button" aria-expanded="false" aria-controls="collapseExample">
+                  See online assistants.
+              </a>
+            </p>
+            <div className="collapse" id="collapseExample">
+              <div className="card card-body">
+                  <ul>
+                      {presence.staff_list.map(
+                          ([email, name]) => <li>{name} (<a href={`mailto:${email}`}> {email}</a>)</li>,
+                      )}
+                  </ul>
+              </div>
+            </div>
+        </React.Fragment>
+            )}
+
       </div>
     </div>
   );
