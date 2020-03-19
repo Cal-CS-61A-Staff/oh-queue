@@ -34,7 +34,7 @@ function StaffOnlineSetup({ state }) {
               <br />
               <p>
                   Consider using <a href="https://meet.google.com">Google Meet</a> to host video calls,
-                  and <a href="https://demo.firepad.io">Firepad</a> for a collaborative document.
+                  and <a href="https://code.cs61a.org">61A Code</a> for a collaborative code editor.
               </p>
               <form id="staff-online-setup-form">
                   <div className="form-group">
@@ -47,7 +47,7 @@ function StaffOnlineSetup({ state }) {
                   <div className="form-group">
                       <label htmlFor="staff-doc-link">Your Default Shared Document Link</label>
                       <input type="text" className="form-control" id="staff-doc-link"
-                             name="staff-doc-link" placeholder="docs.google.com/xyz"
+                             name="staff-doc-link" placeholder="code.cs61a.org/xyz"
                              defaultValue={state.currentUser.doc_url} />
                   </div>
                   <button id="submitBtn" type="submit" className="btn btn-default" onClick={submit}>Submit</button>
