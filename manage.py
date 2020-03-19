@@ -49,6 +49,7 @@ def seed_data():
         location=random.choice(locations),
         capacity=5,
         status=AppointmentStatus.pending,
+        course="ok",
     ) for _ in range(70)]
 
     for assignment in assignments:
@@ -95,7 +96,8 @@ def seed_data():
         user=random.choice(students),
         assignment=random.choice(assignments),
         question=random.choice(questions),
-        description=random.choice(descriptions)
+        description=random.choice(descriptions),
+        course="ok",
     ) for _ in range(120)]
 
     for signup in signups:

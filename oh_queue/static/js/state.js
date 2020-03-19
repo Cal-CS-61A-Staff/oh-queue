@@ -313,6 +313,8 @@ function clearMessage(state: State, id: number): void {
   }
 }
 
+const timeComparator = (a, b) => a.isAfter(b) ? 1 : -1;
+
 const appointmentTimeComparator = (a, b) => moment(a.start_time).isSame(moment(b.start_time)) ? b.id - a.id : moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1;
 
 function getMySignups(state: State) {

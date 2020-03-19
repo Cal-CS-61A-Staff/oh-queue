@@ -11,7 +11,7 @@
  * </Tabs>
  */
 let Tabs = ({selectedIndex, onSelect, children}) => {
-  children = children.filter(x => x);
+  children = React.Children.toArray(children).filter(x => x);
   let renderLabel = (child, index) => {
     let active = selectedIndex === index;
     let tabClass = classNames({

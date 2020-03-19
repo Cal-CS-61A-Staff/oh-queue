@@ -4,6 +4,7 @@ import collections
 
 import random
 import time
+from operator import or_
 from urllib.parse import urljoin
 
 import pytz
@@ -11,7 +12,7 @@ import requests
 from flask import render_template, url_for, copy_current_request_context
 from flask_login import current_user
 from flask_socketio import emit, join_room, leave_room
-from sqlalchemy import func
+from sqlalchemy import func, desc
 
 from oh_queue import app, db, socketio
 from oh_queue.course_config import get_course, format_coursecode
@@ -1084,3 +1085,39 @@ def bulk_appointment_action(action):
         Appointment.query.filter(Appointment.id.in_({x.id for x in appointments})).delete(False)
     db.session.commit()
     emit_state(['appointments'], broadcast=True)
+
+
+@socketio.on("list_users")
+@is_staff
+def list_users(_):
+    return [user_json(user) for user in User.query.filter_by(course=get_course()).all()]
+
+
+@socketio.on("get_user")
+@is_staff
+def get_user(user_id):
+    user = User.query.filter_by(course=get_course(), id=user_id).one()
+    tickets = (
+        Ticket.query
+        .filter(or_(Ticket.user_id == user.id, Ticket.helper_id == user.id), Ticket.course == get_course())
+        .order_by(desc(Ticket.created)).all()
+    )
+    appointments = (
+        Appointment.query
+        .filter(Appointment.helper_id == user.id, Appointment.course == get_course())
+        .order_by(desc(Appointment.start_time)).all()
+    )
+    signups = (
+        AppointmentSignup.query.join(AppointmentSignup.appointment).filter(
+            AppointmentSignup.user_id == user.id, Appointment.course == get_course(),
+        ).order_by(desc(Appointment.start_time)).all()
+    )
+
+    return {
+        "user": user_json(user),
+        "tickets": [ticket_json(ticket) for ticket in tickets],
+        "appointments": (
+            [appointments_json(appointment) for appointment in appointments] +
+            [appointments_json(signup.appointment) for signup in signups]
+        ),
+    }

@@ -34,6 +34,9 @@ let Navbar = ({ state, mode }) => {
                         <li><Link to="/appointments">Appointments</Link></li>}
 
                         {currentUser && currentUser.isStaff &&
+                        <li><Link to="/activity_log">Activity Log</Link></li>}
+
+                        {currentUser && currentUser.isStaff &&
                         <li><Link to="/admin">Admin</Link></li>}
 
                         {currentUser ?

@@ -930,3 +930,15 @@ h4.list-group-item-heading::before {
 .swal2-popup {
     font-size: 16px !important;
 }
+
+.activity-buttons .btn {
+    width: initial;
+}
+
+.activity-buttons {
+    margin-bottom: 10px;
+}
+
+.activity-buttons > .btn {
+    margin-right: 10px;
+}
