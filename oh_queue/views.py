@@ -1094,8 +1094,10 @@ def list_users(_):
 
 
 @socketio.on("get_user")
-@is_staff
+@logged_in
 def get_user(user_id):
+    if user_id != current_user.id and not current_user.is_staff:
+        return socket_unauthorized()
     user = User.query.filter_by(course=get_course(), id=user_id).one()
     tickets = (
         Ticket.query

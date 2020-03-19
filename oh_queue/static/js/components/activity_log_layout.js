@@ -6,6 +6,10 @@ function ActivityLogLayout({ state }) {
 
     const [searchText, setSearchText] = React.useState("");
 
+    if (state.currentUser && !state.currentUser.isStaff) {
+        return <NotFound />;
+    }
+
     if (app && !isLoading && userList.length === 0) {
         setIsLoading(true);
         app.makeRequest("list_users", null, false, (users) => {

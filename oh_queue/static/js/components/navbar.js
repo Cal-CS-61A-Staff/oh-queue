@@ -47,6 +47,7 @@ let Navbar = ({ state, mode }) => {
                                     {state.config.online_active && currentUser.isStaff && (
                                         <li><Link to="/online_setup">Online Setup</Link></li>
                                     )}
+                                    <li><Link to={`/user/${currentUser.id}`}>Ticket History</Link></li>
                                     <li><a href="/logout">Log out</a></li>
                                 </ul>
                             </li>
