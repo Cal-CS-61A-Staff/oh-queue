@@ -7,7 +7,8 @@ function ActivityLogLayout({ state }) {
     const [searchText, setSearchText] = React.useState("");
 
     if (state.currentUser && !state.currentUser.isStaff) {
-        return <NotFound />;
+        const { Redirect } = ReactRouterDOM;
+        return <Redirect to={`user/${state.currentUser.id}`} />;
     }
 
     if (app && !isLoading && userList.length === 0) {
