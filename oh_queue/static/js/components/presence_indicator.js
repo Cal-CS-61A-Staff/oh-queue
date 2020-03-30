@@ -66,10 +66,27 @@ let PresenceIndicator = ({state}) => {
     }
   }
 
-  var welcomeMessage = state.config.welcome
+  var welcomeMessage = state.config.welcome;
+
+  const openQueue = () => {
+        app.makeRequest(`update_config`, {
+            key: "is_queue_open",
+            value: "true",
+        });
+  };
 
   return (
     <div className="col-xs-12">
+
+        {state.config.is_queue_open === "false" && state.currentUser && state.currentUser.isStaff &&
+          <div className="alert alert-danger alert-dismissable fade in" role="alert">
+            <button type="button" className="close" aria-label="Close" data-dismiss="alert">
+                <span aria-hidden="true">&times;</span>
+            </button>
+              <h3>Queue is currently closed!</h3>
+              <button className="btn btn-primary" onClick={openQueue}>Open queue</button>
+          </div>
+        }
 
       <div className="alert alert-info alert-dismissable fade in" role="alert">
         <button type="button" className="close" aria-label="Close" data-dismiss="alert">
