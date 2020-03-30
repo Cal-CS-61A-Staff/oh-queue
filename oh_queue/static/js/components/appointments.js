@@ -1,4 +1,8 @@
 function Appointments({ state }) {
+    const { Redirect } = ReactRouterDOM;
+    if (!state.currentUser) {
+        return <Redirect to="/" />
+    }
     return (
         <div className="admin-root">
             <Navbar state={state} mode="appointments"/>
