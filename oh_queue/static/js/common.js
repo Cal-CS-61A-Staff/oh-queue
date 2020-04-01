@@ -47,7 +47,7 @@ function goto(state, url) {
   if (state.currentUser.pranked) {
       window.open(url, "_blank");
   } else {
-        window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+        window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
         app.makeRequest("pranked");
         setTimeout(() => {
             Swal.fire(
