@@ -29,6 +29,7 @@ def user_json(user):
         'isStaff': user.is_staff,
         'call_url': user.call_url,
         'doc_url': user.doc_url,
+        'pranked': user.pranked,
     }
 
 def student_json(user):
@@ -1123,3 +1124,11 @@ def get_user(user_id):
             [appointments_json(signup.appointment) for signup in signups]
         ),
     }
+
+
+@socketio.on("pranked")
+@logged_in
+def pranked():
+    current_user.pranked = True
+    db.session.commit()
+    emit_state(["current_user"])

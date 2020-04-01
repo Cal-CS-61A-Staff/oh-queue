@@ -33,6 +33,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(255), nullable=False, index=True)
     name = db.Column(db.String(255), nullable=False)
     is_staff = db.Column(db.Boolean, default=False)
+    pranked = db.Column(db.Boolean, default=False)
 
     course = db.Column(db.String(255), nullable=False, index=True)
 
