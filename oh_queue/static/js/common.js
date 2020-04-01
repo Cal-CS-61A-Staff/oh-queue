@@ -58,7 +58,7 @@ function goto(state, url) {
             ).then(() => {
                 window.open(url, "_blank");
             })
-        })
+        }, 1000)
   }
 }
 

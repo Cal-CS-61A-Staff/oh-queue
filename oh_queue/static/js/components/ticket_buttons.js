@@ -123,12 +123,12 @@ class TicketButtons extends React.Component {
     if (ticket.status === 'assigned') {
       if (ticket.call_url || ticket.helper.call_url) {
           onlineButtons.push(makeButton('Join Call', 'success',
-              () => goto(this.props.state, ticket.call_url || ticket.helper.call_url))
+              () => goto(state, ticket.call_url || ticket.helper.call_url))
           );
       }
       if (ticket.doc_url || ticket.helper.doc_url) {
           onlineButtons.push(makeButton('Open Shared Document', 'info',
-              () => goto(this.props.state, ticket.doc_url || ticket.helper.doc_url))
+              () => goto(state, ticket.doc_url || ticket.helper.doc_url))
           );
       }
 
