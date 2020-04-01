@@ -111,12 +111,12 @@ function AppointmentLayout({ state, match, loadAppointment, socket }) {
           );
          */
         const callButton = appointment.helper.call_url && (
-            <AppointmentLayoutButton color="success" onClick={() => window.open(appointment.helper.call_url, "_blank")}>
+            <AppointmentLayoutButton color="success" onClick={() => goto(state, appointment.helper.call_url)}>
                 Join Call
             </AppointmentLayoutButton>
         );
         const docButton = appointment.helper.doc_url && (
-            <AppointmentLayoutButton color="info" onClick={() => window.open(appointment.helper.doc_url, "_blank")}>
+            <AppointmentLayoutButton color="info" onClick={() => goto(state, appointment.helper.doc_url)}>
                 Open Shared Document
             </AppointmentLayoutButton>
         );

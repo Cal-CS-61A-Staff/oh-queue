@@ -15,7 +15,6 @@ class TicketButtons extends React.Component {
     this.unassign = this.unassign.bind(this);
     this.reassign = this.reassign.bind(this);
     this.next = this.next.bind(this);
-    this.joinCall = this.joinCall.bind(this);
 
     this.refresher = null;
   }
@@ -88,24 +87,6 @@ class TicketButtons extends React.Component {
     app.makeRequest('next', [this.props.ticket.id], true);
   }
 
-  joinCall(ticket) {
-      if (this.props.state.currentUser.pranked) {
-          window.open(ticket.call_url || ticket.helper.call_url, "_blank");
-      } else {
-            window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
-            app.makeRequest("pranked");
-            setTimeout(() => {
-                Swal.fire(
-                  'Happy April Fools Day!',
-                  'In trying times, know that we are never gonna give you up. ' +
-                    'Click to continue to your call.',
-                  'success'
-                ).then(() => {
-                    window.open(ticket.call_url || ticket.helper.call_url, "_blank");
-                })
-            })
-      }
-  }
 
   render() {
     let {state, ticket} = this.props;
@@ -142,12 +123,12 @@ class TicketButtons extends React.Component {
     if (ticket.status === 'assigned') {
       if (ticket.call_url || ticket.helper.call_url) {
           onlineButtons.push(makeButton('Join Call', 'success',
-              () => this.joinCall(ticket))
+              () => goto(this.props.state, ticket.call_url || ticket.helper.call_url))
           );
       }
       if (ticket.doc_url || ticket.helper.doc_url) {
           onlineButtons.push(makeButton('Open Shared Document', 'info',
-              () => window.open(ticket.doc_url || ticket.helper.doc_url, "_blank"))
+              () => goto(this.props.state, ticket.doc_url || ticket.helper.doc_url))
           );
       }
 
