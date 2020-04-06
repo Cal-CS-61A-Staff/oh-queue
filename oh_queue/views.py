@@ -962,6 +962,7 @@ def upload_appointments(data):
         data = requests.post("https://auth.apps.cs61a.org/google/read_spreadsheet", json={
             "url": sheet_url,
             "sheet_name": sheet_name,
+            "course": "cs61a",
             "client_name": app.config["AUTH_KEY"],
             "secret": app.config["AUTH_SECRET"],
         }).json()
