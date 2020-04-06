@@ -175,6 +175,7 @@ function AppointmentLayout({ state, match, loadAppointment, socket }) {
                             status={appointment.status}
                             signup={signup}
                             assignments={state.assignments}
+                            okpyEndpointID={state.config.show_okpy_backups && state.config.okpy_endpoint_id}
                         />
                     ))}
                 </div>

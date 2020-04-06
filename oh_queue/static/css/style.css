@@ -946,3 +946,9 @@ h4.list-group-item-heading::before {
 .activity-buttons > .btn {
     margin-right: 10px;
 }
+
+.slot-question-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

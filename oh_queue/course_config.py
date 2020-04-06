@@ -8,6 +8,7 @@ from oh_queue import app
 
 DOMAIN_COURSES = {}
 COURSE_ENDPOINTS = {}
+ENDPOINT_ID = {}
 
 
 def get_course(domain=None):
@@ -30,6 +31,16 @@ def get_endpoint(course=None):
     if course not in COURSE_ENDPOINTS:
         COURSE_ENDPOINTS[course] = requests.post("https://auth.apps.cs61a.org/api/{}/get_endpoint".format(course)).json()
     return COURSE_ENDPOINTS[course]
+
+
+def get_course_id(course=None):
+    if app.config["ENV"] != "prod":
+        return 1
+    if not course:
+        course = get_course()
+    if course not in ENDPOINT_ID:
+        ENDPOINT_ID[course] = requests.post("https://auth.apps.cs61a.org/api/{}/get_endpoint_id".format(course)).json()
+    return ENDPOINT_ID[course]
 
 
 def is_admin(course=None):

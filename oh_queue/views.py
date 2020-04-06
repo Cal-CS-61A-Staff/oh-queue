@@ -15,7 +15,7 @@ from flask_socketio import emit, join_room, leave_room
 from sqlalchemy import func, desc
 
 from oh_queue import app, db, socketio
-from oh_queue.course_config import get_course, format_coursecode
+from oh_queue.course_config import get_course, format_coursecode, get_course_id
 from oh_queue.models import Assignment, ConfigEntry, Location, Ticket, TicketEvent, TicketEventType, TicketStatus, \
     active_statuses, Appointment, AppointmentSignup, User, AppointmentStatus, AttendanceStatus
 
@@ -89,6 +89,7 @@ def config_json():
     for config_entry in ConfigEntry.query.filter_by(course=get_course()).all():
         if config_entry.public:
             config[config_entry.key] = config_entry.value
+    config["okpy_endpoint_id"] = get_course_id()
     return config
 
 def appointments_json(appointment: Appointment):
@@ -270,11 +271,18 @@ def init_config():
         public=True,
         course=get_course(),
     ))
+    db.session.add(ConfigEntry(
+        key='show_okpy_backups',
+        value='false',
+        public=True,
+        course=get_course(),
+    ))
     db.session.commit()
 
 # We run a React app, so serve index.html on all routes
 @app.route('/')
 @app.route('/<path:path>')
+@app.route('/tickets/<int:ticket_id>/')
 def index(*args, **kwargs):
     check = db.session.query(ConfigEntry).filter_by(course=get_course()).first()
     if not check:
@@ -285,7 +293,7 @@ def index(*args, **kwargs):
 def socket_error(message, category='danger', ticket_id=None):
     redirect = url_for('index')
     if ticket_id is not None:
-        redirect = url_for('ticket', ticket_id=ticket_id)
+        redirect = url_for('index', ticket_id=ticket_id)
     return {
         'messages': [
             {
@@ -299,7 +307,7 @@ def socket_error(message, category='danger', ticket_id=None):
 def socket_redirect(ticket_id=None):
     redirect = url_for('index')
     if ticket_id is not None:
-        redirect = url_for('ticket', ticket_id=ticket_id)
+        redirect = url_for('index', ticket_id=ticket_id)
     return {
         'redirect': redirect
     }

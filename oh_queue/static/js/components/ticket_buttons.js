@@ -147,6 +147,9 @@ class TicketButtons extends React.Component {
     if (staff && (ticket.status === 'resolved' || ticket.status === 'deleted')) {
       topButtons.push(makeButton('Next Ticket', 'default', this.next));
     }
+    if (staff && ticket.status === "assigned" && state.config.show_okpy_backups) {
+      topButtons.push(makeLink('View Backups', 'default', 'https://okpy.org/admin/course/' + state.config.okpy_endpoint_id + '/' + encodeURIComponent(ticket.user.email)))
+    }
     if (ticket.status === "juggled") {
         const isWaiting = moment.utc(ticket.rerequest_threshold).isAfter();
         if (staff) {
