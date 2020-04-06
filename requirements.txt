@@ -28,3 +28,4 @@ eventlet==0.20.1
 names==0.3.0
 
 raven[flask]==6.0.0
+cachetools==4.0.0

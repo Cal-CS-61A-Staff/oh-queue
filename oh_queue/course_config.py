@@ -1,14 +1,15 @@
 import re
 
 import requests
+from cachetools import TTLCache
 from flask import request, g
 from flask_login import current_user
 
 from oh_queue import app
 
-DOMAIN_COURSES = {}
-COURSE_ENDPOINTS = {}
-ENDPOINT_ID = {}
+DOMAIN_COURSES = TTLCache(1000, 1800)
+COURSE_ENDPOINTS = TTLCache(1000, 1800)
+ENDPOINT_ID = TTLCache(1000, 1800)
 
 
 def get_course(domain=None):
