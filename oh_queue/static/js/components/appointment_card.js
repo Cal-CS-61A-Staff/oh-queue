@@ -88,6 +88,8 @@ function AppointmentCard({ currentUser, locations, appointment, assignments, com
 }
 
 function AppointmentCardHeader({ appointment, locations, isStaff, onVisibilityToggle, onDeleteClick }) {
+    const [modalOpen, setModalOpen] = React.useState(false);
+
     const spareCapacity = calcSpareCapacity(appointment);
 
     let subtitle = (
@@ -110,11 +112,23 @@ function AppointmentCardHeader({ appointment, locations, isStaff, onVisibilityTo
         </React.Fragment>
     );
 
+    let description = isStaff && appointment.description && (
+        <React.Fragment>
+            {" "}
+            &middot;
+            {" "}
+            {appointment.description}
+        </React.Fragment>
+    );
+
     const visibilityClass = appointment.status === "hidden" ? "glyphicon glyphicon-play" : "glyphicon glyphicon-pause";
 
     return (
         <div className="panel-heading">
             <div className="btn-group" role="group" style={{float: "right"}}>
+                {isStaff && <button type="button" className="btn btn-xs btn-default" onClick={() => setModalOpen(true)}>
+                    <span className="glyphicon glyphicon-edit" aria-hidden="true"/>
+                </button>}
                 {isStaff && <button type="button" className="btn btn-xs btn-default" onClick={onVisibilityToggle}>
                     <span className={visibilityClass} aria-hidden="true"/>
                 </button>}
@@ -122,8 +136,14 @@ function AppointmentCardHeader({ appointment, locations, isStaff, onVisibilityTo
                     <span className="glyphicon glyphicon-trash" aria-hidden="true"/>
                 </button>}
             </div>
+            {!isStaff && <span className="badge">{appointment.description}</span>}
             <h3 className="panel-title">{formatAppointmentDuration(appointment)}</h3>
-            <small>{subtitle}{hiddenWarning}</small>
+            <small>{subtitle}{hiddenWarning}{description}</small>
+            <AppointmentEditForm
+                isOpen={modalOpen}
+                appointment={appointment}
+                onSubmit={() => setModalOpen(false)}
+            />
         </div>
     );
 }
@@ -146,8 +166,8 @@ function AppointmentCardHelperRow({ appointment, currentUser, onStaffSignup, onS
 function AppointmentCardStudentList({ appointment, assignments, currentUser, compact, onStudentSignup }) {
     return (
         appointment.signups.map(signup => {
-            const assignmentText = signup.assignment_id && assignments[signup.assignment_id].name;
-            const questionText = (signup.question ? " " : "") + (parseInt(signup.question) ? "Q" : "") + signup.question;
+            const assignmentText = signup.assignment_id ? assignments[signup.assignment_id].name : "";
+            const questionText = (signup.assignment_id ? " " : "") + (parseInt(signup.question) ? "Q" : "") + (signup.question || "");
             return (signup.user && currentUser.id === signup.user.id || !compact) && (
                 <Slot
                     link={signup.user && (signup.user.id === currentUser.id || currentUser.isStaff)}

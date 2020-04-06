@@ -1,10 +1,21 @@
 function StaffUpcomingAppointmentCard({ appointment, locations })  {
     const possessive = appointment.helper ? "Your" : "This";
 
+    const descriptionText = appointment.description && (
+        <React.Fragment>
+            It will be on the subject of
+            {" "}
+            <b>
+                {appointment.description}
+            </b>
+            .
+        </React.Fragment>
+    );
+
     const content = (
         <React.Fragment>
             {possessive} appointment is at <b>{locations[appointment.location_id].name}</b>,
-            with a group of <b>{appointment.signups.length}</b> students.
+            with a group of <b>{appointment.signups.length}</b> students. {descriptionText}
         </React.Fragment>
     );
 

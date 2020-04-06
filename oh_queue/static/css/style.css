@@ -809,6 +809,10 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
     background-color: #337ab7;;;
 }
 
+.panel-heading .badge {
+    float: right;
+}
+
 h4.list-group-item-heading.list-group-item-heading {
     color: #337ab7;
 }

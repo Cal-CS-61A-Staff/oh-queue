@@ -58,7 +58,7 @@ function AppointmentOverlay({ staffMode, appointment, assignments, signup, onSub
                                 aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <h4 className="modal-title">
                             {staffMode ?
-                                "Create / Edit Appointment" : "What do you need help with?"}
+                                "Create / Edit Appointment Signup" : "What do you need help with?"}
                         </h4>
                     </div>
                     <div className="modal-body">

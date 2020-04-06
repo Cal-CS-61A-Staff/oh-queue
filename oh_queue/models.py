@@ -166,6 +166,8 @@ class Appointment(db.Model):
     duration = db.Column(db.Interval, nullable=False)
     capacity = db.Column(db.Integer, nullable=False)
 
+    description = db.Column(db.String(255), nullable=False, default="")
+
     location_id = db.Column(db.ForeignKey('location.id'), nullable=False, index=True)
     location = db.relationship(Location, foreign_keys=[location_id])
 

@@ -101,6 +101,7 @@ def appointments_json(appointment: Appointment):
         "location_id": appointment.location_id,
         "helper": appointment.helper and user_json(appointment.helper),
         "status": appointment.status.name,
+        "description": appointment.description,
     }
 
 def signup_json(signup: AppointmentSignup):
@@ -1123,3 +1124,13 @@ def get_user(user_id):
             [appointments_json(signup.appointment) for signup in signups]
         ),
     }
+
+
+@socketio.on("update_appointment")
+@is_staff
+def update_appointment(data):
+    appointment_id = data["id"]
+    description = data["description"]
+    Appointment.query.filter_by(id=appointment_id, course=get_course()).one().description = description
+    db.session.commit()
+    return emit_state(["appointments"])

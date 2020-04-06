@@ -11,6 +11,8 @@ function AppointmentLayout({ state, match, loadAppointment, socket }) {
     const title = appointment.helper ?
         `${appointment.helper.shortName}'s Section` : "Unassigned Section";
 
+    const suffix = appointment.description && " for " + appointment.description;
+
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     });
@@ -138,6 +140,7 @@ function AppointmentLayout({ state, match, loadAppointment, socket }) {
                 <br/>
                 <h2 className="list-group-item-heading text-center">
                     {title}
+                    {suffix}
                     <small className="clearfix">
                         {formatAppointmentDuration(appointment)}
                         {" "}

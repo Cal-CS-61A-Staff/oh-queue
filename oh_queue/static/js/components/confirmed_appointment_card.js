@@ -36,10 +36,13 @@ function ConfirmedAppointmentCard({ appointment, signup, locations, assignments 
             <div className="panel panel-default" onClick={handleClick} style={style}>
                 <ul className="list-group">
                     <a href="#" className="list-group-item">
-                        {appointment.status === "active" && <span className="badge badge-primary">In Progress</span>}
-                        <h4 className="list-group-item-heading">
-                            {formatAppointmentDurationWithDate(appointment)}
+                        {appointment.status === "active" && <span className="badge badge-primary">Click To Enter</span>}
+                        <h4 className="list-group-item-heading appointment-card-heading">
+                            {formatAppointmentDate(appointment)}
                         </h4>
+                        <div className="appointment-card-subheading">
+                            {formatAppointmentDuration(appointment)}
+                        </div>
                         {content}
                     </a>
                 </ul>
