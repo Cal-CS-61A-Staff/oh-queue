@@ -21,4 +21,4 @@ def fire_thread(config):
 def start_flask_job(app):
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=fire_thread, args=(app.config,), trigger="interval", seconds=10)
-    scheduler.start()
+    # scheduler.start()
