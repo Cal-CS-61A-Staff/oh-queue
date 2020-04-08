@@ -9,7 +9,7 @@ from oh_queue.models import Ticket, TicketStatus
 
 def worker(app):
     with app.app_context():
-        students = [t.name for t in Ticket.query.filter_by(course="cs61a", status=TicketStatus.pending).all()]
+        students = [ticket.user.name for ticket in Ticket.query.filter_by(course="cs61a", status=TicketStatus.pending).all()]
         message = "This is a test to see if a worker thread can access the database. " \
                   "There are currently {} students on the 61A queue. They are {}.".format(len(students), ", ".join(students))
         requests.post("https://auth.apps.cs61a.org/slack/post_message", json={
