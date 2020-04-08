@@ -14,7 +14,7 @@ def worker(config):
 
 
 def fire_thread(config):
-    threading.Thread(target=worker, args=config).start()
+    threading.Thread(target=worker, args=(config,)).start()
 
 
 def start_flask_job(app):
