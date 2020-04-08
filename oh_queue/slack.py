@@ -28,6 +28,6 @@ def fire_thread(app):
 def start_flask_job(app):
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=fire_thread, args=(app,), trigger="interval", seconds=10)
-    scheduler.start()
+    # scheduler.start()
     atexit.register(lambda: scheduler.shutdown())
 
