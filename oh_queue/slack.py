@@ -9,7 +9,8 @@ def worker(config):
         "client_name": config["AUTH_KEY"],
         "secret": config["AUTH_SECRET"],
         "message": "This message is a test and will be posted on a loop",
-        "purpose": "oh-queue-test"
+        "purpose": "oh-queue-test",
+        "course": "cs61a",
     })
 
 
