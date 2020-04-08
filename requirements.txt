@@ -29,3 +29,5 @@ names==0.3.0
 
 raven[flask]==6.0.0
 cachetools==4.0.0
+
+APScheduler==3.6.3
