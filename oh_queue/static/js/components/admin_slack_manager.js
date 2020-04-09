@@ -51,6 +51,13 @@ function AdminSlackManager({ state: { config } }) {
                     <button className="btn btn-primary" onClick={() => app.makeRequest("test_slack")}>
                         Send a test message
                     </button>
+                    <button
+                        style={{"margin-left": 5}}
+                        className="btn btn-warning"
+                        onClick={() => app.makeRequest("appointment_summary")}
+                    >
+                        Send daily appointment summary
+                    </button>
                 </p>
             </div>
         </React.Fragment>

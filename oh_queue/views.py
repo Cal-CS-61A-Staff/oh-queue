@@ -17,6 +17,7 @@ from oh_queue import app, db, socketio
 from oh_queue.course_config import get_course, format_coursecode, get_course_id, COURSE_DOMAINS
 from oh_queue.models import Assignment, ConfigEntry, Location, Ticket, TicketEvent, TicketEventType, TicketStatus, \
     active_statuses, Appointment, AppointmentSignup, User, AppointmentStatus, AttendanceStatus, get_current_time
+from oh_queue.slack import send_appointment_summary
 
 
 def user_json(user):
@@ -1171,3 +1172,9 @@ def test_slack():
             "course": get_course(),
         },
     )
+
+
+@socketio.on("appointment_summary")
+@is_staff
+def appointment_summary():
+    send_appointment_summary(app, get_course())
