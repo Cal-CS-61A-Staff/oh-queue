@@ -179,7 +179,7 @@ def send_appointment_summary(app, course):
             old = staff[appointment.helper.email]
             staff[appointment.helper.email] = old._replace(
                 total=old.total + 1,
-                nonempty=old.total + int(bool(appointment.signups)),
+                nonempty=old.nonempty + int(bool(appointment.signups)),
                 start_time=min(
                     old.start_time or appointment.start_time, appointment.start_time
                 ),
