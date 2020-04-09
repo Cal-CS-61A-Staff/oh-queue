@@ -1167,7 +1167,7 @@ def test_slack():
             "message": "This is a test message from the OH queue! Your default queue domain is {}. This channel will "
                        "be used for all future notifications. To change the channel, visit auth.apps.cs61a.org and "
                        "update the channel associated with `oh-queue`.".format(domain),
-            "purpose": "oh-queue-test",
+            "purpose": "oh-queue",
             "course": get_course(),
         },
     )

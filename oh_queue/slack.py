@@ -30,7 +30,7 @@ def worker(app):
                         "client_name": app.config["AUTH_KEY"],
                         "secret": app.config["AUTH_SECRET"],
                         "message": message,
-                        "purpose": "oh-queue-test",
+                        "purpose": "oh-queue",
                         "course": course,
                     },
                 )
