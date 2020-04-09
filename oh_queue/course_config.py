@@ -11,6 +11,8 @@ DOMAIN_COURSES = TTLCache(1000, 1800)
 COURSE_ENDPOINTS = TTLCache(1000, 1800)
 ENDPOINT_ID = TTLCache(1000, 1800)
 
+COURSE_DOMAINS = {"ok": "oh.cs61a.org"}
+
 
 def get_course(domain=None):
     if app.config["ENV"] != "prod":
@@ -21,6 +23,7 @@ def get_course(domain=None):
         DOMAIN_COURSES[domain] = requests.post("https://auth.apps.cs61a.org/domains/get_course", json={
             "domain": domain
         }).json()
+    COURSE_DOMAINS[DOMAIN_COURSES[domain]] = domain
     return DOMAIN_COURSES[domain]
 
 
