@@ -202,7 +202,7 @@ def send_appointment_summary(app, course):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "\n".join(
+                    "text": "\n\n".join(
                         "<!{email}>\nYou have *{total}* appointments, "
                         "*{nonempty}* of which currently have students signed up. "
                         "Your first appointment begins at {time} Pacific Time, "
