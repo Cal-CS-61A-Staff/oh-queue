@@ -151,7 +151,7 @@ def worker(app):
                 .value
                 == "true"
             ):
-                if last_appointment_notif.day != get_current_time().day or True:
+                if last_appointment_notif.day != get_current_time().day:
                     # send appointment summary
                     last_appointment_notif = get_current_time()
 
