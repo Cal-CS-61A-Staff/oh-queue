@@ -201,17 +201,20 @@ def send_appointment_summary(app, course):
             *[
                 {
                     "type": "section",
-                    "text": "<!{email}>\nYou have *{total}* appointments, "
-                    "*{nonempty}* of which currently have students signed up. "
-                    "Your first appointment begins at {time} Pacific Time, "
-                    "in about {delta} hours from the time of this message.".format(
-                        email=email,
-                        total=upcoming.total,
-                        nonempty=upcoming.nonempty,
-                        time=upcoming.start_time.strftime("%H:%M%p"),
-                        delta=(upcoming.start_time - get_current_time()).seconds
-                        // 3600,
-                    ),
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "<!{email}>\nYou have *{total}* appointments, "
+                        "*{nonempty}* of which currently have students signed up. "
+                        "Your first appointment begins at {time} Pacific Time, "
+                        "in about {delta} hours from the time of this message.".format(
+                            email=email,
+                            total=upcoming.total,
+                            nonempty=upcoming.nonempty,
+                            time=upcoming.start_time.strftime("%H:%M%p"),
+                            delta=(upcoming.start_time - get_current_time()).seconds
+                            // 3600,
+                        ),
+                    },
                 }
                 for email, upcoming in staff.items()
             ],
