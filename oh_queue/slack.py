@@ -210,7 +210,7 @@ def send_appointment_summary(app, course):
                             email=email,
                             total=upcoming.total,
                             nonempty=upcoming.nonempty,
-                            time=upcoming.start_time.strftime("%H:%M%p"),
+                            time=upcoming.start_time.strftime("%I:%M%p"),
                             delta=(upcoming.start_time - get_current_time()).seconds
                             // 3600,
                         ),
