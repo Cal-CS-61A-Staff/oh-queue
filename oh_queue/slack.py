@@ -78,7 +78,7 @@ def worker(app):
             ):
                 # check for appointments that should have started
                 appointments = Appointment.query.filter(
-                    Appointment.start_time < get_current_time() + timedelta(minutes=1),
+                    Appointment.start_time < get_current_time() - timedelta(minutes=2),
                     Appointment.status == AppointmentStatus.pending,
                     Appointment.course == course,
                 ).all()
@@ -202,7 +202,7 @@ def send_appointment_summary(app, course):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "\n\n".join(
+                    "fields": [
                         "<!{email}>\nYou have *{total}* appointments, "
                         "*{nonempty}* of which currently have students signed up. "
                         "Your first appointment begins at {time} Pacific Time, "
@@ -215,7 +215,7 @@ def send_appointment_summary(app, course):
                             // 3600,
                         )
                         for email, upcoming in staff.items()
-                    ),
+                    ],
                 },
             },
             {"type": "divider"},
