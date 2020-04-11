@@ -59,9 +59,9 @@ def worker(app):
                     queue_len = Ticket.query.filter_by(
                         course=course, status=TicketStatus.pending
                     ).count()
-                    if queue_len > 20:
+                    if queue_len > 10:
                         send(
-                            "<!channel> The OH queue currently has more than {} students waiting. "
+                            "<!here> The OH queue currently has more than {} students waiting. "
                             "If you can, please drop by and help! Go to the <{}|OH Queue> to see more.".format(
                                 queue_len, domain
                             )
@@ -105,7 +105,7 @@ def worker(app):
                                 pinged_appointments.add(appointment.id)
                             else:
                                 send(
-                                    "<!channel> {name}'s appointment is right now but hasn't started, and students are "
+                                    "<!here> {name}'s appointment is right now but hasn't started, and students are "
                                     "waiting! The appointment is {location}. Can anyone available help out? "
                                     "Go to the <{queue_url}|OH Queue> to see more information.".format(
                                         name=appointment.helper.name,
@@ -120,7 +120,7 @@ def worker(app):
                                 alerted_appointments.add(appointment.id)
                         else:
                             send(
-                                "<!channel> An appointment is scheduled for right now that hasn't started, and students "
+                                "<!here> An appointment is scheduled for right now that hasn't started, and students "
                                 "are waiting! *No staff member has signed up for it!* The appointment is {location}. "
                                 "Go to the <{queue_url}|OH Queue> to see more information.".format(
                                     location="*Online*"
@@ -131,15 +131,7 @@ def worker(app):
                             )
                             alerted_appointments.add(appointment.id)
                     else:
-                        if appointment.helper:
-                            send(
-                                "<!{email}> You have an appointment right now that hasn't started, but no students have "
-                                "signed up. I am automatically resolving the appointment - consider helping out in "
-                                "drop-in OH instead!".format(
-                                    email=appointment.helper.email
-                                )
-                            )
-                        else:
+                        if not appointment.helper:
                             send(
                                 "An appointment is scheduled right now that hasn't started, but no students have "
                                 "signed up *and no staff member was assigned*. I am automatically resolving the "

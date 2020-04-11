@@ -1,5 +1,8 @@
 function Appointments({ state }) {
     const { Redirect } = ReactRouterDOM;
+
+    if (!state.loaded) return null;
+
     if (!state.currentUser) {
         return <Redirect to="/" />
     }

@@ -60,7 +60,11 @@ class TicketLayout extends React.Component {
               <div className="row">
                 <div className="col-xs-12 col-md-6 col-md-offset-3">
                   <hr />
-                      <ChatBox currentUser={state.currentUser} socket={this.props.socket} id={id}/>
+                  <ChatBox
+                      key={id}
+                      currentUser={state.currentUser}
+                      socket={this.props.socket}
+                      id={id}/>
                 </div>
               </div>
           )}
