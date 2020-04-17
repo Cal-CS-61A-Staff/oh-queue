@@ -21,7 +21,7 @@ pinged_appointments = set()
 alerted_appointments = set()
 last_queue_ping = {}
 
-last_appointment_notif = get_current_time()
+last_appointment_notif = {}
 
 
 def make_send(app, course):
@@ -41,7 +41,6 @@ def make_send(app, course):
 
 
 def worker(app):
-    global last_appointment_notif
     with app.app_context():
         for course, domain in COURSE_DOMAINS.items():
             send = make_send(app, course)
@@ -148,9 +147,9 @@ def worker(app):
                 .value
                 == "true"
             ):
-                if last_appointment_notif.day != get_current_time().day:
+                if course not in last_appointment_notif or last_appointment_notif[course].day != get_current_time().day:
                     # send appointment summary
-                    last_appointment_notif = get_current_time()
+                    last_appointment_notif[course] = get_current_time()
                     send_appointment_summary(app, course)
 
         db.session.commit()
