@@ -66,7 +66,7 @@ def worker(app):
                                 queue_len, domain
                             )
                         )
-                    last_queue_ping[course] = datetime.now()
+                        last_queue_ping[course] = datetime.now()
 
             if (
                 ConfigEntry.query.filter_by(
