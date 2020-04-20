@@ -147,10 +147,12 @@ def worker(app):
                 .value
                 == "true"
             ):
-                if course not in last_appointment_notif or last_appointment_notif[course].day != get_current_time().day:
+                if course in last_appointment_notif and last_appointment_notif[course].day != get_current_time().day:
                     # send appointment summary
                     last_appointment_notif[course] = get_current_time()
                     send_appointment_summary(app, course)
+                elif course not in last_appointment_notif:
+                    last_appointment_notif[course] = get_current_time()
 
         db.session.commit()
 
