@@ -1,5 +1,7 @@
+import datetime
 import enum
 
+import pytz
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 
@@ -203,3 +205,7 @@ class AppointmentSignup(db.Model):
     attendance_status = db.Column(EnumType(AttendanceStatus), nullable=False, default=AttendanceStatus.unknown)
 
     course = db.Column(db.String(255), nullable=False, index=True)
+
+
+def get_current_time():
+    return pytz.utc.localize(datetime.datetime.utcnow()).astimezone(pytz.timezone("America/Los_Angeles")).replace(tzinfo=None)

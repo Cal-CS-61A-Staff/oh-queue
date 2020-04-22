@@ -24,6 +24,8 @@ class AdminLayout extends React.Component {
                      render={(props) => (<AdminLocationsManager state={state} {...props} />)}/>
               <Route path={`${match.path}/online`}
                      render={(props) => (<AdminOnlineManager state={state} {...props} />)}/>
+              <Route path={`${match.path}/slack`}
+                     render={(props) => (<AdminSlackManager state={state} {...props} />)}/>
           </Switch>
         </div>
       </div>

@@ -7,7 +7,6 @@ import time
 from operator import or_
 from urllib.parse import urljoin
 
-import pytz
 import requests
 from flask import render_template, url_for, copy_current_request_context
 from flask_login import current_user
@@ -15,9 +14,10 @@ from flask_socketio import emit, join_room, leave_room
 from sqlalchemy import func, desc
 
 from oh_queue import app, db, socketio
-from oh_queue.course_config import get_course, format_coursecode, get_course_id
+from oh_queue.course_config import get_course, format_coursecode, get_course_id, COURSE_DOMAINS
 from oh_queue.models import Assignment, ConfigEntry, Location, Ticket, TicketEvent, TicketEventType, TicketStatus, \
-    active_statuses, Appointment, AppointmentSignup, User, AppointmentStatus, AttendanceStatus
+    active_statuses, Appointment, AppointmentSignup, User, AppointmentStatus, AttendanceStatus, get_current_time
+from oh_queue.slack import send_appointment_summary
 
 
 def user_json(user):
@@ -273,6 +273,24 @@ def init_config():
     ))
     db.session.add(ConfigEntry(
         key='show_okpy_backups',
+        value='false',
+        public=True,
+        course=get_course(),
+    ))
+    db.session.add(ConfigEntry(
+        key='slack_notif_long_queue',
+        value='false',
+        public=True,
+        course=get_course(),
+    ))
+    db.session.add(ConfigEntry(
+        key='slack_notif_appt_summary',
+        value='false',
+        public=True,
+        course=get_course(),
+    ))
+    db.session.add(ConfigEntry(
+        key='slack_notif_missed_appt',
         value='false',
         public=True,
         course=get_course(),
@@ -1055,10 +1073,6 @@ def send_chat_message(data):
         emit_message(data)
 
 
-def get_current_time():
-    return pytz.utc.localize(datetime.datetime.utcnow()).astimezone(pytz.timezone("America/Los_Angeles")).replace(tzinfo=None)
-
-
 @socketio.on("bulk_appointment_action")
 @is_staff
 def bulk_appointment_action(action):
@@ -1140,3 +1154,27 @@ def update_appointment(data):
     Appointment.query.filter_by(id=appointment_id, course=get_course()).one().description = description
     db.session.commit()
     return emit_state(["appointments"])
+
+
+@socketio.on("test_slack")
+@is_staff
+def test_slack():
+    domain = COURSE_DOMAINS[get_course()]
+    requests.post(
+        "https://auth.apps.cs61a.org/slack/post_message",
+        json={
+            "client_name": app.config["AUTH_KEY"],
+            "secret": app.config["AUTH_SECRET"],
+            "message": "This is a test message from the OH queue! Your default queue domain is {}. This channel will "
+                       "be used for all future notifications. To change the channel, visit auth.apps.cs61a.org and "
+                       "update the channel associated with `oh-queue`.".format(domain),
+            "purpose": "oh-queue",
+            "course": get_course(),
+        },
+    )
+
+
+@socketio.on("appointment_summary")
+@is_staff
+def appointment_summary():
+    send_appointment_summary(app, get_course())

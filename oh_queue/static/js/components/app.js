@@ -70,7 +70,15 @@ class App extends React.Component {
     }
     if (data.hasOwnProperty('config')) {
       this.state.config = data.config;
-      for (const key of ["daily_appointment_limit", "weekly_appointment_limit", "simul_appointment_limit", "show_okpy_backups"]) {
+      for (const key of [
+          "daily_appointment_limit",
+          "weekly_appointment_limit",
+          "simul_appointment_limit",
+          "show_okpy_backups",
+          "slack_notif_long_queue",
+          "slack_notif_appt_summary",
+          "slack_notif_missed_appt",
+      ]) {
           this.state.config[key] = JSON.parse(this.state.config[key]);
       }
     }
