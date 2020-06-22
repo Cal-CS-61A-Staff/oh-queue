@@ -61,7 +61,7 @@ function AdminAppointmentsManager({ state }) {
                 <tr>
                     <td>
                         <p>
-                            How many appointments should a student be have pending simultaneously?
+                            How many appointments should a student have be pending simultaneously?
                         </p>
                     </td>
                     <td className="col-md-3">
