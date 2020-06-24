@@ -405,7 +405,7 @@ function formatAppointmentDuration(appointment) {
     if (currTimeZone === referenceTimeZone) {
         return `${getAppointmentStartTime(appointment).format("h:mma")}‐${getAppointmentEndTime(appointment).format("h:mma")}`;
     } else {
-        return `${getAppointmentStartTime(appointment).format("h:mma")}‐${getAppointmentEndTime(appointment).format("h:mma z")}`;
+        return `${getAppointmentStartTime(appointment).format("h:mma")}‐${getAppointmentEndTime(appointment).format("h:mma z")} (UTC${getAppointmentEndTime(appointment).format("Z")})`;
     }
 }
 
@@ -413,6 +413,6 @@ function formatAppointmentDurationWithDate(appointment) {
     if (currTimeZone === referenceTimeZone) {
         return `${getAppointmentStartTime(appointment).format("dddd, MMMM D")} at ${getAppointmentStartTime(appointment).format("h:mma")}‐${getAppointmentEndTime(appointment).format("h:mma")}`;
     } else {
-        return `${getAppointmentStartTime(appointment).format("dddd, MMMM D")} at ${getAppointmentStartTime(appointment).format("h:mma")}‐${getAppointmentEndTime(appointment).format("h:mma z")}`;
+        return `${getAppointmentStartTime(appointment).format("dddd, MMMM D")} at ${getAppointmentStartTime(appointment).format("h:mma")}‐${getAppointmentEndTime(appointment).format("h:mma z")} (UTC${getAppointmentEndTime(appointment).format("Z")})`;
     }
 }
