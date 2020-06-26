@@ -43,6 +43,7 @@ def make_send(app, course):
 def worker(app):
     with app.app_context():
         for course, domain in COURSE_DOMAINS.items():
+            queue_url = "https://{}".format(domain)
             send = make_send(app, course)
 
             if (
@@ -62,7 +63,7 @@ def worker(app):
                         send(
                             "<!here> The OH queue currently has more than {} students waiting. "
                             "If you can, please drop by and help! Go to the <{}|OH Queue> to see more.".format(
-                                queue_len, domain
+                                queue_len, queue_url
                             )
                         )
                         last_queue_ping[course] = datetime.now()
@@ -86,11 +87,12 @@ def worker(app):
                     if appointment.id in alerted_appointments:
                         continue
                     if len(appointment.signups) > 0:
+                        appointment_url = "{}/appointments/{}".format(queue_url, appointment.id)
                         if appointment.helper:
                             if appointment.id not in pinged_appointments:
                                 send(
                                     "<!{email}> You have an appointment right now that hasn't started, and students are "
-                                    "waiting! Your appointment is {location}. Go to the <{queue_url}|OH Queue> to see more "
+                                    "waiting! Your appointment is {location}. Go to the <{appointment_url}|OH Queue> to see more "
                                     "information.".format(
                                         email=appointment.helper.email,
                                         location="*Online*"
@@ -98,7 +100,7 @@ def worker(app):
                                         else "at *{}*".format(
                                             appointment.location.name
                                         ),
-                                        queue_url=domain,
+                                        appointment_url=appointment_url,
                                     )
                                 )
                                 pinged_appointments.add(appointment.id)
@@ -106,14 +108,14 @@ def worker(app):
                                 send(
                                     "<!here> {name}'s appointment is right now but hasn't started, and students are "
                                     "waiting! The appointment is {location}. Can anyone available help out? "
-                                    "Go to the <{queue_url}|OH Queue> to see more information.".format(
+                                    "Go to the <{appointment_url}|OH Queue> to see more information.".format(
                                         name=appointment.helper.name,
                                         location="*Online*"
                                         if appointment.location.name == "Online"
                                         else "at *{}*".format(
                                             appointment.location.name
                                         ),
-                                        queue_url=domain,
+                                        appointment_url=appointment_url,
                                     )
                                 )
                                 alerted_appointments.add(appointment.id)
@@ -121,11 +123,11 @@ def worker(app):
                             send(
                                 "<!here> An appointment is scheduled for right now that hasn't started, and students "
                                 "are waiting! *No staff member has signed up for it!* The appointment is {location}. "
-                                "Go to the <{queue_url}|OH Queue> to see more information.".format(
+                                "Go to the <{appointment_url}|OH Queue> to see more information.".format(
                                     location="*Online*"
                                     if appointment.location.name == "Online"
                                     else "at *{}*".format(appointment.location.name),
-                                    queue_url=domain,
+                                    appointment_url=appointment_url,
                                 )
                             )
                             alerted_appointments.add(appointment.id)
