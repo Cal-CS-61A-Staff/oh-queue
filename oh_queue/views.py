@@ -16,7 +16,8 @@ from sqlalchemy import func, desc
 from oh_queue import app, db, socketio
 from oh_queue.course_config import get_course, format_coursecode, get_course_id, COURSE_DOMAINS
 from oh_queue.models import Assignment, ConfigEntry, Location, Ticket, TicketEvent, TicketEventType, TicketStatus, \
-    active_statuses, Appointment, AppointmentSignup, User, AppointmentStatus, AttendanceStatus, get_current_time
+    active_statuses, Appointment, AppointmentSignup, User, AppointmentStatus, AttendanceStatus, get_current_time, \
+    GroupAttendance, GroupAttendanceStatus, Group, GroupStatus
 from oh_queue.slack import send_appointment_summary
 
 
@@ -115,6 +116,31 @@ def signup_json(signup: AppointmentSignup):
         "attendance_status": signup.attendance_status.name,
     }
 
+
+def group_json(group: Group):
+    return {
+        'id': group.id,
+        'attendees': [group_attendance_json(attendance) for attendance in group.attendees],
+        'location_id': group.location_id,
+        'ticket_id': group.ticket_id,
+        'assignment_id': group.assignment_id,
+        'question': group.question,
+        'description': group.description,
+        'group_status': group.group_status.name,
+        'call_url': group.call_url,
+        'doc_url': group.doc_url,
+    }
+
+
+def group_attendance_json(attendance: GroupAttendance):
+    return {
+        'id': attendance.id,
+        'group_id': attendance.group_id,
+        'group_attendance_status': attendance.group_attendance_status.name,
+        'user': user_json(attendance.user),
+    }
+
+
 def emit_event(ticket, event_type):
     ticket_event = TicketEvent(
         event_type=event_type,
@@ -129,12 +155,21 @@ def emit_event(ticket, event_type):
         'ticket': ticket_json(ticket),
     }, room=get_course())
 
+
 def emit_appointment_event(appointment, event_type):
     # TODO: log to db
     socketio.emit("appointment_event", {
         "type": event_type,
         "appointment": appointments_json(appointment),
     }, room=get_course())
+
+
+def emit_group_event(group, event_type):
+    socketio.emit("group_event", {
+        "type": event_type,
+        "group": group_json(group),
+    }, room=get_course())
+
 
 def emit_state(attrs, broadcast=False, callback=None):
     assert not (callback and broadcast), "Cannot have a callback when broadcasting!"
@@ -160,6 +195,12 @@ def emit_state(attrs, broadcast=False, callback=None):
             Appointment.course == get_course(),
         ).order_by(Appointment.id).all()
         state['appointments'] = [appointments_json(appointment) for appointment in appointments]
+    if 'groups' in attrs:
+        groups = Group.query.filter(
+            Group.group_status == GroupStatus.active,
+            Group.course == get_course()
+        ).all()
+        state['groups'] = [group_json(group) for group in groups]
 
     if not broadcast and 'current_user' in attrs:
         state['current_user'] = student_json(current_user)
@@ -295,12 +336,19 @@ def init_config():
         public=True,
         course=get_course(),
     ))
+    db.session.add(ConfigEntry(
+        key='party_enabled',
+        value='false',
+        public=True,
+        course=get_course(),
+    ))
     db.session.commit()
 
 # We run a React app, so serve index.html on all routes
 @app.route('/')
 @app.route('/<path:path>')
 @app.route('/tickets/<int:ticket_id>/')
+@app.route('/groups/<int:group_id>/')
 def index(*args, **kwargs):
     check = db.session.query(ConfigEntry).filter_by(course=get_course()).first()
     if not check:
@@ -322,10 +370,8 @@ def socket_error(message, category='danger', ticket_id=None):
         'redirect': redirect
     }
 
-def socket_redirect(ticket_id=None):
-    redirect = url_for('index')
-    if ticket_id is not None:
-        redirect = url_for('index', ticket_id=ticket_id)
+def socket_redirect(**kwargs):
+    redirect = url_for('index', **kwargs)
     return {
         'redirect': redirect
     }
@@ -378,7 +424,7 @@ def connect():
 
     join_room(get_course())
 
-    emit_state(['tickets', 'assignments', 'locations', 'current_user', 'config'],
+    emit_state(['tickets', 'assignments', 'groups', 'locations', 'current_user', 'config'],
                callback=lambda: emit_state(['appointments'])
                )
 
@@ -400,6 +446,7 @@ def disconnect():
 @socketio.on('refresh')
 def refresh(ticket_ids):
     tickets = Ticket.query.filter(Ticket.id.in_(ticket_ids), Ticket.course == get_course()).all()
+    emit_state(['appointments', 'groups'])
     return {
         'tickets': [ticket_json(ticket) for ticket in tickets],
     }
@@ -1178,3 +1225,91 @@ def test_slack():
 @is_staff
 def appointment_summary():
     send_appointment_summary(app, get_course())
+
+
+@socketio.on('create_group')
+@logged_in
+def create(form):
+    party_enabled = ConfigEntry.query.filter_by(course=get_course(), key='party_enabled').one()
+    if party_enabled.value != 'true':
+        return socket_error(
+            'Party mode is not enabled.',
+            category='warning',
+        )
+
+    prev_attendance = GroupAttendance.query.filter_by(user_id=current_user.id, group_attendance_status=GroupAttendanceStatus.present).one_or_none()
+    if prev_attendance:
+        prev_attendance.group_attendance_status = GroupAttendanceStatus.gone
+        db.session.commit()
+        other_attendances = GroupAttendance.query.filter_by(group=prev_attendance.group, group_attendance_status=GroupAttendanceStatus.present).all()
+        if not other_attendances:
+            prev_attendance.group.group_status = GroupStatus.resolved
+            db.session.commit()
+            emit_group_event(prev_attendance.group, "group_closed")
+        else:
+            emit_group_event(prev_attendance.group, "group_left")
+
+    assignment_id = form.get('assignment_id')
+    location_id = form.get('location_id')
+    question = form.get('question')
+
+    call_link = form.get('call-link', '')
+    doc_link = form.get('doc-link', '')
+
+    if call_link:
+        call_link = urljoin("https://", call_link)
+
+    if doc_link:
+        doc_link = urljoin("https://", doc_link)
+
+    if assignment_id is None or location_id is None or not question:
+        return socket_error(
+            'You must fill out all the fields',
+            category='warning',
+        )
+
+    assignment = Assignment.query.filter_by(course=get_course(), id=assignment_id).one_or_none()
+    if not assignment:
+        return socket_error(
+            'Unknown assignment (id: {})'.format(assignment_id),
+            category='warning',
+        )
+    location = Location.query.filter_by(course=get_course(), id=location_id).one_or_none()
+    if not location:
+        return socket_error(
+            'Unknown location (id: {})'.format(location_id),
+            category='warning',
+        )
+
+    if location.name == "Online" and not call_link:
+        return socket_error(
+            'You must fill out all the fields',
+            category='warning',
+        )
+
+    group = Group(
+        group_status=GroupStatus.active,
+        assignment=assignment,
+        location=location,
+        question=question,
+        course=get_course(),
+        call_url=call_link,
+        doc_url=doc_link,
+    )
+
+    db.session.add(group)
+
+    group_attendance = GroupAttendance(
+        group=group,
+        user=current_user,
+        group_attendance_status=GroupAttendanceStatus.present,
+        course=get_course(),
+    )
+
+    db.session.add(group_attendance)
+
+    db.session.commit()
+
+    emit_group_event(group, "group_created")
+
+    return socket_redirect(group_id=group.id)

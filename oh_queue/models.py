@@ -207,5 +207,52 @@ class AppointmentSignup(db.Model):
     course = db.Column(db.String(255), nullable=False, index=True)
 
 
+GroupStatus = enum.Enum('GroupStatus', 'active resolved')
+
+
+class Group(db.Model):
+    __tablename__ = "group"
+    id = db.Column(db.Integer, primary_key=True)
+
+    question = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.String(255), nullable=False, default="")
+
+    assignment_id = db.Column(db.ForeignKey('assignment.id'), index=True)
+    assignment = db.relationship(Assignment, foreign_keys=[assignment_id])
+
+    location_id = db.Column(db.ForeignKey('location.id'), nullable=False, index=True)
+    location = db.relationship(Location, foreign_keys=[location_id])
+
+    ticket_id = db.Column(db.ForeignKey('ticket.id'), nullable=True, index=True)
+    ticket = db.relationship(Ticket, foreign_keys=[ticket_id])
+
+    attendees = db.relationship("GroupAttendance", back_populates="group")
+
+    group_status = db.Column(EnumType(GroupStatus), nullable=False, default=GroupStatus.active)
+
+    call_url = db.Column(db.String(255))
+    doc_url = db.Column(db.String(255))
+
+    course = db.Column(db.String(255), nullable=False, index=True)
+
+
+GroupAttendanceStatus = enum.Enum('GroupAttendanceStatus', 'present gone')
+
+
+class GroupAttendance(db.Model):
+    __tablename__ = "group_attendance"
+    id = db.Column(db.Integer, primary_key=True)
+
+    group_id = db.Column(db.ForeignKey('group.id'), nullable=False, index=True)
+    group = db.relationship("Group", back_populates="attendees")
+
+    user_id = db.Column(db.ForeignKey('user.id'), nullable=False, index=True)
+    user = db.relationship(User, foreign_keys=[user_id])
+
+    group_attendance_status = db.Column(EnumType(GroupAttendanceStatus), nullable=False, default=GroupAttendanceStatus.present)
+
+    course = db.Column(db.String(255), nullable=False, index=True)
+
+
 def get_current_time():
     return pytz.utc.localize(datetime.datetime.utcnow()).astimezone(pytz.timezone("America/Los_Angeles")).replace(tzinfo=None)

@@ -78,6 +78,26 @@ type Signup = {
     attendance_status: 'unknown' | 'present' | 'excused' | 'absent',
 }
 
+type Group = {
+    id: number,
+    attendees: Array<GroupAttendance>,
+    location_id: number,
+    ticket_id: ?number,
+    assignment_id: number,
+    question: ?string,
+    description: ?string,
+    group_status: 'active' | 'resolved',
+    call_url: string,
+    doc_url: string,
+}
+
+type GroupAttendance = {
+    id: number,
+    group_id: number,
+    user: User,
+    group_attendance_status: 'present' | 'gone',
+}
+
 
 type State = {
   /* May be null if the user is not logged in. */
@@ -88,12 +108,12 @@ type State = {
   offline: boolean,
   /* Ticket assignments */
   assignments: Map<number, TicketAssignment>,
-  /* Ticket locations */
   appointments: Array<Appointment>,
+  groups: Array<Group>,
   /* Ticket locations */
   locations: Map<number, TicketLocation>,
   /* Server configuration */
-  config: Map<string, string>,
+  config: { [string]: string },
   /* All known tickets, including ones that have been resolved or deleted.
    * We may have to load past tickets asynchronously though.
    * This is an ES6 Map from ticket ID to the ticket data.
@@ -118,6 +138,7 @@ let initialState: State = {
   locations: {},
   config: {},
   appointments: [],
+  groups: [],
   tickets: new Map(),
   loadingTickets: new Set(),
   filter: {
@@ -415,4 +436,20 @@ function formatAppointmentDurationWithDate(appointment) {
     } else {
         return `${getAppointmentStartTime(appointment).format("dddd, MMMM D")} at ${getAppointmentStartTime(appointment).format("h:mma")}‐${getAppointmentEndTime(appointment).format("h:mma z")} (UTC${getAppointmentEndTime(appointment).format("Z")})`;
     }
+}
+
+function getGroup(state: State, group_id: number) : Group {
+    return state.groups.find(({ id }) => id === group_id);
+}
+
+function setGroup(state: State, group: Group): void {
+  if (!group.id) {
+      return
+  }
+  const oldGroup = getGroup(state, group.id);
+  if (oldGroup) {
+      state.groups.splice(state.groups.indexOf(oldGroup), 1);
+  }
+  state.groups.push(group);
+  state.groups.sort(group => group.id);
 }

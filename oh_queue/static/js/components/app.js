@@ -36,6 +36,7 @@ class App extends React.Component {
     socket.on('event', (data) => this.updateTicket(data));
     socket.on('presence', (data) => this.updatePresence(data));
     socket.on('appointment_event', (data) => this.updateAppointment(data));
+    socket.on('group_event', (data) => this.updateGroup(data));
 
     this.loadTicket = this.loadTicket.bind(this);
     this.loadAppointment = this.loadAppointment.bind(this);
@@ -78,6 +79,7 @@ class App extends React.Component {
           "slack_notif_long_queue",
           "slack_notif_appt_summary",
           "slack_notif_missed_appt",
+          "party_enabled",
       ]) {
           this.state.config[key] = JSON.parse(this.state.config[key]);
       }
@@ -87,6 +89,9 @@ class App extends React.Component {
     }
     if (data.hasOwnProperty('appointments')) {
         this.state.appointments = Array.from(data.appointments).sort(appointmentTimeComparator);
+    }
+    if (data.hasOwnProperty('groups')) {
+        this.state.groups = Array.from(data.groups).sort(x => x.i);
     }
     this.state.loaded = true;
     this.refresh();
@@ -145,6 +150,11 @@ class App extends React.Component {
         }
         break;
     }
+  }
+
+  updateGroup(data) {
+    setGroup(this.state, data.group);
+    this.refresh();
   }
 
   loadTicket(id) {
@@ -219,11 +229,16 @@ class App extends React.Component {
   render() {
     let { BrowserRouter, Route, Switch } = ReactRouterDOM;
     let state = this.state;
+
+    const Root = state.config.party_enabled && !isStaff(state) ? Party : Home;
+
     return (
       <BrowserRouter ref={(router) => this.router = router}>
         <div>
           <Switch>
-            <Route exact path="/" render={(props) => (<Home state={state} {...props} />)} />
+            <Route exact path="/" render={(props) => (<Root state={state} {...props} />)} />
+            <Route exact path="/party" render={(props) => (<Party state={state} {...props} />)} />
+            <Route exact path="/queue" render={(props) => (<Home state={state} {...props} />)} />
             <Route exact path="/appointments" render={(props) => (<Appointments state={state} {...props} />)} />
             <Route exact path="/online_setup" render={(props) => (<StaffOnlineSetup state={state} {...props} />)} />
             <Route path="/admin" render={(props) => (<AdminLayout state={state} {...props} />)} />

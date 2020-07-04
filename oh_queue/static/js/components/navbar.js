@@ -7,6 +7,9 @@ let Navbar = ({ state, mode }) => {
     const words = mode.split("_");
     const title = words.map(word => word[0].toUpperCase() + word.slice(1)).join(" ");
 
+    const partyAsRoot = state.config.party_enabled && !isStaff(state);
+    const defaultMode = partyAsRoot ? "party" : "queue";
+
     return (
         <nav className="navbar navbar-default navbar-fixed-top">
             <div className="container">
@@ -17,7 +20,7 @@ let Navbar = ({ state, mode }) => {
                         <span className="icon-bar"></span>
                         <span className="icon-bar"></span>
                     </button>
-                    <Link className="navbar-brand" to={"/" + (mode === "queue" ? "" : mode)}>
+                    <Link className="navbar-brand" to={"/" + (mode === defaultMode ? "" : mode)}>
                         <strong>{window.courseName} |</strong>{" " + title}
                     </Link>
                 </div>
@@ -27,8 +30,11 @@ let Navbar = ({ state, mode }) => {
                         {!!myTicket &&
                         <li><Link to={`/tickets/${myTicket.id}/`}>My Request</Link></li>}
 
+                        {currentUser && state.config.party_enabled &&
+                        <li><Link to={partyAsRoot ? "/" : "/party"}>Party</Link></li>}
+
                         {currentUser &&
-                        <li><Link to="/">Queue</Link></li>}
+                        <li><Link to={partyAsRoot ? "/queue" : "/"}>Queue</Link></li>}
 
                         {currentUser && JSON.parse(state.config.appointments_open) &&
                         <li><Link to="/appointments">Appointments</Link></li>}
