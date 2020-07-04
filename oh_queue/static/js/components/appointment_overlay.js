@@ -4,6 +4,10 @@ function AppointmentOverlay({ staffMode, appointment, assignments, signup, onSub
     const [question, setQuestion] = React.useState("");
     const [description, setDescription] = React.useState("");
 
+    const [addGroupMembersButtonClicked, setAddGroupMembersButtonClicked] = React.useState(false);
+    const [groupMembers, setGroupMembers] = React.useState(null);
+    const [selectedGroupMembers, setSelectedGroupMembers] = React.useState([]);
+
     const root = React.useRef();
 
     React.useEffect(() => {
@@ -29,6 +33,12 @@ function AppointmentOverlay({ staffMode, appointment, assignments, signup, onSub
     }, [isOpen]);
 
     React.useEffect(() => {
+        setAddGroupMembersButtonClicked(false);
+        setGroupMembers(null);
+        setSelectedGroupMembers([]);
+    }, [isOpen, assignment, signup]);
+
+    React.useEffect(() => {
         $(root.current).on("hide.bs.modal", onSubmit);
     }, []);
 
@@ -39,14 +49,26 @@ function AppointmentOverlay({ staffMode, appointment, assignments, signup, onSub
 
     const handleSubmit = () => {
         app.makeRequest(
-        'assign_appointment', {
-            appointment_id: appointment,
-            assignment_id: parseInt(assignment),
-            question: question,
-            description: description,
-            email: signup ? signup.user.email : email,
-        });
+            'assign_appointment', {
+                appointment_id: appointment,
+                assignment_id: parseInt(assignment),
+                question: question,
+                description: description,
+                email: signup ? signup.user.email : email,
+                group: selectedGroupMembers,
+            });
         onSubmit();
+    };
+
+    const handleAddGroupButtonClick = () => {
+        app.makeRequest('find_group', { assignment }, (members) => {
+            if (members == null) {
+                setAddGroupMembersButtonClicked(true);
+                window.open("/login", "__blank");
+            } else {
+                setGroupMembers(members);
+            }
+        });
     };
 
     return ReactDOM.createPortal(
@@ -64,7 +86,8 @@ function AppointmentOverlay({ staffMode, appointment, assignments, signup, onSub
                     <div className="modal-body">
                         {!staffMode && (
                             <p>
-                                Leave fields blank if you aren't yet sure what you want to ask about.
+                                Leave fields blank if you aren't yet sure what you want to ask
+                                about.
                             </p>
                         )}
                         <SlotsForm
@@ -79,6 +102,40 @@ function AppointmentOverlay({ staffMode, appointment, assignments, signup, onSub
                             onDescriptionChange={setDescription}
                             showEmail={staffMode && !signup}
                         />
+                        {!staffMode && assignment && groupMembers == null && !signup && (
+                            <p>
+                                <button type="button" className="btn btn-default"
+                                        onClick={handleAddGroupButtonClick}>
+                                    {addGroupMembersButtonClicked ?
+                                        "Add group members (click again)" :
+                                        "Add group members"}
+                                </button>
+                            </p>
+                        )}
+                        {groupMembers && groupMembers.length === 0 && (
+                            <p>
+                                No group members found.
+                            </p>
+                        )}
+                        {groupMembers != null && groupMembers.length > 0 && (
+                            <p>
+                                Select the group members you wish to add.
+                                {groupMembers.map((member) => (
+                                    <div className="checkbox">
+                                        <label>
+                                            <input type="checkbox" checked={selectedGroupMembers.includes(member)} value={member} onClick={() => {
+                                                if (selectedGroupMembers.includes(member)) {
+                                                    setSelectedGroupMembers(members => members.filter(x => x !== member));
+                                                } else {
+                                                    setSelectedGroupMembers(members => members.concat([member]));
+                                                }
+                                            }}/>
+                                            {member}
+                                        </label>
+                                    </div>
+                                ))}
+                            </p>
+                        )}
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn btn-default"
@@ -95,7 +152,8 @@ function AppointmentOverlay({ staffMode, appointment, assignments, signup, onSub
                             type="button"
                             className="btn btn-primary"
                             onClick={handleSubmit}
-                        >Confirm</button>
+                        >Confirm
+                        </button>
                     </div>
                 </div>
             </div>
