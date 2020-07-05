@@ -1,5 +1,9 @@
 function ChatBox({ currentUser, socket, id, mode }) {
-    const [messages, setMessages] = React.useState([]);
+    const [messages, setMessages] = React.useState([[{
+        shortName: "?", name: "OH Queue Bot"
+    },
+        "This chat is unreliable and only for if you can't connect to Zoom." +
+        " Otherwise, use the Zoom chat!"]]);
 
     const [typed, setTyped] = React.useState("");
 
@@ -69,7 +73,7 @@ function ChatBox({ currentUser, socket, id, mode }) {
 
     return (
         <div className="panel panel-default">
-            <div className="panel-heading">Live Chat</div>
+            <div className="panel-heading">⚠️ Emergency Backup Chat ⚠️</div>
             <div className="panel-body">
                 <div className="chat-history" ref={historyRef}>
                 {body}

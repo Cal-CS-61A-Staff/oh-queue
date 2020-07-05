@@ -2,6 +2,10 @@
 let Navbar = ({ state, mode }) => {
     var { currentUser } = state;
     var myTicket = getMyTicket(state);
+    if (myTicket && myTicket.group_id) {
+        myTicket = null;
+    }
+    const myGroup = getMyGroup(state);
     var { Link } = ReactRouterDOM;
 
     const words = mode.split("_");
@@ -26,6 +30,9 @@ let Navbar = ({ state, mode }) => {
                 </div>
                 <div className="collapse navbar-collapse" id="navbar-collapse-section">
                     <ul className="nav navbar-nav navbar-right">
+
+                        {!!myGroup &&
+                        <li><Link to={`/groups/${myGroup.id}/`}>My Group</Link></li>}
 
                         {!!myTicket &&
                         <li><Link to={`/tickets/${myTicket.id}/`}>My Request</Link></li>}

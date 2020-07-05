@@ -213,6 +213,7 @@ GroupStatus = enum.Enum('GroupStatus', 'active resolved')
 class Group(db.Model):
     __tablename__ = "group"
     id = db.Column(db.Integer, primary_key=True)
+    created = db.Column(db.DateTime, default=db.func.now(), index=True)
 
     question = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(255), nullable=False, default="")

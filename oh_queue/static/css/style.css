@@ -87,6 +87,10 @@ a:hover {
   margin-top: 20px;
 }
 
+.request-form .btn {
+    width: 100%;
+}
+
 .description-overlay {
   position: fixed; /* Sit on top of the page content */
   display: none; /* Hidden by default */

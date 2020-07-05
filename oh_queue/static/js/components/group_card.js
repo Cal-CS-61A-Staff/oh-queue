@@ -1,10 +1,14 @@
-function GroupCard({ group, state }: {group: Group, state: State}) {
+function GroupCard({ group, state }: { group: Group, state: State }) {
+    const { Link } = ReactRouterDOM;
+
     let panelColor = "panel-default";
 
-    if (isStaff(state)) {
-        panelColor = "panel-danger";
+    const inGroup = groupIsMine(state, group);
+
+    if (inGroup) {
+        panelColor = "panel-primary";
     } else {
-        panelColor = "panel-success";
+        panelColor = "panel-default";
     }
 
     const panelClass = classNames({
@@ -32,14 +36,31 @@ function GroupCard({ group, state }: {group: Group, state: State}) {
                 {state.locations[group.location_id].name}
             </div>
             <div className="panel-body">
-                {group.attendees.length === 1 ? <p>{ownerName} is looking for a group!</p> : null}
-                <blockquote>
-                    {group.description}
-                </blockquote>
+                {inGroup ? (
+                    <p><b>
+                        You are in this group.
+                    </b></p>
+                ) : (
+                    <p>
+                        {state.currentUser ? ownerName : "A student"} is looking to collaborate!
+                    </p>
+                )}
+                {group.description ? (
+                    <blockquote style={{ fontSize: 15 }}>
+                        {group.description}
+                    </blockquote>
+                ) : (
+                    <p><i>No description</i></p>
+                )}
                 <p>
-                    Created 2 hours ago.
+                    Created {ticketTimeAgo(group)}.
                 </p>
-                <button className="btn btn-default" type="button" onClick={joinGroup}>{joinText}</button>
+                {state.currentUser && <Link to={inGroup ? `groups/${group.id}` : null}>
+                    <button className={inGroup ? "btn btn-primary" : "btn btn-default"} type="button"
+                            onClick={inGroup ? null : joinGroup}>
+                        {inGroup ? "Return to group" : joinText}
+                    </button>
+                </Link>}
             </div>
         </div>
     )

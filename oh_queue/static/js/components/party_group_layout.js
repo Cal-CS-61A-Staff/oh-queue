@@ -2,115 +2,92 @@ const { Link } = ReactRouterDOM;
 
 function PartyGroupLayout({ state, match, loadGroup, socket }) {
     const groupID = +match.params.id;
+
     if (!getGroup(state, groupID)) {
         loadGroup(groupID);
         return "loading...";
     }
     const group = getGroup(state, groupID);
+    const ticket = getTicket(state, group.ticket_id);
+    const ticketActive = ticket && !["resolved", "deleted"].includes(ticket.status);
 
-    let actionButton = null;
+    const inGroup = groupIsMine(state, group);
 
-    // if (isStaff(state)) {
-    //     if (group.status === "resolved") {
-            actionButton = (
-                <Link to="/">
-                    <AppointmentLayoutButton color="default" onClick={() => null}>
-                        Return to Queue
-                    </AppointmentLayoutButton>
-                </Link>
-            );
-    //     } else if (!group.helper) {
-    //         actionButton = (
-    //             <AppointmentLayoutButton color="success" onClick={handleStaffSignup}>
-    //                 Sign up to help section
-    //             </AppointmentLayoutButton>
-    //         );
-    //     } else if (group.helper.id !== state.currentUser.id) {
-    //         actionButton = (
-    //             <div>
-    //                 <AppointmentLayoutButton color="warning" onClick={handleStaffSignup}>
-    //                     Reassign Appointment
-    //                 </AppointmentLayoutButton>
-    //                 <AppointmentLayoutButton color="danger" onClick={handleStaffUnassign}>
-    //                     Unassign Appointment
-    //                 </AppointmentLayoutButton>
-    //             </div>
-    //         );
-    //     } else if (group.status === "pending") {
-    //         actionButton = (
-    //             <div>
-    //                 <AppointmentLayoutButton color="primary" onClick={updateAppointment("active")}>
-    //                     Start Appointment
-    //                 </AppointmentLayoutButton>
-    //                 <AppointmentLayoutButton color="danger" onClick={handleStaffUnassign}>
-    //                     Unassign Appointment
-    //                 </AppointmentLayoutButton>
-    //             </div>
-    //         );
-    //     } else if (attendanceDone) {
-    //         actionButton = (
-    //             <div>
-    //                 <AppointmentLayoutButton color="danger" onClick={updateAppointment("resolved")}>
-    //                     End Appointment
-    //                 </AppointmentLayoutButton>
-    //                 <AppointmentLayoutButton color="default" onClick={updateAppointment("pending")}>
-    //                     Requeue Appointment
-    //                 </AppointmentLayoutButton>
-    //             </div>
-    //         );
-    //     } else {
-    //         actionButton = (
-    //             <div>
-    //             <span
-    //                 className="d-inline-block btn-block"
-    //                 tabIndex="0" data-toggle="tooltip" data-placement="top"
-    //                 title="You must record attendance before ending appointments.">
-    //                 <button className="btn btn-danger btn-lg btn-block" disabled
-    //                         style={{ pointerEvents: 'none' }}>
-    //                     End Appointment
-    //                 </button>
-    //             </span>
-    //                 <AppointmentLayoutButton color="default" onClick={updateAppointment("pending")}>
-    //                     Requeue Appointment
-    //                 </AppointmentLayoutButton>
-    //             </div>
-    //         );
-    //     }
-    // }
+    const actionButton = inGroup ? (
+        <React.Fragment>
+            <PartyGroupLayoutButton
+                color="default"
+                disabled={ticketActive}
+                onClick={() => app.makeRequest("create_group_ticket", {id: group.id})}
+            >
+                {ticketActive ?
+                    `${ticket.user.shortName} has asked for help` :
+                    "Ask for Help (as a group)"}
+            </PartyGroupLayoutButton>
+            <hr />
+            <PartyGroupLayoutButton color="danger" onClick={() => app.makeRequest("leave_group", group.id, true)}>
+                Leave Group
+            </PartyGroupLayoutButton>
+        </React.Fragment>
+    ) : (
+        <React.Fragment>
+            {group.group_status === "active" &&
+                <PartyGroupLayoutButton color="primary" onClick={() => app.makeRequest("join_group", group.id, true)}>
+                    Join Group
+                </PartyGroupLayoutButton>
+            }
+            <hr />
+            <Link to="/">
+                <PartyGroupLayoutButton color="default" onClick={() => null}>
+                    Return to Home
+                </PartyGroupLayoutButton>
+            </Link>
+        </React.Fragment>
+    );
 
     let onlineButtons = null;
-    if (state.locations[group.location_id].name === "Online" && group.status === "active") {
-
-        const callButton = group.helper.call_url && (
-            <AppointmentLayoutButton color="success" onClick={() => window.open(group.helper.call_url, "_blank")}>
+    if (state.locations[group.location_id].name === "Online" && group.group_status === "active" && inGroup) {
+        const callButton = group.call_url && (
+            <PartyGroupLayoutButton color="success" onClick={() => window.open(group.call_url, "_blank")}>
                 Join Call
-            </AppointmentLayoutButton>
+            </PartyGroupLayoutButton>
         );
-        const docButton = group.helper.doc_url && (
-            <AppointmentLayoutButton color="info" onClick={() => window.open(group.helper.doc_url, "_blank")}>
+        const docButton = group.doc_url && (
+            <PartyGroupLayoutButton color="info" onClick={() => window.open(group.doc_url, "_blank")}>
                 Open Shared Document
-            </AppointmentLayoutButton>
+            </PartyGroupLayoutButton>
         );
         if (callButton || docButton) {
             onlineButtons = (
                 <React.Fragment>
                     {callButton}
                     {docButton}
-                    {actionButton && <hr />}
                 </React.Fragment>
             )
         }
     }
 
+    const [description, setDescription] = React.useState("");
+
+    React.useEffect(() => {if (group) setDescription(group.description)}, [group && group.description]);
+
+    const handleDescriptionSubmit = () => {
+        app.makeRequest('update_group', {
+            id: groupID,
+            description,
+        });
+    };
+
     return (
         <div>
             <Navbar state={state} mode="party"/>
             <div className="container">
+                <Messages messages={state.messages}/>
                 <br/>
                 <h2 className="list-group-item-heading text-center">
                     {state.assignments[group.assignment_id].name}
                     {" "}
-                    {group.question}
+                    {ticketQuestion(state, group)}
                     <small className="clearfix">
                         {group.group_status[0].toUpperCase() + group.group_status.slice(1)}
                         {" "}
@@ -118,8 +95,24 @@ function PartyGroupLayout({ state, match, loadGroup, socket }) {
                         {" "}
                         {state.locations[group.location_id].name}
                     </small>
-                    <p className="ticket-view-text text-center"> Created 2 hours ago </p>
-                    <hr/>
+                    <p className="ticket-view-text text-center">Created {ticketTimeAgo(group)}.</p>
+                    </h2>
+                    <div className="row">
+                        <div className="col-xs-12 col-md-6 col-md-offset-3">
+                            <hr/>
+                            <DescriptionBox
+                                locked={!inGroup}
+                                state={state}
+                                ticket={group}
+                                description={description}
+                                prompt="Encourage others to join the group!"
+                                placeholder="Hi! Anyone else want to work on this problem with me?"
+                                onChange={setDescription}
+                                onSubmit={handleDescriptionSubmit}
+                            />
+                        </div>
+                    </div>
+                    <hr />
                     {(onlineButtons || actionButton) && (
                         <div className="row">
                             <div className="col-xs-12 col-md-6 col-md-offset-3">
@@ -130,19 +123,47 @@ function PartyGroupLayout({ state, match, loadGroup, socket }) {
                             </div>
                         </div>
                     )}
-                </h2>
-
-                <Messages messages={state.messages}/>
-
-                {state.locations[group.location_id].name === "Online" && (
-                    <ChatBox
-                        key={group.id}
-                        currentUser={state.currentUser}
-                        socket={socket}
-                        id={group.id}
-                        mode="group"
-                    />
-                )}
+                <div className="card-holder">
+                    {ticketActive && (
+                        <div>
+                            <div className="panel panel-primary">
+                                <div className="panel-heading">
+                                    <h3 className="panel-title">
+                                        Your Ticket
+                                    </h3>
+                                </div>
+                                <div className="panel-body">
+                                    <p className="ticket-view-text text-center"> {ticketStatus(state, ticket)} </p>
+                                    <hr />
+                                    <TicketButtons embedded state={state} ticket={ticket} />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    <div>
+                        {group.attendees.map(attendance => (
+                            <div className="panel panel-default">
+                                <div className="panel-heading">
+                                    <h3 className="panel-title">
+                                        {attendance.user.isStaff ? "Staff" : "Student"}
+                                    </h3>
+                                </div>
+                                <div className="panel-body">
+                                    {attendance.user.name}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    {state.locations[group.location_id].name === "Online" && (
+                        <ChatBox
+                            key={group.id}
+                            currentUser={state.currentUser}
+                            socket={socket}
+                            id={group.id}
+                            mode="group"
+                        />
+                    )}
+                </div>
 
                 {state.config.ticket_prompt &&
                 <div className="row">
@@ -157,9 +178,10 @@ function PartyGroupLayout({ state, match, loadGroup, socket }) {
     )
 }
 
-function AppointmentLayoutButton({ color, children, onClick }) {
+function PartyGroupLayoutButton({ color, children, disabled, onClick }) {
     return (
         <button className={`btn btn-${color} btn-lg btn-block`}
+                disabled={disabled}
                 onClick={onClick}>
             {children}
         </button>

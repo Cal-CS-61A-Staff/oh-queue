@@ -41,10 +41,11 @@ def student_json(user):
     return user_json(user)
 
 def ticket_json(ticket):
+    group = Group.query.filter_by(ticket_id=ticket.id).one_or_none()
     return {
         'id': ticket.id,
         'status': ticket.status.name,
-        'user': student_json(ticket.user),
+        'user': user_json(ticket.user) if group else student_json(ticket.user),
         'created': ticket.created.isoformat(),
         'rerequest_threshold': ticket.rerequest_threshold and ticket.rerequest_threshold.isoformat(),
         'hold_time': ticket.hold_time and ticket.hold_time.isoformat(),
@@ -57,6 +58,7 @@ def ticket_json(ticket):
         'helper': ticket.helper and user_json(ticket.helper),
         'call_url': ticket.call_url,
         'doc_url': ticket.doc_url,
+        'group_id': group.id if group else None,
     }
 
 def assignment_json(assignment):
@@ -120,6 +122,7 @@ def signup_json(signup: AppointmentSignup):
 def group_json(group: Group):
     return {
         'id': group.id,
+        'created': group.created.isoformat(),
         'attendees': [
             group_attendance_json(attendance)
             for attendance in group.attendees
@@ -411,9 +414,32 @@ def has_ticket_access(f):
         ticket = Ticket.query.filter_by(id=ticket_id, course=get_course()).one_or_none()
         if not ticket:
             return socket_error('Invalid ticket ID')
-        if not (current_user.is_staff or ticket.user.id == current_user.id):
+        group = Group.query.filter_by(ticket_id=ticket_id, course=get_course()).one_or_none()
+        if group:
+            if not (current_user.is_staff or is_member_of(group)):
+                return socket_unauthorized()
+        elif not (current_user.is_staff or ticket.user.id == current_user.id):
             return socket_unauthorized()
         kwds['ticket'] = ticket
+        return f(*args, **kwds)
+    return wrapper
+
+
+def has_group_access(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwds):
+        if not current_user.is_authenticated:
+            return socket_unauthorized()
+        data = args[0]
+        group_id = data.get('id')
+        if not group_id:
+            return socket_error('Invalid group ID')
+        group = Group.query.filter_by(id=group_id, course=get_course()).one_or_none()
+        if not group:
+            return socket_error('Invalid group ID')
+        if not (current_user.is_staff or is_member_of(group)):
+            return socket_unauthorized()
+        kwds['group'] = group
         return f(*args, **kwds)
     return wrapper
 
@@ -616,12 +642,20 @@ def get_next_ticket(location=None):
 def next_ticket(ticket_ids):
     return get_next_ticket()
 
+def is_member_of(group):
+    return any(
+        attendance.user.id == current_user.id
+        for attendance in group.attendees
+        if attendance.group_attendance_status == GroupAttendanceStatus.present
+    )
+
 @socketio.on('delete')
 @logged_in
 def delete(ticket_ids):
     tickets = get_tickets(ticket_ids)
     for ticket in tickets:
-        if not (current_user.is_staff or ticket.user.id == current_user.id):
+        ticket_group = Group.query.filter_by(ticket_id=ticket.id, course=get_course()).one_or_none()
+        if not (current_user.is_staff or ticket.user.id == current_user.id or ticket_group and is_member_of(ticket_group)):
             return socket_unauthorized()
         ticket.status = TicketStatus.deleted
         emit_event(ticket, TicketEventType.delete)
@@ -1125,12 +1159,8 @@ def send_chat_message(data):
 
     elif mode == "group":
         group = Group.query.filter_by(course=get_course(), id=event_id).one()
-        if not current_user.is_staff:
-            for attendance in group.attendees:
-                if attendance.user.id == current_user.id:
-                    break
-            else:
-                return socket_unauthorized()
+        if not current_user.is_staff and not is_member_of(group):
+            return socket_unauthorized()
         emit_message(data)
 
 
@@ -1250,6 +1280,9 @@ def leave_current_groups():
         other_attendances = GroupAttendance.query.filter_by(group=prev_attendance.group, group_attendance_status=GroupAttendanceStatus.present).all()
         if not other_attendances:
             prev_attendance.group.group_status = GroupStatus.resolved
+            if prev_attendance.group.ticket:
+                prev_attendance.group.ticket.status = TicketStatus.resolved
+                emit_event(prev_attendance.group.ticket, TicketEventType.resolve)
             db.session.commit()
             emit_group_event(prev_attendance.group, "group_closed")
         else:
@@ -1310,6 +1343,7 @@ def create(form):
         group_status=GroupStatus.active,
         assignment=assignment,
         location=location,
+        description="Hi! Anyone else want to work on this problem with me?",
         question=question,
         course=get_course(),
         call_url=call_link,
@@ -1346,7 +1380,7 @@ def load_group(group_id):
 
 @socketio.on("join_group")
 def join_group(group_id):
-    group = Group.query.filter_by(id=group_id, course=get_course()).one()
+    group = Group.query.filter_by(id=group_id, course=get_course(), group_status=GroupStatus.active).one()
     leave_current_groups()
     attendance = GroupAttendance(
         group=group,
@@ -1360,3 +1394,58 @@ def join_group(group_id):
     emit_group_event(group, "group_joined")
 
     return socket_redirect(group_id=group_id)
+
+
+@socketio.on("leave_group")
+def leave_group(group_id):
+    leave_current_groups()
+    return socket_redirect()
+
+
+@socketio.on('update_group')
+@has_group_access
+def update_group(data, group):
+    if 'description' in data:
+        group.description = data['description']
+    if 'location_id' in data:
+        group.location = Location.query.filter_by(course=get_course(), id=data['location_id']).one_or_none()
+    db.session.commit()
+    emit_group_event(group, "update_group")
+    return group_json(group)
+
+
+@socketio.on('create_group_ticket')
+@has_group_access
+def create_group_ticket(data, group):
+    is_queue_open = ConfigEntry.query.filter_by(course=get_course(), key='is_queue_open').one()
+    if is_queue_open.value != 'true':
+        return socket_error(
+            'The queue is closed',
+            category='warning',
+        )
+    if group.ticket and group.ticket.status not in [TicketStatus.resolved, TicketStatus.deleted] or Ticket.for_user(current_user):
+        return socket_error(
+            'You are already on the queue',
+            category='warning',
+        )
+
+    ticket = Ticket(
+        status=TicketStatus.pending,
+        user=current_user,
+        assignment=group.assignment,
+        location=group.location,
+        question=group.question,
+        description="This ticket is associated with a group.",
+        course=get_course(),
+        call_url=group.call_url,
+        doc_url=group.doc_url,
+    )
+
+    db.session.add(ticket)
+    db.session.commit()
+
+    group.ticket = ticket
+    db.session.commit()
+
+    emit_event(ticket, TicketEventType.create)
+    emit_group_event(group, "group_ticket_created")

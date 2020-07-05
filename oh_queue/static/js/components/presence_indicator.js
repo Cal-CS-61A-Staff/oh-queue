@@ -1,4 +1,4 @@
-let PresenceIndicator = ({ state, hideWaitTime }) => {
+let PresenceIndicator = ({ state, hideWaitTime, hideWelcome }) => {
     let presence = state.presence;
     let numStudentsOnline = presence && presence.students ? presence.students : 0;
     let numStaffOnline = presence && presence.staff ? presence.staff : 0;
@@ -88,12 +88,12 @@ let PresenceIndicator = ({ state, hideWaitTime }) => {
             </div>
             }
 
-            <div className="alert alert-info alert-dismissable fade in" role="alert">
+            {!hideWelcome && <div className="alert alert-info alert-dismissable fade in" role="alert">
                 <button type="button" className="close" aria-label="Close" data-dismiss="alert">
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <ReactMarkdown source={welcomeMessage}/>
-            </div>
+            </div>}
 
             {state.config.online_active === "true" && state.currentUser && state.currentUser.isStaff &&
             [state.config.students_set_online_link, state.config.students_set_online_doc].includes("false") && (

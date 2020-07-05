@@ -31,6 +31,7 @@ type Ticket = {
   helper: ?User,
   call_url: string,
   doc_url: string,
+  group_id: number,
 };
 
 type TicketAssignment = {
@@ -158,7 +159,7 @@ function ticketDisplayTime(ticket: Ticket): string {
   return moment.utc(ticket.created).local().format('h:mm A')
 }
 
-function ticketTimeAgo(ticket: Ticket): string {
+function ticketTimeAgo(ticket: Ticket | Group): string {
   return moment.utc(ticket.created).fromNow()
 }
 
@@ -206,7 +207,7 @@ function ticketStatus(state: State, ticket: Ticket): string {
   } else if (ticket.status === 'deleted') {
     return 'Deleted';
   } else if (ticket.status === "juggled") {
-    return "Working solo";
+    return ticket.group_id ? "Working in a group" : "Working solo";
   } else if (ticket.status === "rerequested") {
     return `Waiting for ${isTicketHelper(state, ticket) ? "you" : ticket.helper ? ticket.helper.name : "any assistant"} to come back`
   } else {
@@ -452,4 +453,18 @@ function setGroup(state: State, group: Group): void {
   }
   state.groups.push(group);
   state.groups.sort(group => group.id);
+}
+
+function groupIsActive(group: Group): boolean {
+    return group.group_status === "active";
+}
+
+function groupIsMine(state: State, group: Group): boolean {
+    return state.currentUser && group.attendees.some(attendance => attendance.user.id === state.currentUser.id);
+}
+
+function getMyGroup(state: State): ?Ticket {
+  return Array.from(state.groups.values()).find(group =>
+    groupIsActive(group) && groupIsMine(state, group)
+  );
 }

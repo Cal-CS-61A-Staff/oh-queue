@@ -2,7 +2,7 @@ let RequestForm = (props) => {
     let state = props.state;
     const disabled = !JSON.parse(state.config.is_queue_open);
     const appointments = JSON.parse(state.config.appointments_open);
-    let party_enabled = state.config.party_enabled;
+    let party_enabled = state.config.party_enabled && !props.forceTicket;
     let descriptionRequired = state.config.description_required === "true";
 
     let submit = (e) => {

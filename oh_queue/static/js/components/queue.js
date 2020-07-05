@@ -1,7 +1,8 @@
 let Queue = ({state}) => {
   let staff = isStaff(state);
   let myTicket = getMyTicket(state);
-  let showJumbotron = !staff && !myTicket;
+  let canAddTicket = !staff && !myTicket;
+  let showJumbotron = canAddTicket && !state.config.party_enabled;
   const myAssignedTickets = getTickets(state, 'assigned').filter(ticket => isTicketHelper(state, ticket));
   let pendingTickets = [].concat(...getTickets(state, "rerequested").filter(ticket => isTicketHelper(state, ticket) || !ticket.helper))
                          .concat(...getTickets(state, 'pending'))
@@ -24,8 +25,15 @@ let Queue = ({state}) => {
     <div>
       {showJumbotron && <Jumbotron state={state}/>}
       <div className={containerClass}>
+        {!showJumbotron && canAddTicket && (
+            <div className="col-xs-8 col-xs-offset-2">
+                <div className="request-form">
+                    <RequestForm state={state} forceTicket />
+                </div>
+            </div>
+        )}
         {!showJumbotron && <Messages messages={state.messages}/>}
-        <PresenceIndicator state={state} />
+        <PresenceIndicator state={state} hideWelcome={state.config.party_enabled} />
         <MyAppointments state={state} />
         <MyAssignedTickets state={state} tickets={myAssignedTickets} />
         {!!myAssignedTickets.length && <hr />}
