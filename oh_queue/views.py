@@ -120,7 +120,11 @@ def signup_json(signup: AppointmentSignup):
 def group_json(group: Group):
     return {
         'id': group.id,
-        'attendees': [group_attendance_json(attendance) for attendance in group.attendees],
+        'attendees': [
+            group_attendance_json(attendance)
+            for attendance in group.attendees
+            if attendance.group_attendance_status == GroupAttendanceStatus.present
+        ],
         'location_id': group.location_id,
         'ticket_id': group.ticket_id,
         'assignment_id': group.assignment_id,
@@ -1098,12 +1102,12 @@ def update_staff_online_setup(data):
 @socketio.on("send_chat_message")
 @logged_in
 def send_chat_message(data):
-    is_appointment = data.get("isAppointment")
+    mode = data.get("mode")
     event_id = data["id"]
 
     data["sender"] = user_json(current_user)
 
-    if is_appointment:
+    if mode == "appointment":
         appointment = Appointment.query.filter_by(course=get_course(), id=event_id).one()
         if not current_user.is_staff:
             for signup in appointment.signups:
@@ -1113,11 +1117,22 @@ def send_chat_message(data):
                 return socket_unauthorized()
         emit_message(data)
 
-    else:
+    elif mode == "ticket":
         ticket = Ticket.query.filter_by(course=get_course(), id=event_id).one()
         if not current_user.is_staff and ticket.user_id != current_user.id:
             return socket_unauthorized()
         emit_message(data)
+
+    elif mode == "group":
+        group = Group.query.filter_by(course=get_course(), id=event_id).one()
+        if not current_user.is_staff:
+            for attendance in group.attendees:
+                if attendance.user.id == current_user.id:
+                    break
+            else:
+                return socket_unauthorized()
+        emit_message(data)
+
 
 
 @socketio.on("bulk_appointment_action")
@@ -1227,16 +1242,7 @@ def appointment_summary():
     send_appointment_summary(app, get_course())
 
 
-@socketio.on('create_group')
-@logged_in
-def create(form):
-    party_enabled = ConfigEntry.query.filter_by(course=get_course(), key='party_enabled').one()
-    if party_enabled.value != 'true':
-        return socket_error(
-            'Party mode is not enabled.',
-            category='warning',
-        )
-
+def leave_current_groups():
     prev_attendance = GroupAttendance.query.filter_by(user_id=current_user.id, group_attendance_status=GroupAttendanceStatus.present).one_or_none()
     if prev_attendance:
         prev_attendance.group_attendance_status = GroupAttendanceStatus.gone
@@ -1248,6 +1254,17 @@ def create(form):
             emit_group_event(prev_attendance.group, "group_closed")
         else:
             emit_group_event(prev_attendance.group, "group_left")
+
+
+@socketio.on('create_group')
+@logged_in
+def create(form):
+    party_enabled = ConfigEntry.query.filter_by(course=get_course(), key='party_enabled').one()
+    if party_enabled.value != 'true':
+        return socket_error(
+            'Party mode is not enabled.',
+            category='warning',
+        )
 
     assignment_id = form.get('assignment_id')
     location_id = form.get('location_id')
@@ -1287,6 +1304,8 @@ def create(form):
             category='warning',
         )
 
+    leave_current_groups()
+
     group = Group(
         group_status=GroupStatus.active,
         assignment=assignment,
@@ -1313,3 +1332,31 @@ def create(form):
     emit_group_event(group, "group_created")
 
     return socket_redirect(group_id=group.id)
+
+
+@socketio.on('load_group')
+@is_staff
+def load_group(group_id):
+    if not group_id:
+        return socket_error('Invalid group ID')
+    group = Group.query.filter_by(id=group_id, course=get_course()).one()
+    if group:
+        return group_json(group)
+
+
+@socketio.on("join_group")
+def join_group(group_id):
+    group = Group.query.filter_by(id=group_id, course=get_course()).one()
+    leave_current_groups()
+    attendance = GroupAttendance(
+        group=group,
+        user=current_user,
+        group_attendance_status=GroupAttendanceStatus.present,
+        course=get_course()
+    )
+    db.session.add(attendance)
+    db.session.commit()
+
+    emit_group_event(group, "group_joined")
+
+    return socket_redirect(group_id=group_id)

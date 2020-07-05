@@ -20,13 +20,12 @@ let Jumbotron = ({ state }) => {
         var contents = <RequestForm state={state} />;
     }
 
-    if (party_enabled) {
+    if (state.currentUser && party_enabled) {
         subtitleText = "Join an existing group, or create a new one!";
     }
-    else if (appointments && !isQueueOpen) {
+    else if (state.currentUser && appointments && !isQueueOpen) {
         subtitleText = " Click the button to make an appointment for a future OH!"
     }
-
 
     return (
         <div className="jumbotron blue">

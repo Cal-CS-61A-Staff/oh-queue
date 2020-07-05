@@ -186,7 +186,7 @@ function AppointmentLayout({ state, match, loadAppointment, socket }) {
                         currentUser={state.currentUser}
                         socket={socket}
                         id={appointment.id}
-                        isAppointment
+                        mode="appointment"
                     />
                 )}
 

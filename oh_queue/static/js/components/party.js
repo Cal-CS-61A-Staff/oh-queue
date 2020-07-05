@@ -20,11 +20,18 @@ let Party = ({ match, state, children }) => {
             <OfflineIndicator offline={state.offline && state.loaded}/>
             <div>
                 {showJumbotron && <Jumbotron state={state}/>}
-                <div className={containerClass}>
-                    {!showJumbotron && <Messages messages={state.messages}/>}
-                    <PresenceIndicator state={state} hideWaitTime />
-                    {state.groups.toString()}
-
+                {!showJumbotron && <Messages messages={state.messages}/>}
+            </div>
+            <div className={containerClass}>
+                <div className="row">
+                <PresenceIndicator state={state} hideWaitTime />
+                </div>
+                <div className="row">
+                    <div className="card-holder">
+                        {state.groups.filter((group: Group) => group.group_status === "active").map(group => (
+                            <GroupCard group={group} state={state} />
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

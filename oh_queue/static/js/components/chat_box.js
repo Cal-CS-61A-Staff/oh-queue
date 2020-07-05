@@ -1,4 +1,4 @@
-function ChatBox({ currentUser, socket, id, isAppointment }) {
+function ChatBox({ currentUser, socket, id, mode }) {
     const [messages, setMessages] = React.useState([]);
 
     const [typed, setTyped] = React.useState("");
@@ -21,7 +21,7 @@ function ChatBox({ currentUser, socket, id, isAppointment }) {
         }
         app.makeRequest("send_chat_message", {
             content: typed,
-            isAppointment: isAppointment,
+            mode,
             id,
         });
         setTyped("");
@@ -36,7 +36,7 @@ function ChatBox({ currentUser, socket, id, isAppointment }) {
 
     React.useEffect(() => {
         socket.on("chat_message", (message) => {
-            if (message.isAppointment !== isAppointment || message.id !== id) {
+            if (message.mode !== mode || message.id !== id) {
                 return;
             }
             setMessages(messages.concat([[message.sender, message.content]]));

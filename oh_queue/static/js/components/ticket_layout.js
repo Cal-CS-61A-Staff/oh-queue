@@ -64,6 +64,7 @@ class TicketLayout extends React.Component {
                       key={id}
                       currentUser={state.currentUser}
                       socket={this.props.socket}
+                      mode="ticket"
                       id={id}/>
                 </div>
               </div>

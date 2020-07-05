@@ -40,6 +40,7 @@ class App extends React.Component {
 
     this.loadTicket = this.loadTicket.bind(this);
     this.loadAppointment = this.loadAppointment.bind(this);
+    this.loadGroup = this.loadGroup.bind(this);
   }
 
   refresh() {
@@ -175,6 +176,15 @@ class App extends React.Component {
     }
   }
 
+  loadGroup(id) {
+    if (isStaff(this.state)) {
+        this.socket.emit('load_group', id, (group) => {
+            setAppointment(this.state, group);
+            this.refresh();
+        });
+    }
+  }
+
   toggleFilter() {
     this.state.filter.enabled = !this.state.filter.enabled;
     this.refresh();
@@ -247,6 +257,7 @@ class App extends React.Component {
             <Route path="/presence" render={(props) => (<PresenceIndicator state={state} {...props} />)} />
             <Route path="/tickets/:id" render={(props) => (<TicketLayout state={state} socket={this.socket} loadTicket={this.loadTicket} {...props} />)} />
             <Route path="/appointments/:id" render={(props) => (<AppointmentLayout state={state} socket={this.socket} loadAppointment={this.loadAppointment} {...props} />)} />
+            <Route path="/groups/:id" render={(props) => (<PartyGroupLayout state={state} socket={this.socket} loadGroup={this.loadGroup} {...props} />)} />
             <Route path="/user/:id" render={(props) => (<UserLayout state={state} {...props} />)} />
             <Route render={(props) => (<ErrorView state={state} {...props} message="Page Not Found" />)} />
           </Switch>

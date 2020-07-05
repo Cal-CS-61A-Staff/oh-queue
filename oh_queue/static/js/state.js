@@ -186,7 +186,7 @@ function ticketLocation(state: State, ticket: Ticket): TicketLocation {
   return state.locations[ticket.location_id];
 }
 
-function ticketQuestion(state: State, ticket: Ticket): string {
+function ticketQuestion(state: State, ticket: Ticket | Group): string {
   var question = ticket.question;
   if (!isNaN(question)) {
     question = "Q" + parseInt(question);
