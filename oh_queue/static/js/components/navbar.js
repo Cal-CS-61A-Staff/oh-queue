@@ -11,7 +11,7 @@ let Navbar = ({ state, mode }) => {
     const words = mode.split("_");
     const title = words.map(word => word[0].toUpperCase() + word.slice(1)).join(" ");
 
-    const partyAsRoot = state.config.party_enabled && !isStaff(state);
+    const partyAsRoot = isPartyRoot(state);
     const defaultMode = partyAsRoot ? "party" : "queue";
 
     return (

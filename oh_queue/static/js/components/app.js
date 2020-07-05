@@ -240,7 +240,7 @@ class App extends React.Component {
     let { BrowserRouter, Route, Switch } = ReactRouterDOM;
     let state = this.state;
 
-    const Root = state.config.party_enabled && !isStaff(state) ? Party : Home;
+    const Root = isPartyRoot(state) ? Party : Home;
 
     return (
       <BrowserRouter ref={(router) => this.router = router}>

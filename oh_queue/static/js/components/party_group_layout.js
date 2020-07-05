@@ -17,12 +17,15 @@ function PartyGroupLayout({ state, match, loadGroup, socket }) {
         <React.Fragment>
             <PartyGroupLayoutButton
                 color="default"
-                disabled={ticketActive}
+                disabled={ticketActive || !JSON.parse(state.config.is_queue_open)}
                 onClick={() => app.makeRequest("create_group_ticket", {id: group.id})}
             >
                 {ticketActive ?
                     `${ticket.user.shortName} has asked for help` :
-                    "Ask for Help (as a group)"}
+                    JSON.parse(state.config.is_queue_open) ?
+                        "Ask for Help (as a group)" :
+                        "Queue is currently closed"
+                }
             </PartyGroupLayoutButton>
             <hr />
             <PartyGroupLayoutButton color="danger" onClick={() => app.makeRequest("leave_group", group.id, true)}>
