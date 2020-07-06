@@ -7,7 +7,7 @@ let Party = ({ match, state, children }) => {
 
     if (!state.loaded) return null;
 
-    const showJumbotron = !isStaff(state);
+    const showJumbotron = !isStaff(state) && !getMyGroup(state);
 
     let containerClass = classNames({
         'container': true,
@@ -27,10 +27,13 @@ let Party = ({ match, state, children }) => {
                 <PresenceIndicator state={state} hideWaitTime />
                 </div>
                 <div className="row">
-                    <div className="card-holder">
-                        {state.groups.filter((group: Group) => group.group_status === "active").map(group => (
-                            <GroupCard group={group} state={state} />
-                        ))}
+                    <div className="col-xs-12">
+                        <MyAppointments state={state} />
+                        <div className="card-holder">
+                            {state.groups.filter((group: Group) => group.group_status === "active").map(group => (
+                                <GroupCard group={group} state={state} />
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
