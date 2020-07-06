@@ -1452,3 +1452,17 @@ def create_group_ticket(data, group):
 
     emit_event(ticket, TicketEventType.create)
     emit_group_event(group, "group_ticket_created")
+
+
+@socketio.on('delete_group')
+@is_staff
+def delete(group_id):
+    group = Group.query.filter_by(id=group_id, course=get_course()).one()
+    group.group_status = GroupStatus.resolved
+    for attendance in group.attendees:
+        attendance.group_attendance_status = GroupAttendanceStatus.gone
+    emit_group_event(group, "group_closed")
+    if group.ticket:
+        group.ticket.status = TicketStatus.deleted
+        emit_event(group.ticket, TicketEventType.delete)
+    db.session.commit()

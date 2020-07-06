@@ -53,6 +53,17 @@ function GroupCard({ group, state }: { group: Group, state: State }) {
                 &middot;
                 {" "}
                 {state.locations[group.location_id].name}
+                <div className="btn-group" role="group" style={{float: "right"}}>
+                {isStaff(state) && (
+                    <button type="button"
+                            className="btn btn-xs btn-default"
+                            onClick={() => app.makeRequest("delete_group", group.id)}
+                    >
+                        <span className="glyphicon glyphicon-trash" aria-hidden="true"/>
+                    </button>
+                )}
+            </div>
+
             </div>
             <div className="panel-body">
                 {inGroup ? (

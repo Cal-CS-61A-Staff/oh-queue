@@ -179,7 +179,7 @@ class App extends React.Component {
   loadGroup(id) {
     if (isStaff(this.state)) {
         this.socket.emit('load_group', id, (group) => {
-            setAppointment(this.state, group);
+            setGroup(this.state, group);
             this.refresh();
         });
     }
