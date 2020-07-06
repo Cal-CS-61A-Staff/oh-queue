@@ -44,8 +44,9 @@ function ChatBox({ currentUser, socket, id, mode }) {
                 return;
             }
             setMessages(messages.concat([[message.sender, message.content]]));
-        })
-    });
+        });
+        return () => socket.removeAllListeners("chat_message");
+    }, [messages]);
 
     const body = messages.map(([sender, message], i) => {
         if (sender.id === currentUser.id) {
