@@ -233,7 +233,7 @@ function getTicket(state: State, id: number): ?Ticket {
 }
 
 function setTicket(state: State, ticket: Ticket): void {
-  if (ticketIsMine(state, ticket)) {
+  if (ticketIsMine(state, ticket, true)) {
     let oldTicket = getMyTicket(state);
     if (oldTicket) {
       if (oldTicket.status === "pending" && ticket.status === "assigned") {
@@ -295,8 +295,10 @@ function applyFilter(filter: Filter, tickets: Array<Ticket>): Array<Ticket> {
   return tickets;
 }
 
-function ticketIsMine(state: State, ticket: Ticket): boolean {
-  return state.currentUser != null && ticket.user && state.currentUser.id === ticket.user.id;
+function ticketIsMine(state: State, ticket: Ticket, includeGroup: boolean): boolean {
+  return state.currentUser != null && (
+      ticket.user && state.currentUser.id === ticket.user.id ||
+      includeGroup && getMyGroup(state) && getMyGroup(state).id === ticket.group_id);
 }
 
 function isTicketHelper(state: State, ticket: Ticket): boolean {

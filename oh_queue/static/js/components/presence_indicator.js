@@ -78,13 +78,15 @@ let PresenceIndicator = ({ state, hideWaitTime, hideWelcome }) => {
     return (
         <div className="col-xs-12">
 
-            {state.config.is_queue_open === "false" && state.currentUser && state.currentUser.isStaff &&
+            {!hideWaitTime && state.config.is_queue_open === "false" && (state.config.party_enabled || isStaff(state)) &&
             <div className="alert alert-danger alert-dismissable fade in" role="alert">
                 <button type="button" className="close" aria-label="Close" data-dismiss="alert">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h3>Queue is currently closed!</h3>
-                <button className="btn btn-primary" onClick={openQueue}>Open queue</button>
+                <h3>The queue is currently closed!</h3>
+                {state.currentUser && state.currentUser.isStaff && (
+                    <button className="btn btn-primary" onClick={openQueue}>Open queue</button>
+                )}
             </div>
             }
 

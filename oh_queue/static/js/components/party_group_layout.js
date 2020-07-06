@@ -13,6 +13,29 @@ function PartyGroupLayout({ state, match, loadGroup, socket }) {
 
     const inGroup = groupIsMine(state, group);
 
+    const handleLeaveGroup = () => {
+        const leave = () => app.makeRequest("leave_group", group.id, true);
+
+        if (ticketActive && ticket.user.id === state.currentUser.id) {
+            Swal.fire({
+              title: 'Are you sure?',
+              text: "You have created a ticket for this group. If you leave the group, the" +
+                  " ticket will be deleted!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes, do it!'
+            }).then((result) => {
+              if (result.value) {
+                leave();
+              }
+            });
+        } else {
+            leave();
+        }
+    };
+
     const actionButton = inGroup ? (
         <React.Fragment>
             <PartyGroupLayoutButton
@@ -28,7 +51,7 @@ function PartyGroupLayout({ state, match, loadGroup, socket }) {
                 }
             </PartyGroupLayoutButton>
             <hr />
-            <PartyGroupLayoutButton color="danger" onClick={() => app.makeRequest("leave_group", group.id, true)}>
+            <PartyGroupLayoutButton color="danger" onClick={handleLeaveGroup}>
                 Leave Group
             </PartyGroupLayoutButton>
         </React.Fragment>

@@ -27,7 +27,7 @@ function TicketLayout({ loadTicket, state, socket, match }) {
         }
     }
 
-    if (!isStaff(state) && !ticketIsMine(state, ticket)) {
+    if (!isStaff(state) && !ticketIsMine(state, ticket, true)) {
         return <NotFound/>;
     }
 

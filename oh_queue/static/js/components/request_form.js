@@ -1,9 +1,10 @@
 let RequestForm = (props) => {
     let state = props.state;
     const forceTicket = props.forceTicket;
+    const is_queue_open = JSON.parse(state.config.is_queue_open);
     const appointments = JSON.parse(state.config.appointments_open);
     let party_enabled = state.config.party_enabled && !forceTicket;
-    const disabled = !party_enabled && !JSON.parse(state.config.is_queue_open);
+    const disabled = !party_enabled && !is_queue_open;
     let descriptionRequired = state.config.description_required === "true";
 
     let submit = (e) => {
@@ -51,8 +52,12 @@ let RequestForm = (props) => {
 
     const history = ReactRouterDOM.useHistory();
 
-    const openAppointments = () => {
-        history.push("/appointments");
+    const openAlternative = () => {
+        if (is_queue_open && party_enabled) {
+             history.push("/queue");
+        } else {
+            history.push("/appointments");
+        }
     };
 
     let { assignments, locations } = state;
@@ -141,10 +146,15 @@ let RequestForm = (props) => {
                         </div>
                     </React.Fragment>
                 )}
-                {appointments &&
+                {((party_enabled && (appointments || is_queue_open)) || (appointments && (!forceTicket || is_queue_open))) &&
                 <div className="form-group form-group-lg">
-                    <button className="btn btn-lg btn-default" onClick={openAppointments}>
-                        {disabled ? "Schedule Appointment" : "Or make an appointment"}
+                    <button className="btn btn-lg btn-default" onClick={openAlternative}>
+                        {party_enabled && is_queue_open ?
+                            "Or ask staff privately" :
+                            disabled ?
+                                "Schedule Appointment" :
+                                "Or make an appointment"
+                        }
                     </button>
                 </div>
                 }

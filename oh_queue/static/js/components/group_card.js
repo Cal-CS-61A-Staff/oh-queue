@@ -21,7 +21,26 @@ function GroupCard({ group, state }: { group: Group, state: State }) {
     const joinText = group.attendees.length === 1 ? `Join ${ownerName}!` : `Join ${ownerName} and ${group.attendees.length - 1} others!`;
 
     const joinGroup = () => {
-        app.makeRequest("join_group", group.id, true);
+        const join = () => app.makeRequest("join_group", group.id, true);
+        const ticket = getMyTicket(state);
+        if (ticket && ticket.group_id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You have created a ticket for your previous group. If you switch groups," +
+                    " that ticket will be deleted",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, do it!'
+            }).then((result) => {
+                if (result.value) {
+                    join();
+                }
+            });
+        } else {
+            join()
+        }
     };
 
     return (

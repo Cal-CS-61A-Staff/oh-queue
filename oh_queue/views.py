@@ -1278,11 +1278,14 @@ def leave_current_groups():
         prev_attendance.group_attendance_status = GroupAttendanceStatus.gone
         db.session.commit()
         other_attendances = GroupAttendance.query.filter_by(group=prev_attendance.group, group_attendance_status=GroupAttendanceStatus.present).all()
+
+        if prev_attendance.group.ticket and (not other_attendances or prev_attendance.group.ticket.user_id == current_user.id):
+            # delete the ticket if the group is closed or the ticket creator leaves
+            prev_attendance.group.ticket.status = TicketStatus.deleted
+            emit_event(prev_attendance.group.ticket, TicketEventType.delete)
+
         if not other_attendances:
             prev_attendance.group.group_status = GroupStatus.resolved
-            if prev_attendance.group.ticket:
-                prev_attendance.group.ticket.status = TicketStatus.resolved
-                emit_event(prev_attendance.group.ticket, TicketEventType.resolve)
             db.session.commit()
             emit_group_event(prev_attendance.group, "group_closed")
         else:
