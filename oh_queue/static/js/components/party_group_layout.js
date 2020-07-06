@@ -58,11 +58,13 @@ function PartyGroupLayout({ state, match, loadGroup, socket }) {
     ) : (
         <React.Fragment>
             {group.group_status === "active" &&
-                <PartyGroupLayoutButton color="primary" onClick={() => app.makeRequest("join_group", group.id, true)}>
-                    Join Group
-                </PartyGroupLayoutButton>
+                <React.Fragment>
+                    <PartyGroupLayoutButton color="primary" onClick={() => app.makeRequest("join_group", group.id, true)}>
+                        Join Group
+                    </PartyGroupLayoutButton>
+                    <hr />
+                </React.Fragment>
             }
-            <hr />
             <Link to="/">
                 <PartyGroupLayoutButton color="default" onClick={() => null}>
                     Return to Home
@@ -180,15 +182,13 @@ function PartyGroupLayout({ state, match, loadGroup, socket }) {
                             </div>
                         ))}
                     </div>
-                    {state.locations[group.location_id].name === "Online" && (
-                        <ChatBox
-                            key={group.id}
-                            currentUser={state.currentUser}
-                            socket={socket}
-                            id={group.id}
-                            mode="group"
-                        />
-                    )}
+                    <ChatBox
+                        key={group.id}
+                        currentUser={state.currentUser}
+                        socket={socket}
+                        id={group.id}
+                        mode="group"
+                    />
                 </div>
 
                 {state.config.ticket_prompt &&
