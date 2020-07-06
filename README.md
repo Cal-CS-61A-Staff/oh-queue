@@ -39,6 +39,8 @@ This is a hosted app provided by 61A. To set it up for your own course, visit [A
 
 4. Run the database migrations to setup the initial database.
     ```
+    ./manage.py resetdb
+    ./manage.py seed_data
     ./manage.py db upgrade
     ```
 

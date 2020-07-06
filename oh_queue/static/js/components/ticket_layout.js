@@ -79,19 +79,17 @@ function TicketLayout({ loadTicket, state, socket, match }) {
                     </div>
                 </div>}
                 <TicketButtons state={state} ticket={ticket}/>
-                {location.name === "Online" && (
-                    <div className="row">
-                        <div className="col-xs-12 col-md-6 col-md-offset-3">
-                            <hr/>
-                            <ChatBox
-                                key={id}
-                                currentUser={state.currentUser}
-                                socket={socket}
-                                mode={group ? "group" : "ticket"}
-                                id={group ? group.id : id}/>
-                        </div>
+                <div className="row">
+                    <div className="col-xs-12 col-md-6 col-md-offset-3">
+                        <hr/>
+                        <ChatBox
+                            key={id}
+                            currentUser={state.currentUser}
+                            socket={socket}
+                            mode={group ? "group" : "ticket"}
+                            id={group ? group.id : id}/>
                     </div>
-                )}
+                </div>
                 {state.config.ticket_prompt &&
                 <div className="row">
                     <div className="col-xs-12 col-md-6 col-md-offset-3">

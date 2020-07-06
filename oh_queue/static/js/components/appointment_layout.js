@@ -179,17 +179,13 @@ function AppointmentLayout({ state, match, loadAppointment, socket }) {
                         />
                     ))}
                 </div>
-
-                {state.locations[appointment.location_id].name === "Online" && (
-                    <ChatBox
-                        key={appointment.id}
-                        currentUser={state.currentUser}
-                        socket={socket}
-                        id={appointment.id}
-                        mode="appointment"
-                    />
-                )}
-
+                <ChatBox
+                    key={appointment.id}
+                    currentUser={state.currentUser}
+                    socket={socket}
+                    id={appointment.id}
+                    mode="appointment"
+                />
                 {state.config.ticket_prompt &&
                 <div className="row">
                     <div className="col-xs-12 col-md-6 col-md-offset-3 text-center">
