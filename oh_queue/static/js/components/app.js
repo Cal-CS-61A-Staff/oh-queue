@@ -92,7 +92,7 @@ class App extends React.Component {
         this.state.appointments = Array.from(data.appointments).sort(appointmentTimeComparator);
     }
     if (data.hasOwnProperty('groups')) {
-        this.state.groups = Array.from(data.groups).sort(x => x.i);
+        this.state.groups = Array.from(data.groups).sort(x => x.id);
     }
     this.state.loaded = true;
     this.refresh();
