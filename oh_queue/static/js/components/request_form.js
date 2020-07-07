@@ -29,7 +29,7 @@ let RequestForm = (props) => {
     };
 
     let show = (e) => {
-        if (!descriptionRequired) {
+        if (!descriptionRequired || party_enabled) {
             return submit(e);
         }
         e.preventDefault();
