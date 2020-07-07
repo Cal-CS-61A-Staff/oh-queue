@@ -31,6 +31,7 @@ type Ticket = {
   helper: ?User,
   call_url: string,
   doc_url: string,
+  group_id: number,
 };
 
 type TicketAssignment = {
@@ -78,6 +79,26 @@ type Signup = {
     attendance_status: 'unknown' | 'present' | 'excused' | 'absent',
 }
 
+type Group = {
+    id: number,
+    attendees: Array<GroupAttendance>,
+    location_id: number,
+    ticket_id: ?number,
+    assignment_id: number,
+    question: ?string,
+    description: ?string,
+    group_status: 'active' | 'resolved',
+    call_url: string,
+    doc_url: string,
+}
+
+type GroupAttendance = {
+    id: number,
+    group_id: number,
+    user: User,
+    group_attendance_status: 'present' | 'gone',
+}
+
 
 type State = {
   /* May be null if the user is not logged in. */
@@ -88,12 +109,12 @@ type State = {
   offline: boolean,
   /* Ticket assignments */
   assignments: Map<number, TicketAssignment>,
-  /* Ticket locations */
   appointments: Array<Appointment>,
+  groups: Array<Group>,
   /* Ticket locations */
   locations: Map<number, TicketLocation>,
   /* Server configuration */
-  config: Map<string, string>,
+  config: { [string]: string },
   /* All known tickets, including ones that have been resolved or deleted.
    * We may have to load past tickets asynchronously though.
    * This is an ES6 Map from ticket ID to the ticket data.
@@ -118,6 +139,7 @@ let initialState: State = {
   locations: {},
   config: {},
   appointments: [],
+  groups: [],
   tickets: new Map(),
   loadingTickets: new Set(),
   filter: {
@@ -137,7 +159,7 @@ function ticketDisplayTime(ticket: Ticket): string {
   return moment.utc(ticket.created).local().format('h:mm A')
 }
 
-function ticketTimeAgo(ticket: Ticket): string {
+function ticketTimeAgo(ticket: Ticket | Group): string {
   return moment.utc(ticket.created).fromNow()
 }
 
@@ -165,7 +187,7 @@ function ticketLocation(state: State, ticket: Ticket): TicketLocation {
   return state.locations[ticket.location_id];
 }
 
-function ticketQuestion(state: State, ticket: Ticket): string {
+function ticketQuestion(state: State, ticket: Ticket | Group): string {
   var question = ticket.question;
   if (!isNaN(question)) {
     question = "Q" + parseInt(question);
@@ -185,7 +207,7 @@ function ticketStatus(state: State, ticket: Ticket): string {
   } else if (ticket.status === 'deleted') {
     return 'Deleted';
   } else if (ticket.status === "juggled") {
-    return "Working solo";
+    return ticket.group_id ? "Working in a group" : "Working solo";
   } else if (ticket.status === "rerequested") {
     return `Waiting for ${isTicketHelper(state, ticket) ? "you" : ticket.helper ? ticket.helper.name : "any assistant"} to come back`
   } else {
@@ -211,7 +233,7 @@ function getTicket(state: State, id: number): ?Ticket {
 }
 
 function setTicket(state: State, ticket: Ticket): void {
-  if (ticketIsMine(state, ticket)) {
+  if (ticketIsMine(state, ticket, true)) {
     let oldTicket = getMyTicket(state);
     if (oldTicket) {
       if (oldTicket.status === "pending" && ticket.status === "assigned") {
@@ -273,8 +295,10 @@ function applyFilter(filter: Filter, tickets: Array<Ticket>): Array<Ticket> {
   return tickets;
 }
 
-function ticketIsMine(state: State, ticket: Ticket): boolean {
-  return state.currentUser != null && ticket.user && state.currentUser.id === ticket.user.id;
+function ticketIsMine(state: State, ticket: Ticket, includeGroup: boolean): boolean {
+  return state.currentUser != null && (
+      ticket.user && state.currentUser.id === ticket.user.id ||
+      includeGroup && getMyGroup(state) && getMyGroup(state).id === ticket.group_id);
 }
 
 function isTicketHelper(state: State, ticket: Ticket): boolean {
@@ -415,4 +439,34 @@ function formatAppointmentDurationWithDate(appointment) {
     } else {
         return `${getAppointmentStartTime(appointment).format("dddd, MMMM D")} at ${getAppointmentStartTime(appointment).format("h:mma")}‐${getAppointmentEndTime(appointment).format("h:mma z")} (UTC${getAppointmentEndTime(appointment).format("Z")})`;
     }
+}
+
+function getGroup(state: State, group_id: number) : Group {
+    return state.groups.find(({ id }) => id === group_id);
+}
+
+function setGroup(state: State, group: Group): void {
+  if (!group.id) {
+      return
+  }
+  const oldGroup = getGroup(state, group.id);
+  if (oldGroup) {
+      state.groups.splice(state.groups.indexOf(oldGroup), 1);
+  }
+  state.groups.push(group);
+  state.groups.sort(group => group.id);
+}
+
+function groupIsActive(group: Group): boolean {
+    return group.group_status === "active";
+}
+
+function groupIsMine(state: State, group: Group): boolean {
+    return state.currentUser && group.attendees.some(attendance => attendance.user.id === state.currentUser.id);
+}
+
+function getMyGroup(state: State): ?Ticket {
+  return Array.from(state.groups.values()).find(group =>
+    groupIsActive(group) && groupIsMine(state, group)
+  );
 }

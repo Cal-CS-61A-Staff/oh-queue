@@ -184,7 +184,7 @@ function AppointmentLayout({ state, match, loadAppointment, socket }) {
                     currentUser={state.currentUser}
                     socket={socket}
                     id={appointment.id}
-                    isAppointment
+                    mode="appointment"
                 />
                 {state.config.ticket_prompt &&
                 <div className="row">

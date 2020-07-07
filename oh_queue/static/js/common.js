@@ -43,6 +43,10 @@ function initializeTooltip(elem, options) {
   $(elem).tooltip(options);
 }
 
+function isPartyRoot(state) {
+    return state.config.party_enabled && (!JSON.parse(state.config.is_queue_open) || !isStaff(state));
+}
+
 // The one and only app. Other components may reference this variable.
 // See components/app.js for more documentation
 let app = ReactDOM.render(<App />, document.getElementById('content'));

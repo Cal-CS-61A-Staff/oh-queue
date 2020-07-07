@@ -1,5 +1,9 @@
-function ChatBox({ currentUser, socket, id, isAppointment }) {
-    const [messages, setMessages] = React.useState([]);
+function ChatBox({ currentUser, socket, id, mode }) {
+    const [messages, setMessages] = React.useState([[{
+        shortName: "?", name: "OH Queue Bot"
+    },
+        "This chat is unreliable and only for if you can't connect to Zoom." +
+        " Otherwise, use the Zoom chat!"]]);
 
     const [typed, setTyped] = React.useState("");
 
@@ -21,7 +25,7 @@ function ChatBox({ currentUser, socket, id, isAppointment }) {
         }
         app.makeRequest("send_chat_message", {
             content: typed,
-            isAppointment: isAppointment,
+            mode,
             id,
         });
         setTyped("");
@@ -36,12 +40,13 @@ function ChatBox({ currentUser, socket, id, isAppointment }) {
 
     React.useEffect(() => {
         socket.on("chat_message", (message) => {
-            if (message.isAppointment !== isAppointment || message.id !== id) {
+            if (message.mode !== mode || message.id !== id) {
                 return;
             }
             setMessages(messages.concat([[message.sender, message.content]]));
-        })
-    });
+        });
+        return () => socket.removeAllListeners("chat_message");
+    }, [messages]);
 
     const body = messages.map(([sender, message], i) => {
         if (sender.id === currentUser.id) {
@@ -69,7 +74,7 @@ function ChatBox({ currentUser, socket, id, isAppointment }) {
 
     return (
         <div className="panel panel-default">
-            <div className="panel-heading">Live Chat</div>
+            <div className="panel-heading">⚠️ Emergency Backup Chat ⚠️</div>
             <div className="panel-body">
                 <div className="chat-history" ref={historyRef}>
                 {body}

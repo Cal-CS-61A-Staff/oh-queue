@@ -1,7 +1,10 @@
 let RequestForm = (props) => {
     let state = props.state;
-    let disabled = !!props.disabled;
-    let appointments = props.appointments;
+    const forceTicket = props.forceTicket;
+    const is_queue_open = JSON.parse(state.config.is_queue_open);
+    const appointments = JSON.parse(state.config.appointments_open);
+    let party_enabled = state.config.party_enabled && !forceTicket;
+    const disabled = !party_enabled && !is_queue_open;
     let descriptionRequired = state.config.description_required === "true";
 
     let submit = (e) => {
@@ -21,12 +24,12 @@ let RequestForm = (props) => {
 
         formData['description'] = descriptionBox.val();
 
-        app.makeRequest('create', formData, true);
+        app.makeRequest(party_enabled ? 'create_group' : 'create', formData, true);
         $('#description-overlay').hide();
     };
 
     let show = (e) => {
-        if (!e.descriptionRequired) {
+        if (!descriptionRequired) {
             return submit(e);
         }
         e.preventDefault();
@@ -49,8 +52,12 @@ let RequestForm = (props) => {
 
     const history = ReactRouterDOM.useHistory();
 
-    const openAppointments = () => {
-        history.push("/appointments");
+    const openAlternative = () => {
+        if (is_queue_open && party_enabled) {
+             history.push("/queue");
+        } else {
+            history.push("/appointments");
+        }
     };
 
     let { assignments, locations } = state;
@@ -77,7 +84,7 @@ let RequestForm = (props) => {
         setLocationID(e.target.value);
     };
 
-    const showOnlineInput = locationID && state.locations[locationID].name;
+    const showOnlineInput = locationID && state.locations[locationID].name === "Online";
 
     return (
         <div>
@@ -98,9 +105,9 @@ let RequestForm = (props) => {
                                        disabled={disabled && !appointments}/>
                             </div>
                         </div>
-                        {showOnlineInput && (JSON.parse(state.config.students_set_online_link) || JSON.parse(state.config.students_set_online_doc)) && (
+                        {showOnlineInput && (party_enabled || JSON.parse(state.config.students_set_online_link) || JSON.parse(state.config.students_set_online_doc)) && (
                             <React.Fragment>
-                                {JSON.parse(state.config.students_set_online_link) && (
+                                {(party_enabled || JSON.parse(state.config.students_set_online_link)) && (
                                     <div className="form-group form-group-lg">
                                         <label htmlFor="call-link">Video Call Link</label>
                                         <input className="form-control" type="text" id="call-link"
@@ -109,7 +116,7 @@ let RequestForm = (props) => {
                                         />
                                     </div>
                                 )}
-                                {JSON.parse(state.config.students_set_online_doc) && (
+                                {(party_enabled || JSON.parse(state.config.students_set_online_doc)) && (
                                     <div className="form-group form-group-lg">
                                         <label htmlFor="doc-link">Shared Document Link (optional)</label>
                                         <input className="form-control" type="text" id="doc-link"
@@ -131,17 +138,23 @@ let RequestForm = (props) => {
                                               disabled={disabled}/>
                                 <div className="input-group-btn form-right pull-left">
                                     <button className="btn btn-lg btn-default" onClick={show}
-                                            disabled={disabled}>Request
+                                            disabled={disabled}>
+                                        {party_enabled ? "Create" : "Request"}
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </React.Fragment>
                 )}
-                {appointments &&
+                {((party_enabled && (appointments || is_queue_open)) || (appointments && (!forceTicket || is_queue_open))) &&
                 <div className="form-group form-group-lg">
-                    <button className="btn btn-lg btn-default" onClick={openAppointments}>
-                        {disabled ? "Schedule Appointment" : "Or make an appointment"}
+                    <button className="btn btn-lg btn-default" onClick={openAlternative}>
+                        {party_enabled && is_queue_open ?
+                            "Or ask staff privately" :
+                            disabled ?
+                                "Schedule Appointment" :
+                                "Or make an appointment"
+                        }
                     </button>
                 </div>
                 }

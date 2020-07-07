@@ -55,8 +55,8 @@ let Ticket = ({state, ticket, independent}) => {
 
 let TicketLink = ({state, ticket, children, independent}) => {
   var {Link} = ReactRouterDOM;
-  let highlight = ticketIsMine(state, ticket) || isTicketHelper(state, ticket);
-  let link = ticketIsMine(state, ticket) || isStaff(state);
+  let highlight = ticketIsMine(state, ticket, true) || isTicketHelper(state, ticket);
+  let link = ticketIsMine(state, ticket, true) || isStaff(state);
   let ticketClass = classNames({
     'ticket-row': true,
     'clearfix': true,

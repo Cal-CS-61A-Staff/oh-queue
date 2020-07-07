@@ -88,7 +88,7 @@ class TicketButtons extends React.Component {
   }
 
   render() {
-    let {state, ticket} = this.props;
+    let {embedded, state, ticket} = this.props;
     let staff = isStaff(state);
 
     function makeButton(text, style, action) {
@@ -120,12 +120,12 @@ class TicketButtons extends React.Component {
       }
     }
     if (ticket.status === 'assigned') {
-      if (ticket.call_url || ticket.helper.call_url) {
+      if (!embedded && (ticket.call_url || ticket.helper.call_url)) {
           onlineButtons.push(makeButton('Join Call', 'success',
               () => window.open(ticket.call_url || ticket.helper.call_url, "_blank"))
           );
       }
-      if (ticket.doc_url || ticket.helper.doc_url) {
+      if (!embedded && (ticket.doc_url || ticket.helper.doc_url)) {
           onlineButtons.push(makeButton('Open Shared Document', 'info',
               () => window.open(ticket.doc_url || ticket.helper.doc_url, "_blank"))
           );
@@ -201,15 +201,25 @@ class TicketButtons extends React.Component {
       return null;
     }
 
-    return (
-      <div className="row">
-        <div className="col-xs-12 col-md-6 col-md-offset-3">
-          <div className="well">
+    const contents = (
+        <React.Fragment>
             {onlineButtons}
             {onlineHR}
             {topButtons}
             {hr}
             {bottomButtons}
+        </React.Fragment>
+    );
+
+    if (embedded) {
+        return contents;
+    }
+
+    return (
+      <div className="row">
+        <div className="col-xs-12 col-md-6 col-md-offset-3">
+          <div className="well">
+            {contents}
           </div>
         </div>
       </div>

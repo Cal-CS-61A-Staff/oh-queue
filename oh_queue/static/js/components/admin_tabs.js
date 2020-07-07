@@ -3,7 +3,7 @@ function AdminTabs({ currentTab }) {
         currentTab = "general";
     }
 
-    const links = ["general", "appointments", "assignments", "locations", "online", "slack"];
+    const links = ["general", "party", "appointments", "assignments", "locations", "online", "slack"];
 
     const body = links.map((link, index) => (
             <li role="presentation" className={currentTab === link ? "active" : ""}>
