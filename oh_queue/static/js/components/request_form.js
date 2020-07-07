@@ -105,7 +105,7 @@ let RequestForm = (props) => {
                                        disabled={disabled && !appointments}/>
                             </div>
                         </div>
-                        {showOnlineInput && (party_enabled || JSON.parse(state.config.students_set_online_link) || JSON.parse(state.config.students_set_online_doc)) && (
+                        {(showOnlineInput || party_enabled) && (party_enabled || JSON.parse(state.config.students_set_online_link) || JSON.parse(state.config.students_set_online_doc)) && (
                             <React.Fragment>
                                 {(party_enabled || JSON.parse(state.config.students_set_online_link)) && (
                                     <div className="form-group form-group-lg">
@@ -120,7 +120,7 @@ let RequestForm = (props) => {
                                     <div className="form-group form-group-lg">
                                         <label htmlFor="doc-link">Shared Document Link (optional)</label>
                                         <input className="form-control" type="text" id="doc-link"
-                                               name="doc-link" title="Shared Doc Link" placeholder="docs.google.com/xyz" required
+                                               name="doc-link" title="Shared Doc Link" placeholder="docs.google.com/xyz"
                                                disabled={disabled && !appointments}
                                         />
                                     </div>
