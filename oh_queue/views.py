@@ -320,6 +320,12 @@ def init_config():
         course=get_course(),
     ))
     db.session.add(ConfigEntry(
+        key='appointment_or_minutes',
+        value='false',
+        public=True,
+        course=get_course(),
+    ))
+    db.session.add(ConfigEntry(
         key='show_okpy_backups',
         value='false',
         public=True,
@@ -922,6 +928,7 @@ def assign_appointment(data):
         daily_threshold = int(ConfigEntry.query.filter_by(key="daily_appointment_limit", course=get_course()).one().value)
         weekly_threshold = int(ConfigEntry.query.filter_by(key="weekly_appointment_limit", course=get_course()).one().value)
         pending_threshold = int(ConfigEntry.query.filter_by(key="simul_appointment_limit", course=get_course()).one().value)
+        pending_metric= ConfigEntry.query.filter_by(key="appointment_or_minutes", course=get_course()).one().value
 
         start = appointment.start_time.replace(hour=0, minute=0, second=0, microsecond=0)
         week_start = start - datetime.timedelta(days=appointment.start_time.weekday())
@@ -940,13 +947,21 @@ def assign_appointment(data):
         ).count()
         if num_today >= daily_threshold:
             return socket_error("You have already signed up for {} OH slots for the same day".format(daily_threshold))
-
         num_pending = AppointmentSignup.query.join(AppointmentSignup.appointment).filter(
             Appointment.status == AppointmentStatus.pending,
             AppointmentSignup.user_id == current_user.id,
-        ).count()
-        if num_pending >= pending_threshold:
-            return socket_error("You have already signed up for {} OH slots that have not yet occurred.".format(pending_threshold))
+        )
+        if pending_metric != 'false':
+            start = appointment.duration
+            num_pend = [appt.appointment.duration for appt in list(num_pending)]
+            threshold  = datetime.timedelta(minutes=pending_threshold)
+            for item in num_pend:
+                start += item
+            if start > threshold:
+                return socket_error("You cannot sign up for more than {} minutes of OH that have not yet occurred.".format(pending_threshold))
+        else:
+            if num_pending.count() >= pending_threshold:
+                return socket_error("You have already signed up for {} OH slots that have not yet occurred.".format(pending_threshold))
 
     old_signup = AppointmentSignup.query.filter_by(
         appointment_id=data["appointment_id"],
