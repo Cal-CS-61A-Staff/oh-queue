@@ -91,7 +91,9 @@ function FutureSlots({ state }) {
                         {" "}
                         {state.config.simul_appointment_limit}
                         {" "}
-                        appointments that have not yet occurred.
+                        {(state.config.restrict_by_time != "false") ? "minutes of appointments" : "appointments"}
+                        {" "}
+                        that have not yet occurred.
                     </h5>
                   </div>
                 {(!currentUser || currentUser.isStaff) && <AppointmentButtons />}

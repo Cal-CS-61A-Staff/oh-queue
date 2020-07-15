@@ -279,7 +279,7 @@ def init_config():
     ))
     db.session.add(ConfigEntry(
         key='appointments_open',
-        value='false',
+        value='true',
         public=True,
         course=get_course(),
     ))
@@ -320,7 +320,7 @@ def init_config():
         course=get_course(),
     ))
     db.session.add(ConfigEntry(
-        key='appointment_or_minutes',
+        key='restrict_by_time',
         value='false',
         public=True,
         course=get_course(),
@@ -928,7 +928,7 @@ def assign_appointment(data):
         daily_threshold = int(ConfigEntry.query.filter_by(key="daily_appointment_limit", course=get_course()).one().value)
         weekly_threshold = int(ConfigEntry.query.filter_by(key="weekly_appointment_limit", course=get_course()).one().value)
         pending_threshold = int(ConfigEntry.query.filter_by(key="simul_appointment_limit", course=get_course()).one().value)
-        pending_metric= ConfigEntry.query.filter_by(key="appointment_or_minutes", course=get_course()).one().value
+        pending_metric= ConfigEntry.query.filter_by(key="restrict_by_time", course=get_course()).one().value
 
         start = appointment.start_time.replace(hour=0, minute=0, second=0, microsecond=0)
         week_start = start - datetime.timedelta(days=appointment.start_time.weekday())
@@ -951,6 +951,8 @@ def assign_appointment(data):
             Appointment.status == AppointmentStatus.pending,
             AppointmentSignup.user_id == current_user.id,
         )
+        print('POTATO')
+        print(pending_metric)
         if pending_metric != 'false':
             start = appointment.duration
             num_pend = [appt.appointment.duration for appt in list(num_pending)]
