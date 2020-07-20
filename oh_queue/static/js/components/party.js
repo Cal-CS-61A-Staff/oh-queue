@@ -7,7 +7,7 @@ let Party = ({ match, state, children }) => {
 
     if (!state.loaded) return null;
 
-    const showJumbotron = !isStaff(state) && !getMyGroup(state);
+    const showJumbotron = !getMyGroup(state);
 
     let containerClass = classNames({
         'container': true,
