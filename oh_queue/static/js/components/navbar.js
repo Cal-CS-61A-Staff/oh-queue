@@ -55,7 +55,7 @@ let Navbar = ({ state, mode }) => {
                         {currentUser ?
                             <li className="dropdown">
                                 <a href="#" className="dropdown-toggle" data-toggle="dropdown"
-                                   role="button">{getDisplayName(currentUser.name, currentUser && currentUser.isStaff, isGroup)} <span className="caret"/></a>
+                                   role="button">{getDisplayName(currentUser.name, currentUser && currentUser.isStaff, myGroup)} <span className="caret"/></a>
                                 <ul className="dropdown-menu">
                                     {state.config.online_active && currentUser.isStaff && (
                                         <li><Link to="/online_setup">Online Setup</Link></li>
