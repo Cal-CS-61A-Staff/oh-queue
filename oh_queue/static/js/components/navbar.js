@@ -55,7 +55,7 @@ let Navbar = ({ state, mode }) => {
                         {currentUser ?
                             <li className="dropdown">
                                 <a href="#" className="dropdown-toggle" data-toggle="dropdown"
-                                   role="button">{currentUser.name} <span className="caret"/></a>
+                                   role="button">{getDisplayName(currentUser.name, currentUser && currentUser.isStaff, isGroup)} <span className="caret"/></a>
                                 <ul className="dropdown-menu">
                                     {state.config.online_active && currentUser.isStaff && (
                                         <li><Link to="/online_setup">Online Setup</Link></li>
@@ -72,4 +72,21 @@ let Navbar = ({ state, mode }) => {
             </div>
         </nav>
     );
+}
+
+/*
+Function to take in a username, and boolean values for whether the user is a staff member and
+currently in a group. If both of those are true, then the user's name is reduced to their
+initials. Else, their name is returned.
+*/
+function getDisplayName(usrname, isStaff, myGroup) {
+    if (isStaff && myGroup) {
+        var display = ""
+        var names = (usrname.split(" "));
+        names.forEach(name => {
+            display = display + name.charAt(0)
+        });
+        return display;
+    }
+    return usrname
 }
