@@ -45,12 +45,17 @@ let Navbar = ({ state, mode }) => {
 
                         {currentUser && JSON.parse(state.config.appointments_open) &&
                         <li><Link to="/appointments">Appointments</Link></li>}
-
+                        
                         {currentUser && currentUser.isStaff &&
-                        <li><Link to="/activity_log">Activity Log</Link></li>}
-
-                        {currentUser && currentUser.isStaff &&
-                        <li><Link to="/admin">Admin</Link></li>}
+                            <li className="dropdown">
+                            <a href="#" className="dropdown-toggle" data-toggle="dropdown"
+                               role="button">Admin<span className="caret"/></a>
+                            <ul className="dropdown-menu">
+                                <li><Link to="/admin">Settings</Link></li>
+                                <li><Link to="/activity_log">Activity Log</Link></li>
+                            </ul>
+                        </li>
+                        }
 
                         {currentUser ?
                             <li className="dropdown">
