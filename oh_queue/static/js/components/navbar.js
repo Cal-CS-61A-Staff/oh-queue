@@ -47,9 +47,6 @@ let Navbar = ({ state, mode }) => {
                         <li><Link to="/appointments">Appointments</Link></li>}
 
                         {currentUser && currentUser.isStaff &&
-                        <li><Link to="/activity_log">Activity Log</Link></li>}
-
-                        {currentUser && currentUser.isStaff &&
                         <li><Link to="/admin">Admin</Link></li>}
 
                         {currentUser ?
@@ -61,6 +58,8 @@ let Navbar = ({ state, mode }) => {
                                         <li><Link to="/online_setup">Online Setup</Link></li>
                                     )}
                                     <li><Link to={`/user/${currentUser.id}`}>Ticket History</Link></li>
+                                    {currentUser && currentUser.isStaff &&
+                                        <li><Link to="/activity_log">Activity Log</Link></li>}
                                     <li><a href="/logout">Log out</a></li>
                                 </ul>
                             </li>
