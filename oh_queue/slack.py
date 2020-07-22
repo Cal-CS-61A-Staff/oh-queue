@@ -206,8 +206,8 @@ def send_appointment_summary(app, course):
                             total=upcoming.total,
                             nonempty=upcoming.nonempty,
                             time=upcoming.start_time.strftime("%I:%M%p"),
-                            delta=(upcoming.start_time - get_current_time()).seconds
-                            // 3600,
+                            delta=round((upcoming.start_time - get_current_time()).seconds
+                            / 3600),
                         ),
                     },
                 }
