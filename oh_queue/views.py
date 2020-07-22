@@ -320,11 +320,7 @@ def init_config():
         course=get_course(),
     ))
     db.session.add(ConfigEntry(
-<<<<<<< HEAD
         key='restrict_by_time',
-=======
-        key='appointment_or_minutes',
->>>>>>> b2ace0759bb704ba1eb15db012ad4f1b1b61b002
         value='false',
         public=True,
         course=get_course(),
