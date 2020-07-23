@@ -12,8 +12,6 @@ from sqlalchemy import orm
 revision = 'ee50ab5f3371'
 down_revision = '7857a34ef101'
 
-import sys
-
 from alembic import op
 import sqlalchemy as sa
 import oh_queue.models
