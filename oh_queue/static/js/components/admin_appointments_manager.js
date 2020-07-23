@@ -64,7 +64,7 @@ function AdminAppointmentsManager({ state }) {
                         How many appointments should a student have be pending simultaneously?
                         </p>
                             (by 
-                            <ConfigLinkedToggle config={state.config} configKey="appointment_or_minutes" onText="minutes" offText="number"/> 
+                            <ConfigLinkedToggle config={state.config} configKey="restrict_by_time" onText="minutes" offText="number"/> 
                             )
                     </td>
                     <td className="col-md-3">
