@@ -924,6 +924,12 @@ def assign_appointment(data):
         course=get_course(),
     ).one()  # type = Appointment
 
+    old_signup = AppointmentSignup.query.filter_by(
+        appointment_id=data["appointment_id"],
+        user_id=user_id,
+        course=get_course(),
+    ).one_or_none()
+
     if not current_user.is_staff:
         daily_threshold = int(ConfigEntry.query.filter_by(key="daily_appointment_limit", course=get_course()).one().value)
         weekly_threshold = int(ConfigEntry.query.filter_by(key="weekly_appointment_limit", course=get_course()).one().value)
@@ -936,7 +942,7 @@ def assign_appointment(data):
         num_this_week = AppointmentSignup.query.join(AppointmentSignup.appointment).filter(
             week_start < Appointment.start_time, Appointment.start_time < week_end,
             AppointmentSignup.user_id == current_user.id, AppointmentSignup.attendance_status != AttendanceStatus.excused,
-        ).count()
+        ).count() - (1 if old_signup else 0)
         if num_this_week >= weekly_threshold:
             return socket_error("You have already signed up for {} OH slots this week".format(weekly_threshold))
 
@@ -944,7 +950,7 @@ def assign_appointment(data):
         num_today = AppointmentSignup.query.join(AppointmentSignup.appointment).filter(
             start < Appointment.start_time, Appointment.start_time < day_end,
             AppointmentSignup.user_id == current_user.id, AppointmentSignup.attendance_status != AttendanceStatus.excused,
-        ).count()
+        ).count() - (1 if old_signup else 0)
         if num_today >= daily_threshold:
             return socket_error("You have already signed up for {} OH slots for the same day".format(daily_threshold))
         num_pending = AppointmentSignup.query.join(AppointmentSignup.appointment).filter(
@@ -962,12 +968,6 @@ def assign_appointment(data):
         else:
             if num_pending.count() >= pending_threshold:
                 return socket_error("You have already signed up for {} OH slots that have not yet occurred.".format(pending_threshold))
-
-    old_signup = AppointmentSignup.query.filter_by(
-        appointment_id=data["appointment_id"],
-        user_id=user_id,
-        course=get_course(),
-    ).one_or_none()
 
     old_attendance = old_signup.attendance_status if old_signup else AttendanceStatus.unknown
 
