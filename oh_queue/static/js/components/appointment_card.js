@@ -3,23 +3,41 @@ const calcSpareCapacity = appointment => Math.max(0, appointment.capacity - appo
 function AppointmentCard({ currentUser, locations, appointment, assignments, compact, onStudentSignup }) {
     let panelColor = "panel-default";
     let canAdd = true;
+    let shortDuration = 600;
 
     const spareCapacity = calcSpareCapacity(appointment);
 
     if (currentUser.isStaff) {
         if (appointment.helper && appointment.status === "hidden") {
             panelColor = "panel-danger";
+            if (appointment.duration <= shortDuration) {
+                panelColor = "panel-danger-short";
+            }
         } else if (appointment.helper && appointment.helper.id === currentUser.id) {
             panelColor = "panel-primary";
+            if (appointment.duration <= shortDuration) {
+                panelColor = "panel-primary-short";
+            }
         } else if (currentUser.isStaff && !appointment.helper) {
             panelColor = "panel-warning";
+            if (appointment.duration <= shortDuration) {
+                panelColor = "panel-warning-short";
+            }
         }
     } else {
         if (appointment.signups.some(({ user }) => user && user.id === currentUser.id)) {
             panelColor = "panel-success";
             canAdd = false;
+            if (appointment.duration <= shortDuration) {
+                panelColor = "panel-success-short";
+            }
         } else if (spareCapacity === 0) {
             panelColor = "panel-danger";
+            if (appointment.duration <= shortDuration) {
+                panelColor = "panel-danger-short";
+            }
+        } else if (appointment.duration <= shortDuration) {
+            panelColor = "panel-default-short";
         }
     }
 
