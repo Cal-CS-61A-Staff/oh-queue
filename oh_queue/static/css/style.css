@@ -749,6 +749,18 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
     border-color: orange;
 }
 
+.panel-warning-short > .panel-heading {
+  color: #fff;
+  background: repeating-linear-gradient(
+    45deg,
+    orange,
+    orange 10px,
+    #EE9E00 10px,
+    #EE9E00 20px
+  );
+  border-color: #EE9E00;
+}
+
 .panel-success {
     border-color: #4cae4c;
 }
@@ -759,6 +771,41 @@ h1.truncate, h2.truncate, h3.truncate, h4.truncate, h5.truncate, h6.truncate {
     border-color: #4cae4c;
 }
 
+.panel-success-short > .panel-heading {
+    color: #fff;
+    background: repeating-linear-gradient(
+      45deg,
+      #5cb85c,
+      #5cb85c 10px,
+      #4cae4c 10px,
+      #4cae4c 20px
+    );
+    border-color: #4cae4c;
+}
+
+.panel-primary-short > .panel-heading {
+    color: #fff;
+    background: repeating-linear-gradient(
+      45deg,
+      #337ab7,
+      #337ab7 10px,
+      #3C8CD1 10px,
+      #3C8CD1 20px
+    );
+    border-color: #337ab7;
+}
+
+.panel-danger-short > .panel-heading {
+  color: #ac4b49;
+  background: repeating-linear-gradient(
+    45deg,
+    #f2dede,
+    #f2dede 10px,
+    #F5D0D0 10px,
+    #F5D0D0 20px
+  );
+  border-color: #F5D0D0;
+}
 
 .btn-take-over {
     position: absolute;
@@ -833,6 +880,21 @@ h4.list-group-item-heading::before {
 
 .panel {
     border-top: none;
+}
+
+.panel.panel-default {
+    border-top: 1px solid #ddd;;
+}
+
+.panel.panel-default-short > .panel-heading{
+    border-top: 1px solid #ddd;
+    background: repeating-linear-gradient(
+      45deg,
+      #ddd,
+      #ddd 10px,
+      #D0D0D0 10px,
+      #D0D0D0 20px
+    );
 }
 
 .panel.panel-default {
