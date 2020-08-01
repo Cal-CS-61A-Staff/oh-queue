@@ -127,6 +127,7 @@ function FutureSlots({ state }) {
                 staffMode={currentUser && currentUser.isStaff}
                 isOpen={modalOpen}
                 onSubmit={handleSubmit}
+                state={state}
             />
         </React.Fragment>
     );

@@ -10,6 +10,7 @@ function MyAppointments({ state }) {
                     appointment={appointment}
                     signup={signup}
                     onClick={handleClick}
+                    state={state}
                 />
             )
         });

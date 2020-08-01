@@ -1,4 +1,4 @@
-function ConfirmedAppointmentCard({ appointment, signup, locations, assignments })  {
+function ConfirmedAppointmentCard({ appointment, signup, locations, assignments , state})  {
     const assignmentName = signup.assignment_id && assignments[signup.assignment_id].name;
     const questionName = signup.question ? " Question " + signup.question : "";
 
@@ -53,6 +53,7 @@ function ConfirmedAppointmentCard({ appointment, signup, locations, assignments 
                 signup={signup}
                 isOpen={modalOpen}
                 onSubmit={() => setModalOpen(false)}
+                state={state}
             />
         </React.Fragment>
     )

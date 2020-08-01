@@ -1,4 +1,4 @@
-function AppointmentOverlay({ staffMode, appointment, assignments, signup, onSubmit, isOpen }) {
+function AppointmentOverlay({ staffMode, appointment, assignments, signup, onSubmit, isOpen, state }) {
     const [email, setEmail] = React.useState("");
     const [assignment, setAssignment] = React.useState("");
     const [question, setQuestion] = React.useState("");
@@ -38,7 +38,7 @@ function AppointmentOverlay({ staffMode, appointment, assignments, signup, onSub
     };
 
     const handleSubmit = () => {
-        if (assignment && question && description) {
+        if (state.config.appointment_fields_required && assignment && question && description) {
             app.makeRequest(
             'assign_appointment', {
                 appointment_id: appointment,

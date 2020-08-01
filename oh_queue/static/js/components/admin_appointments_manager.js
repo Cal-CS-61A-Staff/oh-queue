@@ -33,6 +33,17 @@ function AdminAppointmentsManager({ state }) {
                     </td>
                 </tr>
                 <tr>
+                    <td>Should all fields be required for new appointments?</td>
+                    <td className="col-md-1">
+                        <ConfigLinkedToggle
+                            config={state.config}
+                            configKey="appointment_fields_required"
+                            offText="No"
+                            onText="Yes"
+                        />
+                    </td>
+                </tr>
+                <tr>
                     <td>
                         <p>
                             How many appointments should a student be able to make daily?
