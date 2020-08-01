@@ -3,7 +3,7 @@ const calcSpareCapacity = appointment => Math.max(0, appointment.capacity - appo
 function AppointmentCard({ currentUser, locations, appointment, assignments, compact, onStudentSignup }) {
     let panelColor = "panel-default";
     let canAdd = true;
-    let shortDuration = 3600;
+    let shortDuration = 600;
 
     const spareCapacity = calcSpareCapacity(appointment);
 
