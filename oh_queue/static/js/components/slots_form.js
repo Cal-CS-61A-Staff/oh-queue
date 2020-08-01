@@ -31,6 +31,7 @@ function SlotsForm({
                            required/>
                 </div>
                 <br/>
+                <form>
                 <div className="input-group">
                     <textarea className="description-box" rows="5"
                               value={description}
@@ -42,6 +43,7 @@ function SlotsForm({
                               required
                     />
                 </div>
+                </form>
             </div>
         </form>
     )
