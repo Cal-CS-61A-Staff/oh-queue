@@ -355,6 +355,12 @@ def init_config():
         public=True,
         course=get_course(),
     ))
+    db.session.add(ConfigEntry(
+        key='appointment_fields_required',
+        value='false',
+        public=True,
+        course=get_course(),
+    ))
     db.session.commit()
 
 # We run a React app, so serve index.html on all routes

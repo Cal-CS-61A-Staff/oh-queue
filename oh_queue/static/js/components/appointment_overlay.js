@@ -1,4 +1,4 @@
-function AppointmentOverlay({ staffMode, appointment, assignments, signup, onSubmit, isOpen }) {
+function AppointmentOverlay({ staffMode, appointment, assignments, signup, onSubmit, isOpen, state }) {
     const [email, setEmail] = React.useState("");
     const [assignment, setAssignment] = React.useState("");
     const [question, setQuestion] = React.useState("");
@@ -38,15 +38,19 @@ function AppointmentOverlay({ staffMode, appointment, assignments, signup, onSub
     };
 
     const handleSubmit = () => {
-        app.makeRequest(
-        'assign_appointment', {
-            appointment_id: appointment,
-            assignment_id: parseInt(assignment),
-            question: question,
-            description: description,
-            email: signup ? signup.user.email : email,
-        });
-        onSubmit();
+        if (state.config.appointment_fields_required && assignment && question && description) {
+            app.makeRequest(
+            'assign_appointment', {
+                appointment_id: appointment,
+                assignment_id: parseInt(assignment),
+                question: question,
+                description: description,
+                email: signup ? signup.user.email : email,
+            });
+            onSubmit();
+        } else {
+            alert("Please fill out all fields.")
+        }
     };
 
     return ReactDOM.createPortal(
@@ -64,7 +68,7 @@ function AppointmentOverlay({ staffMode, appointment, assignments, signup, onSub
                     <div className="modal-body">
                         {!staffMode && (
                             <p>
-                                Leave fields blank if you aren't yet sure what you want to ask about.
+                                Please fill out all fields to the best of your ability. You can always come back and edit them later.
                             </p>
                         )}
                         <SlotsForm
