@@ -23,14 +23,16 @@ function ChatBox({ currentUser, socket, id, mode }) {
         if (!typed.trim()) {
             return;
         }
+        // Time is initialized in "send_chat_message".
         app.makeRequest("send_chat_message", {
             content: typed,
             mode,
             id,
+            time: 0
         });
         setTyped("");
     };
-
+    
     const scrollDown = () => {
         $('[data-toggle="tooltip"]').tooltip()
         historyRef.current.scrollTop = historyRef.current.scrollHeight;
@@ -43,30 +45,64 @@ function ChatBox({ currentUser, socket, id, mode }) {
             if (message.mode !== mode || message.id !== id) {
                 return;
             }
-            setMessages(messages.concat([[message.sender, message.content]]));
+            setMessages(messages.concat([[
+                message.sender,
+                message.content,
+                message.time
+            ]]));
         });
         return () => socket.removeAllListeners("chat_message");
     }, [messages]);
 
-    const body = messages.map(([sender, message], i) => {
+    const body = messages.map(([sender, message, time], i) => {
+        function formatTitle(name, time) {
+            if (name === undefined) { 
+                return time
+            } else if (time === undefined) {
+                return name
+            }
+            return name + ' | ' + time;
+        }
+        
         if (sender.id === currentUser.id) {
             return (
                 <div className="my-chat-bubble">
-                    <div className="chat-text">{message}</div>
+                    <div
+                        className="chat-text"
+                        data-toggle="tooltip"
+                        data-placement="right"
+                        title={formatTitle(time)}
+                    >
+                        {message}
+                    </div>
                 </div>
             )
         } else if (messages[i + 1] && sender.id === messages[i + 1][0].id) {
             return (
                 <div className="chat-bubble">
                     <div className="chat-icon none">{sender.shortName[0]}</div>
-                    <div className="chat-text" data-toggle="tooltip" data-placement="right" title={sender.name}>{message}</div>
+                    <div 
+                        className="chat-text"
+                        data-toggle="tooltip"
+                        data-placement="right"
+                        title={formatTitle(sender.name, time)}
+                    >
+                        {message}
+                    </div>
                 </div>
             )
         } else {
             return (
                 <div className="chat-bubble">
                     <div className="chat-icon">{sender.shortName[0]}</div>
-                    <div className="chat-text" data-toggle="tooltip" data-placement="right" title={sender.name}>{message}</div>
+                    <div 
+                        className="chat-text"
+                        data-toggle="tooltip"
+                        data-placement="right"
+                        title={formatTitle(sender.name, time)}
+                    >
+                        {message}
+                    </div>
                 </div>
             )
         }
