@@ -23,6 +23,7 @@ function ChatBox({ currentUser, socket, id, mode }) {
         if (!typed.trim()) {
             return;
         }
+        // Time is initialized in "send_chat_message".
         app.makeRequest("send_chat_message", {
             content: typed,
             mode,
@@ -54,24 +55,54 @@ function ChatBox({ currentUser, socket, id, mode }) {
     }, [messages]);
 
     const body = messages.map(([sender, message, time], i) => {
+        function formatTitle(name, time) {
+            if (name === undefined) { 
+                return time
+            } else if (time === undefined) {
+                return name
+            }
+            return name + ' | ' + time;
+        }
+        
         if (sender.id === currentUser.id) {
             return (
                 <div className="my-chat-bubble">
-                    <div className="chat-text">{message}{time}</div>
+                    <div
+                        className="chat-text"
+                        data-toggle="tooltip"
+                        data-placement="right"
+                        title={formatTitle(time)}
+                    >
+                        {message}
+                    </div>
                 </div>
             )
         } else if (messages[i + 1] && sender.id === messages[i + 1][0].id) {
             return (
                 <div className="chat-bubble">
                     <div className="chat-icon none">{sender.shortName[0]}</div>
-                    <div className="chat-text" data-toggle="tooltip" data-placement="right" title={sender.name}>{message}{time}</div>
+                    <div 
+                        className="chat-text"
+                        data-toggle="tooltip"
+                        data-placement="right"
+                        title={formatTitle(sender.name, time)}
+                    >
+                        {message}
+                    </div>
                 </div>
             )
         } else {
             return (
                 <div className="chat-bubble">
                     <div className="chat-icon">{sender.shortName[0]}</div>
-                    <div className="chat-text" data-toggle="tooltip" data-placement="right" title={sender.name}>{message}{time}</div>
+                    <div 
+                        className="chat-text"
+                        data-toggle="tooltip"
+                        data-placement="right"
+                        title={formatTitle(sender.name, time)}
+                    >
+                        {message}
+                    </div>
                 </div>
             )
         }

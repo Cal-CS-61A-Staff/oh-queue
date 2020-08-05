@@ -1155,8 +1155,8 @@ def send_chat_message(data):
     event_id = data["id"]
 
     data["sender"] = user_json(current_user)
-    timeStr = get_current_time().strftime("%a %-I:%M%p")
-    data["time"] = timeStr
+    message_time = get_current_time().strftime("%a %-I:%M%p")
+    data["time"] = message_time
 
     if mode == "appointment":
         appointment = Appointment.query.filter_by(course=get_course(), id=event_id).one()
