@@ -1547,7 +1547,7 @@ def delete(group_id):
     db.session.commit()
 
 
-@app.route('/api/set_online_call_link')
+@app.route('/api/set_online_call_link', methods=["POST"])
 def set_online_call_link():
     if not hmac.compare_digest(getenv("SECRET_61C"), request.json["secret"]):
         abort(401)
