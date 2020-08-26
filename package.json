@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Office Hours ============",
   "main": "index.js",
+  "engines" : { "node" : "14.2.0" },
   "directories": {
     "test": "tests"
   },
