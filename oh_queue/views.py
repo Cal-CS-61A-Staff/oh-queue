@@ -12,6 +12,7 @@ from flask import render_template, url_for, copy_current_request_context
 from flask_login import current_user
 from flask_socketio import emit, join_room, leave_room
 from sqlalchemy import func, desc
+from sqlalchemy.orm import joinedload
 
 from oh_queue import app, db, socketio
 from oh_queue.course_config import get_course, format_coursecode, get_course_id, COURSE_DOMAINS
@@ -182,10 +183,14 @@ def emit_state(attrs, broadcast=False, callback=None):
     assert not (callback and broadcast), "Cannot have a callback when broadcasting!"
     state = {}
     if 'tickets' in attrs:
-        tickets = Ticket.query.filter(
-            Ticket.status.in_(active_statuses),
-            Ticket.course == get_course(),
-        ).all()
+        tickets = (
+            Ticket.query.filter(
+                Ticket.status.in_(active_statuses), Ticket.course == get_course()
+            )
+            .options(joinedload(Ticket.user, innerjoin=True))
+            .options(joinedload(Ticket.group))
+            .all()
+        )
         state['tickets'] = [ticket_json(ticket) for ticket in tickets]
     if 'assignments' in attrs:
         assignments = Assignment.query.filter_by(course=get_course()).all()
@@ -197,10 +202,20 @@ def emit_state(attrs, broadcast=False, callback=None):
     if 'config' in attrs:
         state['config'] = config_json()
     if 'appointments' in attrs:
-        appointments = Appointment.query.filter(
-            Appointment.status != AppointmentStatus.resolved,
-            Appointment.course == get_course(),
-        ).order_by(Appointment.id).all()
+        appointments = (
+            Appointment.query.filter(
+                Appointment.status != AppointmentStatus.resolved,
+                Appointment.course == get_course(),
+            )
+            .order_by(Appointment.id)
+            .options(joinedload(Appointment.helper))
+            .options(
+                joinedload(Appointment.signups).joinedload(
+                    AppointmentSignup.user, innerjoin=True
+                )
+            )
+            .all()
+        )
         state['appointments'] = [appointments_json(appointment) for appointment in appointments]
     if 'groups' in attrs:
         groups = Group.query.filter(

@@ -93,6 +93,8 @@ class Ticket(db.Model):
     updated = db.Column(db.DateTime, onupdate=db.func.now())
     status = db.Column(EnumType(TicketStatus), nullable=False, index=True)
 
+    group = db.relationship("Group", back_populates="ticket")
+
     rerequest_threshold = db.Column(db.DateTime)  # time when student allowed to re-request help
     hold_time = db.Column(db.DateTime)  # time when student was put on hold
     rerequest_time = db.Column(db.DateTime)  # time when student re-requested help
