@@ -1,14 +1,16 @@
 import datetime
 import functools
 import collections
+import hmac
 
 import random
 import time
 from operator import or_
+from os import getenv
 from urllib.parse import urljoin
 
 import requests
-from flask import render_template, url_for, copy_current_request_context
+from flask import abort, render_template, request, url_for, copy_current_request_context
 from flask_login import current_user
 from flask_socketio import emit, join_room, leave_room
 from sqlalchemy import func, desc
@@ -33,13 +35,15 @@ def user_json(user):
         'doc_url': user.doc_url,
     }
 
+
 def student_json(user):
     """ Only send student information to staff. """
     can_see_details = (current_user.is_authenticated
-                        and (current_user.is_staff or user.id == current_user.id))
+                       and (current_user.is_staff or user.id == current_user.id))
     if not can_see_details:
         return None
     return user_json(user)
+
 
 def ticket_json(ticket):
     group = Group.query.filter_by(ticket_id=ticket.id).one_or_none()
@@ -62,6 +66,7 @@ def ticket_json(ticket):
         'group_id': group.id if group else None,
     }
 
+
 def assignment_json(assignment):
     return {
         'id': assignment.id,
@@ -69,12 +74,14 @@ def assignment_json(assignment):
         'visible': assignment.visible
     }
 
+
 def location_json(location):
     return {
         'id': location.id,
         'name': location.name,
         'visible': location.visible
     }
+
 
 def get_online_location():
     online_location = Location.query.filter_by(course=get_course(), name="Online").one_or_none()
@@ -88,6 +95,7 @@ def get_online_location():
         db.session.commit()
     return online_location
 
+
 def config_json():
     config = {}
     for config_entry in ConfigEntry.query.filter_by(course=get_course()).all():
@@ -95,6 +103,7 @@ def config_json():
             config[config_entry.key] = config_entry.value
     config["okpy_endpoint_id"] = get_course_id()
     return config
+
 
 def appointments_json(appointment: Appointment):
     return {
@@ -109,11 +118,12 @@ def appointments_json(appointment: Appointment):
         "description": appointment.description,
     }
 
+
 def signup_json(signup: AppointmentSignup):
     return {
         "id": signup.id,
         "assignment_id": signup.assignment_id,
-        "user": user_json(signup.user), # TODO: This should be private!
+        "user": user_json(signup.user),  # TODO: This should be private!
         "question": signup.question,
         "description": signup.description,
         "attendance_status": signup.attendance_status.name,
@@ -187,9 +197,9 @@ def emit_state(attrs, broadcast=False, callback=None):
             Ticket.query.filter(
                 Ticket.status.in_(active_statuses), Ticket.course == get_course()
             )
-            .options(joinedload(Ticket.user, innerjoin=True))
-            .options(joinedload(Ticket.group))
-            .all()
+                .options(joinedload(Ticket.user, innerjoin=True))
+                .options(joinedload(Ticket.group))
+                .all()
         )
         state['tickets'] = [ticket_json(ticket) for ticket in tickets]
     if 'assignments' in attrs:
@@ -207,14 +217,14 @@ def emit_state(attrs, broadcast=False, callback=None):
                 Appointment.status != AppointmentStatus.resolved,
                 Appointment.course == get_course(),
             )
-            .order_by(Appointment.id)
-            .options(joinedload(Appointment.helper))
-            .options(
+                .order_by(Appointment.id)
+                .options(joinedload(Appointment.helper))
+                .options(
                 joinedload(Appointment.signups).joinedload(
                     AppointmentSignup.user, innerjoin=True
                 )
             )
-            .all()
+                .all()
         )
         state['appointments'] = [appointments_json(appointment) for appointment in appointments]
     if 'groups' in attrs:
@@ -233,8 +243,9 @@ def emit_state(attrs, broadcast=False, callback=None):
     else:
         emit('state', state)
 
+
 def emit_presence(data):
-    out = {k: len(v) for k,v in data.items()}
+    out = {k: len(v) for k, v in data.items()}
     active_staff = {(t.helper.email, t.helper.name) for t in Ticket.query.filter(
         Ticket.status.in_(active_statuses),
         Ticket.helper != None,
@@ -244,10 +255,13 @@ def emit_presence(data):
     out["staff_list"] = list(data["staff"] | active_staff)
     socketio.emit('presence', out, room=get_course())
 
+
 def emit_message(message):
     socketio.emit('chat_message', message, room=get_course())
 
-user_presence = collections.defaultdict(lambda: collections.defaultdict(set)) # An in memory map of presence.
+
+user_presence = collections.defaultdict(lambda: collections.defaultdict(set))  # An in memory map of presence.
+
 
 def init_config():
     db.session.add(ConfigEntry(
@@ -366,6 +380,7 @@ def init_config():
     ))
     db.session.commit()
 
+
 # We run a React app, so serve index.html on all routes
 @app.route('/')
 @app.route('/<path:path>')
@@ -392,14 +407,17 @@ def socket_error(message, category='danger', ticket_id=None):
         'redirect': redirect
     }
 
+
 def socket_redirect(**kwargs):
     redirect = url_for('index', **kwargs)
     return {
         'redirect': redirect
     }
 
+
 def socket_unauthorized():
     return socket_error("You don't have permission to do that")
+
 
 def logged_in(f):
     @functools.wraps(f)
@@ -407,7 +425,9 @@ def logged_in(f):
         if not current_user.is_authenticated and current_user.course == get_course():
             return socket_unauthorized()
         return f(*args, **kwds)
+
     return wrapper
+
 
 def is_staff(f):
     @functools.wraps(f)
@@ -415,7 +435,9 @@ def is_staff(f):
         if not (current_user.is_authenticated and current_user.is_staff and current_user.course == get_course()):
             return socket_unauthorized()
         return f(*args, **kwds)
+
     return wrapper
+
 
 def has_ticket_access(f):
     @functools.wraps(f)
@@ -437,6 +459,7 @@ def has_ticket_access(f):
             return socket_unauthorized()
         kwds['ticket'] = ticket
         return f(*args, **kwds)
+
     return wrapper
 
 
@@ -456,7 +479,9 @@ def has_group_access(f):
             return socket_unauthorized()
         kwds['group'] = group
         return f(*args, **kwds)
+
     return wrapper
+
 
 @socketio.on('connect')
 def connect():
@@ -475,6 +500,7 @@ def connect():
 
     emit_presence(user_presence[get_course()])
 
+
 @socketio.on('disconnect')
 def disconnect():
     if not current_user.is_authenticated:
@@ -488,6 +514,7 @@ def disconnect():
 
     emit_presence(user_presence[get_course()])
 
+
 @socketio.on('refresh')
 def refresh(ticket_ids):
     tickets = Ticket.query.filter(Ticket.id.in_(ticket_ids), Ticket.course == get_course()).all()
@@ -495,6 +522,7 @@ def refresh(ticket_ids):
     return {
         'tickets': [ticket_json(ticket) for ticket in tickets],
     }
+
 
 def get_magic_word(mode=None, data=None, time_offset=0):
     if mode is None:
@@ -523,6 +551,7 @@ def get_magic_word(mode=None, data=None, time_offset=0):
         return str(rand.randint(int(data[2]), int(data[3]))).zfill(len(data[3]))
     raise Exception('Unrecognized queue magic word mode')
 
+
 def check_magic_word(magic_word):
     mode = ConfigEntry.query.filter_by(course=get_course(), key='queue_magic_word_mode').one().value
     if mode == 'none':
@@ -536,12 +565,14 @@ def check_magic_word(magic_word):
         return False
     return get_magic_word(mode, data) == magic_word
 
+
 @socketio.on('refresh_magic_word')
 @is_staff
 def refresh_magic_word():
     return {
         'magic_word': get_magic_word()
     }
+
 
 @socketio.on('create')
 @logged_in
@@ -619,8 +650,10 @@ def create(form):
     emit_event(ticket, TicketEventType.create)
     return socket_redirect(ticket_id=ticket.id)
 
+
 def get_tickets(ticket_ids):
     return Ticket.query.filter(Ticket.id.in_(ticket_ids), Ticket.course == get_course()).all()
+
 
 def get_next_ticket(location=None):
     """Return the user's first assigned but unresolved ticket.
@@ -652,10 +685,12 @@ def get_next_ticket(location=None):
     else:
         return socket_redirect()
 
+
 @socketio.on('next')
 @is_staff
 def next_ticket(ticket_ids):
     return get_next_ticket()
+
 
 def is_member_of(group):
     return any(
@@ -664,17 +699,20 @@ def is_member_of(group):
         if attendance.group_attendance_status == GroupAttendanceStatus.present
     )
 
+
 @socketio.on('delete')
 @logged_in
 def delete(ticket_ids):
     tickets = get_tickets(ticket_ids)
     for ticket in tickets:
         ticket_group = Group.query.filter_by(ticket_id=ticket.id, course=get_course()).one_or_none()
-        if not (current_user.is_staff or ticket.user.id == current_user.id or ticket_group and is_member_of(ticket_group)):
+        if not (current_user.is_staff or ticket.user.id == current_user.id or ticket_group and is_member_of(
+                ticket_group)):
             return socket_unauthorized()
         ticket.status = TicketStatus.deleted
         emit_event(ticket, TicketEventType.delete)
     db.session.commit()
+
 
 @socketio.on('resolve')
 @logged_in
@@ -698,6 +736,7 @@ def resolve(data):
     db.session.commit()
     return get_next_ticket(location)
 
+
 @socketio.on("juggle")
 @is_staff
 def juggle(data):
@@ -718,6 +757,7 @@ def juggle(data):
     db.session.commit()
     return get_next_ticket(location)
 
+
 @socketio.on('assign')
 @is_staff
 def assign(ticket_ids):
@@ -728,6 +768,7 @@ def assign(ticket_ids):
         ticket.helper_id = current_user.id
         emit_event(ticket, TicketEventType.assign)
     db.session.commit()
+
 
 @socketio.on('return_to')
 @is_staff
@@ -740,6 +781,7 @@ def return_to(ticket_ids):
         emit_event(ticket, TicketEventType.return_to)
 
     db.session.commit()
+
 
 @socketio.on('rerequest')
 @logged_in
@@ -760,6 +802,7 @@ def rerequest(data):
 
     db.session.commit()
 
+
 @socketio.on('cancel_rerequest')
 @logged_in
 def rerequest(data):
@@ -774,6 +817,7 @@ def rerequest(data):
 
     db.session.commit()
 
+
 @socketio.on("release_holds")
 @is_staff
 def release_holds(data):
@@ -787,6 +831,7 @@ def release_holds(data):
 
     return socket_redirect()
 
+
 @socketio.on('unassign')
 @is_staff
 def unassign(ticket_ids):
@@ -797,6 +842,7 @@ def unassign(ticket_ids):
         emit_event(ticket, TicketEventType.unassign)
     db.session.commit()
 
+
 @socketio.on('load_ticket')
 @is_staff
 def load_ticket(ticket_id):
@@ -805,6 +851,7 @@ def load_ticket(ticket_id):
     ticket = Ticket.query.filter_by(course=get_course(), id=ticket_id).one_or_none()
     if ticket:
         return ticket_json(ticket)
+
 
 @socketio.on('update_ticket')
 @has_ticket_access
@@ -817,6 +864,7 @@ def update_ticket(data, ticket):
     db.session.commit()
     return ticket_json(ticket)
 
+
 @socketio.on('add_assignment')
 @is_staff
 def add_assignment(data):
@@ -828,6 +876,7 @@ def add_assignment(data):
     emit_state(['assignments'], broadcast=True)
     db.session.refresh(assignment)
     return assignment_json(assignment)
+
 
 @socketio.on('update_assignment')
 @is_staff
@@ -842,6 +891,7 @@ def update_assignment(data):
     emit_state(['assignments'], broadcast=True)
     return assignment_json(assignment)
 
+
 @socketio.on('add_location')
 @is_staff
 def add_location(data):
@@ -855,6 +905,7 @@ def add_location(data):
     emit_state(['locations'], broadcast=True)
     db.session.refresh(location)
     return location_json(location)
+
 
 @socketio.on('update_location')
 @is_staff
@@ -871,17 +922,18 @@ def update_location(data):
     emit_state(['locations'], broadcast=True)
     return location_json(location)
 
+
 @socketio.on('update_config')
 @is_staff
 def update_config(data):
     config = {}
     if 'keys' in data:
-        config = {k : v for k, v in zip(data["keys"], data["values"]) if v is not None}
+        config = {k: v for k, v in zip(data["keys"], data["values"]) if v is not None}
     elif 'key' in data:
-        config = {data['key'] : data['value']}
+        config = {data['key']: data['value']}
     if 'queue_magic_word_mode' in config:
         if config['queue_magic_word_mode'] == "timed_numeric":
-            config["queue_magic_word_data"] = format(random.randrange(2 ** 64), "x")+ ":60:0:9999"
+            config["queue_magic_word_data"] = format(random.randrange(2 ** 64), "x") + ":60:0:9999"
     for key, value in config.items():
         entry = ConfigEntry.query.filter_by(key=key, course=get_course()).one()
         entry.value = value
@@ -934,16 +986,20 @@ def assign_appointment(data):
     ).one()  # type = Appointment
 
     if not current_user.is_staff:
-        daily_threshold = int(ConfigEntry.query.filter_by(key="daily_appointment_limit", course=get_course()).one().value)
-        weekly_threshold = int(ConfigEntry.query.filter_by(key="weekly_appointment_limit", course=get_course()).one().value)
-        pending_threshold = int(ConfigEntry.query.filter_by(key="simul_appointment_limit", course=get_course()).one().value)
+        daily_threshold = int(
+            ConfigEntry.query.filter_by(key="daily_appointment_limit", course=get_course()).one().value)
+        weekly_threshold = int(
+            ConfigEntry.query.filter_by(key="weekly_appointment_limit", course=get_course()).one().value)
+        pending_threshold = int(
+            ConfigEntry.query.filter_by(key="simul_appointment_limit", course=get_course()).one().value)
 
         start = appointment.start_time.replace(hour=0, minute=0, second=0, microsecond=0)
         week_start = start - datetime.timedelta(days=appointment.start_time.weekday())
         week_end = start + datetime.timedelta(days=7)
         num_this_week = AppointmentSignup.query.join(AppointmentSignup.appointment).filter(
             week_start < Appointment.start_time, Appointment.start_time < week_end,
-            AppointmentSignup.user_id == current_user.id, AppointmentSignup.attendance_status != AttendanceStatus.excused,
+            AppointmentSignup.user_id == current_user.id,
+            AppointmentSignup.attendance_status != AttendanceStatus.excused,
         ).count()
         if num_this_week >= weekly_threshold:
             return socket_error("You have already signed up for {} OH slots this week".format(weekly_threshold))
@@ -951,7 +1007,8 @@ def assign_appointment(data):
         day_end = start + datetime.timedelta(days=1)
         num_today = AppointmentSignup.query.join(AppointmentSignup.appointment).filter(
             start < Appointment.start_time, Appointment.start_time < day_end,
-            AppointmentSignup.user_id == current_user.id, AppointmentSignup.attendance_status != AttendanceStatus.excused,
+            AppointmentSignup.user_id == current_user.id,
+            AppointmentSignup.attendance_status != AttendanceStatus.excused,
         ).count()
         if num_today >= daily_threshold:
             return socket_error("You have already signed up for {} OH slots for the same day".format(daily_threshold))
@@ -961,7 +1018,8 @@ def assign_appointment(data):
             AppointmentSignup.user_id == current_user.id,
         ).count()
         if num_pending >= pending_threshold:
-            return socket_error("You have already signed up for {} OH slots that have not yet occurred.".format(pending_threshold))
+            return socket_error(
+                "You have already signed up for {} OH slots that have not yet occurred.".format(pending_threshold))
 
     old_signup = AppointmentSignup.query.filter_by(
         appointment_id=data["appointment_id"],
@@ -1006,7 +1064,8 @@ def unassign_appointment(signup_id):
 
     appointment = old_signup.appointment
 
-    if not current_user.is_staff and (not old_signup or old_signup.user_id != current_user.id) or appointment.status != AppointmentStatus.pending:
+    if not current_user.is_staff and (
+            not old_signup or old_signup.user_id != current_user.id) or appointment.status != AppointmentStatus.pending:
         return socket_unauthorized()
 
     db.session.delete(old_signup)
@@ -1179,24 +1238,25 @@ def send_chat_message(data):
         emit_message(data)
 
 
-
 @socketio.on("bulk_appointment_action")
 @is_staff
 def bulk_appointment_action(action):
     if action == "open_all_assigned":
-        Appointment.query.filter(Appointment.course == get_course(), Appointment.helper_id != None, Appointment.status == AppointmentStatus.hidden).update({Appointment.status: AppointmentStatus.pending})
+        Appointment.query.filter(Appointment.course == get_course(), Appointment.helper_id != None,
+                                 Appointment.status == AppointmentStatus.hidden).update(
+            {Appointment.status: AppointmentStatus.pending})
     elif action == "resolve_all_past":
         appointments = (
             Appointment.query
-            .filter(
+                .filter(
                 Appointment.course == get_course(),
                 Appointment.helper_id != None,
                 Appointment.start_time < get_current_time(),
                 Appointment.status == AppointmentStatus.pending
             )
-            .outerjoin(Appointment.signups)
-            .group_by(Appointment)
-            .having(func.count(AppointmentSignup.id) == 0).all()
+                .outerjoin(Appointment.signups)
+                .group_by(Appointment)
+                .having(func.count(AppointmentSignup.id) == 0).all()
         )
         (Appointment.query
          .filter(Appointment.id.in_({x.id for x in appointments}))
@@ -1205,10 +1265,10 @@ def bulk_appointment_action(action):
     elif action == "remove_all_unassigned":
         appointments = (
             Appointment.query
-            .filter(Appointment.course == get_course(), Appointment.helper_id == None)
-            .outerjoin(Appointment.signups)
-            .group_by(Appointment)
-            .having(func.count(AppointmentSignup.id) == 0).all()
+                .filter(Appointment.course == get_course(), Appointment.helper_id == None)
+                .outerjoin(Appointment.signups)
+                .group_by(Appointment)
+                .having(func.count(AppointmentSignup.id) == 0).all()
         )
         Appointment.query.filter(Appointment.id.in_({x.id for x in appointments})).delete(False)
     db.session.commit()
@@ -1229,13 +1289,13 @@ def get_user(user_id):
     user = User.query.filter_by(course=get_course(), id=user_id).one()
     tickets = (
         Ticket.query
-        .filter(or_(Ticket.user_id == user.id, Ticket.helper_id == user.id), Ticket.course == get_course())
-        .order_by(desc(Ticket.created)).all()
+            .filter(or_(Ticket.user_id == user.id, Ticket.helper_id == user.id), Ticket.course == get_course())
+            .order_by(desc(Ticket.created)).all()
     )
     appointments = (
         Appointment.query
-        .filter(Appointment.helper_id == user.id, Appointment.course == get_course())
-        .order_by(desc(Appointment.start_time)).all()
+            .filter(Appointment.helper_id == user.id, Appointment.course == get_course())
+            .order_by(desc(Appointment.start_time)).all()
     )
     signups = (
         AppointmentSignup.query.join(AppointmentSignup.appointment).filter(
@@ -1247,8 +1307,8 @@ def get_user(user_id):
         "user": user_json(user),
         "tickets": [ticket_json(ticket) for ticket in tickets],
         "appointments": (
-            [appointments_json(appointment) for appointment in appointments] +
-            [appointments_json(signup.appointment) for signup in signups]
+                [appointments_json(appointment) for appointment in appointments] +
+                [appointments_json(signup.appointment) for signup in signups]
         ),
     }
 
@@ -1288,13 +1348,16 @@ def appointment_summary():
 
 
 def leave_current_groups():
-    prev_attendance = GroupAttendance.query.filter_by(user_id=current_user.id, group_attendance_status=GroupAttendanceStatus.present).one_or_none()
+    prev_attendance = GroupAttendance.query.filter_by(user_id=current_user.id,
+                                                      group_attendance_status=GroupAttendanceStatus.present).one_or_none()
     if prev_attendance:
         prev_attendance.group_attendance_status = GroupAttendanceStatus.gone
         db.session.commit()
-        other_attendances = GroupAttendance.query.filter_by(group=prev_attendance.group, group_attendance_status=GroupAttendanceStatus.present).all()
+        other_attendances = GroupAttendance.query.filter_by(group=prev_attendance.group,
+                                                            group_attendance_status=GroupAttendanceStatus.present).all()
 
-        if prev_attendance.group.ticket and (not other_attendances or prev_attendance.group.ticket.user_id == current_user.id):
+        if prev_attendance.group.ticket and (
+                not other_attendances or prev_attendance.group.ticket.user_id == current_user.id):
             # delete the ticket if the group is closed or the ticket creator leaves
             prev_attendance.group.ticket.status = TicketStatus.deleted
             emit_event(prev_attendance.group.ticket, TicketEventType.delete)
@@ -1441,7 +1504,8 @@ def create_group_ticket(data, group):
             'The queue is closed',
             category='warning',
         )
-    if group.ticket and group.ticket.status not in [TicketStatus.resolved, TicketStatus.deleted] or Ticket.for_user(current_user):
+    if group.ticket and group.ticket.status not in [TicketStatus.resolved, TicketStatus.deleted] or Ticket.for_user(
+            current_user):
         return socket_error(
             'You are already on the queue',
             category='warning',
@@ -1481,3 +1545,13 @@ def delete(group_id):
         group.ticket.status = TicketStatus.deleted
         emit_event(group.ticket, TicketEventType.delete)
     db.session.commit()
+
+
+@app.route('/api/set_online_call_link')
+def set_online_call_link():
+    if not hmac.compare_digest(getenv("SECRET_61C"), request.json["secret"]):
+        abort(401)
+    user = User.query.filter_by(course="cs61c", email=request.json["email"]).one()
+    user.call_url = str(request.json["call_url"])
+    db.session.commit()
+    return ""
