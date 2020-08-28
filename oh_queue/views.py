@@ -1383,7 +1383,7 @@ def process_call_link(link, location):
     if link:
         if location.link:
             if all(x.isdigit() for x in link):
-                return f"Breakout Room {link}"
+                return "Breakout Room " + link
         else:
             return urljoin("https://", link)
     return link
