@@ -89,7 +89,7 @@ def get_online_location():
     online_location = Location.query.filter_by(course=get_course(), name="Online").one_or_none()
     online_visible = ConfigEntry.query.filter_by(key="online_active", course=get_course()).one().value == "true"
     if online_location is None:
-        online_location = Location(name="Online", visible=online_visible, course=get_course())
+        online_location = Location(name="Online", visible=online_visible, course=get_course(), online=True, link="")
         db.session.add(online_location)
         db.session.commit()
     else:
