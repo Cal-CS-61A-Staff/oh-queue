@@ -74,6 +74,8 @@ class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, default=db.func.now())
     name = db.Column(db.String(255), nullable=False)
+    online = db.Column(db.Boolean, nullable=False)
+    link = db.Column(db.String(255), nullable=False)
     visible = db.Column(db.Boolean, default=False)
 
     course = db.Column(db.String(255), nullable=False, index=True)

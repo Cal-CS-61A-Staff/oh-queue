@@ -79,7 +79,9 @@ def location_json(location):
     return {
         'id': location.id,
         'name': location.name,
-        'visible': location.visible
+        'visible': location.visible,
+        'online': location.online,
+        'link': location.link,
     }
 
 
@@ -606,8 +608,14 @@ def create(form):
     call_link = form.get('call-link', '')
     doc_link = form.get('doc-link', '')
 
-    if call_link:
-        call_link = urljoin("https://", call_link)
+    location = Location.query.filter_by(course=get_course(), id=location_id).one_or_none()
+    if not location:
+        return socket_error(
+            'Unknown location (id: {})'.format(location_id),
+            category='warning',
+        )
+
+    call_link = process_call_link(call_link, location)
 
     if doc_link:
         doc_link = urljoin("https://", doc_link)
@@ -623,12 +631,6 @@ def create(form):
     if not assignment:
         return socket_error(
             'Unknown assignment (id: {})'.format(assignment_id),
-            category='warning',
-        )
-    location = Location.query.filter_by(course=get_course(), id=location_id).one_or_none()
-    if not location:
-        return socket_error(
-            'Unknown location (id: {})'.format(location_id),
             category='warning',
         )
 
@@ -915,6 +917,13 @@ def update_location(data):
         location.name = data['name']
     if 'visible' in data:
         location.visible = data['visible']
+    if 'link' in data:
+        location.link = data['link']
+    if 'online' in data:
+        location.online = data['online']
+    if not location.online:
+        location.link = ""
+    location.link = location.link and urljoin("https://", location.link)
     if location.name == "Online":
         return
     db.session.commit()
@@ -1370,6 +1379,16 @@ def leave_current_groups():
             emit_group_event(prev_attendance.group, "group_left")
 
 
+def process_call_link(link, location):
+    if link:
+        if location.link:
+            if all(x.isdigit() for x in link):
+                return f"Breakout Room {link}"
+        else:
+            return urljoin("https://", link)
+    return link
+
+
 @socketio.on('create_group')
 @logged_in
 def create(form):
@@ -1387,8 +1406,14 @@ def create(form):
     call_link = form.get('call-link', '')
     doc_link = form.get('doc-link', '')
 
-    if call_link:
-        call_link = urljoin("https://", call_link)
+    location = Location.query.filter_by(course=get_course(), id=location_id).one_or_none()
+    if not location:
+        return socket_error(
+            'Unknown location (id: {})'.format(location_id),
+            category='warning',
+        )
+
+    call_link = process_call_link(call_link, location)
 
     if doc_link:
         doc_link = urljoin("https://", doc_link)
@@ -1403,12 +1428,6 @@ def create(form):
     if not assignment:
         return socket_error(
             'Unknown assignment (id: {})'.format(assignment_id),
-            category='warning',
-        )
-    location = Location.query.filter_by(course=get_course(), id=location_id).one_or_none()
-    if not location:
-        return socket_error(
-            'Unknown location (id: {})'.format(location_id),
             category='warning',
         )
 

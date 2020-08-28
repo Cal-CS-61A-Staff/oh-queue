@@ -84,7 +84,8 @@ let RequestForm = (props) => {
         setLocationID(e.target.value);
     };
 
-    const showOnlineInput = locationID && state.locations[locationID].name === "Online";
+    const showOnlineInput = locationID && state.locations[locationID].online;
+    const linkKnown = locationID && state.locations[locationID].link;
 
     return (
         <div>
@@ -105,13 +106,20 @@ let RequestForm = (props) => {
                                        disabled={disabled && !appointments}/>
                             </div>
                         </div>
-                        {(showOnlineInput || party_enabled) && (party_enabled || JSON.parse(state.config.students_set_online_link) || JSON.parse(state.config.students_set_online_doc)) && (
+                        {showOnlineInput && (party_enabled || JSON.parse(state.config.students_set_online_link) || JSON.parse(state.config.students_set_online_doc)) && (
                             <React.Fragment>
                                 {(party_enabled || JSON.parse(state.config.students_set_online_link)) && (
                                     <div className="form-group form-group-lg">
-                                        <label htmlFor="call-link">Video Call Link</label>
+                                        <label htmlFor="call-link">
+                                            {linkKnown ?
+                                                "Breakout Room (optional)" :
+                                                "Video Call Link"
+                                            }
+                                        </label>
                                         <input className="form-control" type="text" id="call-link"
-                                               name="call-link" title="Video Call Link" placeholder="meet.google.com/xyz" required
+                                               name="call-link" title="Video Call Link"
+                                               placeholder={linkKnown ? "Breakout Room 6" : "meet.google.com/xyz"}
+                                               required={!linkKnown}
                                                disabled={disabled && !appointments}
                                         />
                                     </div>
