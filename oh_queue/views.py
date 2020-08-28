@@ -900,7 +900,7 @@ def add_location(data):
     name = data['name']
     if name == "Online":
         return
-    location = Location(name=name, course=get_course())
+    location = Location(name=name, course=get_course(), link="", online=False)
     db.session.add(location)
     db.session.commit()
 
