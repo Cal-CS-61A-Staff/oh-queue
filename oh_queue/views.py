@@ -380,6 +380,18 @@ def init_config():
         public=True,
         course=get_course(),
     ))
+    db.session.add(ConfigEntry(
+        key='party_enabled',
+        value='false',
+        public=True,
+        course=get_course(),
+    ))
+    db.session.add(ConfigEntry(
+        key='allow_private_party_tickets',
+        value='true',
+        public=True,
+        course=get_course(),
+    ))
     db.session.commit()
 
 
