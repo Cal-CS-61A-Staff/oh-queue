@@ -81,6 +81,7 @@ class App extends React.Component {
           "slack_notif_appt_summary",
           "slack_notif_missed_appt",
           "party_enabled",
+          "allow_private_party_tickets",
       ]) {
           this.state.config[key] = JSON.parse(this.state.config[key]);
       }

@@ -582,8 +582,10 @@ def create(form):
     """Stores a new ticket to the persistent database, and emits it to all
     connected clients.
     """
-    is_closed = ConfigEntry.query.filter_by(course=get_course(), key='is_queue_open').one()
-    if is_closed.value != 'true':
+    is_open = ConfigEntry.query.filter_by(course=get_course(), key='is_queue_open').one().value == 'true'
+    party_enabled = ConfigEntry.query.filter_by(course=get_course(), key='party_enabled').one().value == 'true'
+    private_party_tickets_allowed = ConfigEntry.query.filter_by(course=get_course(), key='allow_private_party_tickets').one().value == 'true'
+    if not is_open or (party_enabled and not private_party_tickets_allowed):
         return socket_error(
             'The queue is closed',
             category='warning',
@@ -921,8 +923,8 @@ def update_location(data):
         location.link = data['link']
     if 'online' in data:
         location.online = data['online']
-    if not location.online:
-        location.link = ""
+    if location.link:
+        location.online = True
     location.link = location.link and urljoin("https://", location.link)
     if location.name == "Online":
         return
@@ -1507,6 +1509,10 @@ def leave_group(group_id):
 def update_group(data, group):
     if 'description' in data:
         group.description = data['description']
+    if 'assignment_id' in data:
+        group.assignment = Assignment.query.filter_by(course=get_course(), id=data['assignment_id']).one()
+    if 'question' in data:
+        group.question = data['question']
     if 'location_id' in data:
         group.location = Location.query.filter_by(course=get_course(), id=data['location_id']).one_or_none()
     db.session.commit()

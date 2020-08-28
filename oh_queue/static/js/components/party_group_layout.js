@@ -143,6 +143,11 @@ function PartyGroupLayout({ state, match, loadGroup, socket }) {
                             />
                         </div>
                     </div>
+                    <div className="row">
+                        <div className="col-xs-12 col-md-6 col-md-offset-3">
+                            <UpdateAssignmentBox state={state} group={group} />
+                        </div>
+                    </div>
                     <hr />
                     {(onlineButtons || actionButton) && (
                         <div className="row">
