@@ -106,9 +106,13 @@ let RequestForm = (props) => {
                                        disabled={disabled && !appointments}/>
                             </div>
                         </div>
-                        {showOnlineInput && (party_enabled || JSON.parse(state.config.students_set_online_link) || JSON.parse(state.config.students_set_online_doc)) && (
+                        {showOnlineInput && (
                             <React.Fragment>
-                                {(party_enabled || JSON.parse(state.config.students_set_online_link)) && (
+                                {(
+                                    party_enabled ||
+                                    state.locations[locationID].name !== "Online" ||
+                                    JSON.parse(state.config.students_set_online_link)
+                                ) && (
                                     <div className="form-group form-group-lg">
                                         <label htmlFor="call-link">
                                             {linkKnown ?
