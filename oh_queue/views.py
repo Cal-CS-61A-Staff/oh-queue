@@ -1205,7 +1205,7 @@ def upload_appointments(data):
                 duration=datetime.timedelta(minutes=int(row[header.index("Duration (mins)")])),
                 capacity=int(row[header.index("Capacity")]),
                 location=get_location(row[header.index("Location")]),
-                status=AppointmentStatus.pending if row[header.index("Email")] else AppointmentStatus.hidden,
+                status=AppointmentStatus.hidden,
                 helper=get_helper(row[header.index("Email")], row[header.index("Name")]),
                 course=get_course(),
             )
