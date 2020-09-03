@@ -231,7 +231,7 @@ class Group(db.Model):
     ticket_id = db.Column(db.ForeignKey('ticket.id'), nullable=True, index=True)
     ticket = db.relationship(Ticket, foreign_keys=[ticket_id])
 
-    attendees = db.relationship("GroupAttendance", back_populates="group")
+    attendees = db.relationship("GroupAttendance", back_populates="group", lazy="joined")
 
     group_status = db.Column(EnumType(GroupStatus), nullable=False, default=GroupStatus.active)
 
@@ -252,7 +252,7 @@ class GroupAttendance(db.Model):
     group = db.relationship("Group", back_populates="attendees")
 
     user_id = db.Column(db.ForeignKey('user.id'), nullable=False, index=True)
-    user = db.relationship(User, foreign_keys=[user_id])
+    user = db.relationship(User, foreign_keys=[user_id], lazy="joined")
 
     group_attendance_status = db.Column(EnumType(GroupAttendanceStatus), nullable=False, default=GroupAttendanceStatus.present)
 

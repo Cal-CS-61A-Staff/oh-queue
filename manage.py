@@ -8,10 +8,14 @@ import alembic
 import names
 
 from alembic.config import Config
+from flask_debugtoolbar import DebugToolbarExtension
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from oh_queue import app, socketio
-from oh_queue.models import db, Assignment, ConfigEntry, Location, Ticket, TicketStatus, User, Appointment, \
+from oh_queue.models import Group, GroupAttendance, GroupAttendanceStatus, GroupStatus, db, Assignment, ConfigEntry, \
+    Location, Ticket, \
+    TicketStatus, User, \
+    Appointment, \
     AppointmentSignup, AppointmentStatus
 
 migrate = Migrate(app, db)
@@ -39,27 +43,10 @@ def seed_data():
     print('Seeding...')
 
     assignments = [Assignment(name=name, course="ok", visible=True) for name in ['Hog', 'Maps', 'Ants', 'Scheme']]
-    locations = [Location(name=name, course="ok", visible=True) for name in ['109 Morgan', '241 Cory', '247 Cory']]
+    locations = [Location(name=name, course="ok", visible=True, online=True, link="") for name in
+                 ['109 Morgan', '241 Cory', '247 Cory']]
     questions = list(range(1, 16)) + ['Other', 'EC', 'Checkoff']
     descriptions = ['', 'I\'m in the hallway', 'SyntaxError on Line 5']
-
-    appointments = [Appointment(
-        start_time=datetime.datetime.now() + datetime.timedelta(hours=random.randrange(-8, 50)),
-        duration=datetime.timedelta(minutes=random.randrange(30, 120, 30)),
-        location=random.choice(locations),
-        capacity=5,
-        status=AppointmentStatus.pending,
-        course="ok",
-    ) for _ in range(70)]
-
-    for assignment in assignments:
-        db.session.add(assignment)
-    for location in locations:
-        db.session.add(location)
-    for appointment in appointments:
-        db.session.add(appointment)
-
-    db.session.commit()
 
     students = []
 
@@ -87,9 +74,28 @@ def seed_data():
             location=random.choice(locations),
             question=random.choice(questions),
             description=random.choice(descriptions),
-            course = "ok"
+            course="ok"
         )
         db.session.add(ticket)
+
+    appointments = [Appointment(
+        start_time=datetime.datetime.now() + datetime.timedelta(hours=random.randrange(-8, 50)),
+        duration=datetime.timedelta(minutes=random.randrange(30, 120, 30)),
+        location=random.choice(locations),
+        capacity=5,
+        status=AppointmentStatus.pending,
+        course="ok",
+        helper=random.choice(students)
+    ) for _ in range(70)]
+
+    for assignment in assignments:
+        db.session.add(assignment)
+    for location in locations:
+        db.session.add(location)
+    for appointment in appointments:
+        db.session.add(appointment)
+
+    db.session.commit()
 
     signups = [AppointmentSignup(
         appointment=random.choice(appointments),
@@ -102,6 +108,27 @@ def seed_data():
 
     for signup in signups:
         db.session.add(signup)
+
+    db.session.commit()
+
+    groups = [
+        Group(
+            group_status=GroupStatus.active,
+            question=random.choice(questions),
+            assignment=random.choice(assignments),
+            location=random.choice(locations),
+            attendees=[GroupAttendance(
+                user=student,
+                group_attendance_status=GroupAttendanceStatus.present,
+                course="ok"
+            ) for student in random.sample(students, 5)],
+            call_url="",
+            doc_url="",
+            course="ok",
+        ) for _ in range(120)]
+
+    for group in groups:
+        db.session.add(group)
 
     db.session.commit()
 
@@ -125,6 +152,7 @@ def initdb():
 @manager.command
 @not_in_production
 def server():
+    DebugToolbarExtension(app)
     socketio.run(app, host=app.config.get('HOST'), port=app.config.get('PORT'))
 
 

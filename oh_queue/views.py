@@ -381,12 +381,6 @@ def init_config():
         course=get_course(),
     ))
     db.session.add(ConfigEntry(
-        key='party_enabled',
-        value='false',
-        public=True,
-        course=get_course(),
-    ))
-    db.session.add(ConfigEntry(
         key='allow_private_party_tickets',
         value='true',
         public=True,
@@ -1592,3 +1586,11 @@ def set_online_call_link():
     user.call_url = str(request.json["call_url"])
     db.session.commit()
     return ""
+
+@app.route("/debug")
+def debug():
+    try:
+        emit_state(['tickets', 'assignments', 'groups', 'locations', 'current_user', 'config', 'appointments'])
+    except AttributeError:
+        pass
+    return "<body></body>"
