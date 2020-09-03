@@ -46,7 +46,7 @@ def student_json(user):
 
 
 def ticket_json(ticket):
-    group = ticket.group[0]
+    group = ticket.group
     return {
         'id': ticket.id,
         'status': ticket.status.name,
@@ -63,7 +63,7 @@ def ticket_json(ticket):
         'helper': ticket.helper and user_json(ticket.helper),
         'call_url': ticket.call_url,
         'doc_url': ticket.doc_url,
-        'group_id': group.id if group else None,
+        'group_id': group[0].id if group else None,
     }
 
 
