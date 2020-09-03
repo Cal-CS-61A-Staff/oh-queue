@@ -46,7 +46,7 @@ def student_json(user):
 
 
 def ticket_json(ticket):
-    group = ticket.group
+    group = ticket.group[0]
     return {
         'id': ticket.id,
         'status': ticket.status.name,
