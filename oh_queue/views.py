@@ -46,7 +46,7 @@ def student_json(user):
 
 
 def ticket_json(ticket):
-    group = Group.query.filter_by(ticket_id=ticket.id).one_or_none()
+    group = ticket.group
     return {
         'id': ticket.id,
         'status': ticket.status.name,
